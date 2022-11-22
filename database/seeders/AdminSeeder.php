@@ -19,6 +19,7 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'Administrator',
             'email' => 'admin@toyotaforklifts-philippines.com',
+            'area' => 'Parañaque(Head Office)',
             'email_verified_at' => now(),
             'password' => bcrypt('p@55w0rd2023'),
             'role' => 'admin',
@@ -28,6 +29,7 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'John Arian Malondras',
             'email' => 'hii.malondras@toyotaforklifts-philippines.com',
+            'area' => 'General Trias, Cavite',
             'email_verified_at' => now(),
             'password' => bcrypt('p@55w0rd2023'),
             'role' => 'user',

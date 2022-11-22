@@ -11,9 +11,11 @@
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
         <!-- Scripts -->
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased overflow-x-hidden overflow-y-hidden">
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 
@@ -31,5 +33,7 @@
                 {{ $slot }}
             </main>
         </div>
+
+        <script src="https://unpkg.com/flowbite@1.5.4/dist/flowbite.js"></script>
     </body>
 </html>

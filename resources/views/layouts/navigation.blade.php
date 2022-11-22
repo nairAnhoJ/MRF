@@ -15,6 +15,18 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 pl-3 pr-4 font-medium text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto">Create MRF <svg class="w-5 h-5 ml-1" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button>
+                    <!-- Dropdown menu -->
+                    <div id="dropdownNavbar" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded shadow-lg">
+                        <ul class="py-1 text-sm text-gray-700" aria-labelledby="dropdownLargeButton">
+                            <li class="bor border-b border-gray-200">
+                                <a href="{{ route('rental.index') }}" class="block px-4 py-2 hover:bg-gray-100">For Rental Unit</a>
+                            </li>
+                            <li>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100">For Consumable / Vehicle / Stock</a>
+                            </li>
+                        </ul>
+                    </div>
                     @if (auth()->user()->role == 'admin')
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('System Management') }}
@@ -75,6 +87,19 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            <button type="button" class="flex items-center p-2 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 " aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+                <span class="flex-1 ml-3 text-left whitespace-nowrap" sidebar-toggle-item>Create MRF</span>
+                <svg sidebar-toggle-item class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+            <ul id="dropdown-example" class="hidden py-2 space-y-2">
+                <li>
+                    <a href="{{ route('rental.index') }}" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100">For Rental Unita</a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-2 pl-11 w-full text-base font-normal text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100">For Consumable / Vehicle / Stock</a>
+                </li>
+            </ul>
         </div>
 
         <!-- Responsive Settings Options -->
