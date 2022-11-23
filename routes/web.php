@@ -17,7 +17,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('auth/login');
+    if(!auth()->user()){
+        return view('auth/login');
+    }else{
+        return redirect()->route('dashboard');
+    }
 });
 
 Route::get('/dashboard', function () {
@@ -31,6 +35,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/create-mrf/for-rental-unit', [MrfController::class, 'rentalIndex'])->name('rental.index');
+    Route::post('/create-mrf/for-rental-unit-get-model', [MrfController::class, 'rentalGetModel'])->name('rental.getModel');
+    Route::post('/create-mrf/store', [MrfController::class, 'store'])->name('rental.store');
 
     Route::get('/googlesheets', [GoogleSheetsController::class, 'sheetOperation']);
 });

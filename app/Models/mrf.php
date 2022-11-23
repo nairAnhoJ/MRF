@@ -30,4 +30,6 @@ class mrf extends Model
         'date_needed',
         'customer_address',
     ];
+
+    protected $table = 'mrf';
 }

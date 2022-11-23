@@ -14,7 +14,7 @@ class GoogleSheetsServices{
         $this->client = $this->getClient();
         $this->service = new Sheets($this->client);
         $this->documentId = '1ZekhV3d7vOjnE575bvB4XpVSGlaHyTAJ9BETvnLRsXQ';
-        $this->range = 'A:Z';
+        $this->range = 'B:Y';
     }
 
     public function getClient(){
@@ -55,6 +55,6 @@ class GoogleSheetsServices{
             'valueInputOption' => 'USER_ENTERED'
         ];
         //executing the request
-        $result = $this->service->spreadsheets_values->append($this->documentId, $this->range, $body, $params);
+        $result = $this->service->spreadsheets_values->append($this->documentId, 'B:Y', $body, $params);
     }
 }

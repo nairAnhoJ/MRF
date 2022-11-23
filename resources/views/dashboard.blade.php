@@ -1,7 +1,21 @@
+<style>
+    #tblDashboard thead tr th{
+        width: 1%;
+        white-space: nowrap;
+        border-right-width: 1px;
+    }
+    #tblBodyDashboard tr td{
+        width: 1%;
+        white-space: nowrap;
+        border-right-width: 1px;
+        text-align: center;
+    }
+</style>
+
 <x-app-layout>
     <div style="height: calc(100vh - 64px);" class="w-screen h-screen p-3">
         <div class="overflow-x-auto relative shadow-md sm:rounded-lg h-full">
-            <table class="w-full text-sm text-left text-gray-500 overflow-y-scroll max-h-full">
+            <table id="tblDashboard" class="w-full text-sm text-left text-gray-500 overflow-y-scroll max-h-full">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
                         <th scope="col" class="py-3 px-6">
@@ -63,7 +77,7 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tblBodyDashboard">
                     @if ($mrfs->count() > 0)
                         @foreach ($mrfs as $mrf)
                             <tr class="bg-white border-b">
@@ -71,10 +85,10 @@
                                     <a href="#" class="font-medium text-blue-600 hover:underline">Edit</a>
                                 </td>
                                 <td class="py-4 px-6">
-                                    {{ $mrf->created_at->format('m-d-Y') }}
+                                    {{ date("m-d-Y", strtotime($mrf->created_at)) }}
                                 </td>
                                 <td class="py-4 px-6">
-                                    {{ $mrf->date_needed->format('m-d-Y') }}
+                                    {{ date("m-d-Y", strtotime($mrf->date_needed)) }}
                                 </td>
                                 <td class="py-4 px-6">
                                     {{ $mrf->area }}
@@ -86,7 +100,15 @@
                                     {{ $mrf->fleet_no }}
                                 </td>
                                 <td class="py-4 px-6">
-                                    {{ $mrf->brand_id }}
+                                    @php
+                                        if($mrf->brand_id == 1){
+                                            echo 'TOYOTA';
+                                        }else if($mrf->brand_id == 2){
+                                            echo 'BT';
+                                        }else if($mrf->brand_id == 3){
+                                            echo 'RAYMOND';
+                                        }
+                                    @endphp
                                 </td>
                                 <td class="py-4 px-6">
                                     {{ $mrf->supervisor_id }}
@@ -113,7 +135,7 @@
                                     {{ $mrf->requester }}
                                 </td>
                                 <td class="py-4 px-6">
-                                    {{ $mrf->request_for }}
+                                    {{ strtoupper($mrf->request_for) }}
                                 </td>
                                 <td class="py-4 px-6">
                                     {{ $mrf->mri_no }}
