@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -24,5 +26,31 @@ class LoginController extends Controller
         }
 
         return redirect()->back()->with('error', 'Invalid credentials. Please try again.')->withInput();
+    }
+
+    public function changePassword(){
+        return view('change-password');
+    }
+    
+    public function updatePassword(Request $request){
+        $password = $request->password;
+        $password_confirmation = $request->password_confirmation;
+
+        $request->validate([
+            'password' => 'required|min:8',
+            'password_confirmation' => 'required',
+        ]);
+
+        if ($password === $password_confirmation) {
+            $user = Auth::user();
+            $user = User::where('id', Auth::user()->id)->first();
+            $user->password = Hash::make($password);
+            $user->first_time_login = 0;
+            $user->save();
+
+            return redirect()->route('nchargeable');
+        } else {
+            return redirect()->back()->with('error', 'Password does not match. Please try again.');
+        }
     }
 }
