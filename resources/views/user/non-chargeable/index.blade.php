@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Non-Chargeable Requests')
 
 @section('content')
 

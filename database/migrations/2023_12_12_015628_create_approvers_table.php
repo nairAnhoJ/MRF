@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('approvers', function (Blueprint $table) {
+        Schema::create('mrf_approvers', function (Blueprint $table) {
             $table->id();
+            $table->string('for');
+            $table->string('condition');
+            $table->smallInteger('user_id');
             $table->timestamps();
         });
     }
@@ -22,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('approvers');
+        Schema::dropIfExists('mrf_approvers');
     }
 };

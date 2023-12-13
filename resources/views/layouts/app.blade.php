@@ -64,8 +64,6 @@
 
         <script>
             $(document).ready(function () {
-                var tab = 1;
-
                 jQuery(document).on( "input", ".numberOnly", function(){
                     var inputValue = $(this).val();
                     inputValue = inputValue.replace(/[^0-9.]/g, '');
@@ -114,13 +112,13 @@
                     $('.uil-angle-down').removeClass('-rotate-180');
                 });
 
+
+
+                
+
                 jQuery(document).on("input", ".partSearch", function(){
                     var value = $(this).val().toLowerCase();
                     $('#part_search').val(value);
-                });
-
-                jQuery('.resultsTable').on("click", ".editButton", function(e){
-                    e.stopPropagation();
                 });
                 
                 jQuery(document).on( "click", ".autoResize", function(){

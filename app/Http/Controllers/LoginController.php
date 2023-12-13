@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Hash;
 class LoginController extends Controller
 {
     public function index(){
-        return view('login');
+        if(Auth::user()){
+            return redirect()->route('nchargeable');
+        }else{
+            return view('login');
+        }
     }
 
     public function authenticate(Request $request){
@@ -21,7 +25,7 @@ class LoginController extends Controller
             if (Auth::user()->first_time_login == 1) {
                 return redirect()->route('change.password');
             } else {
-                return redirect()->route('nchargable');
+                return redirect()->route('nchargeable');
             }
         }
 
@@ -29,7 +33,11 @@ class LoginController extends Controller
     }
 
     public function changePassword(){
-        return view('change-password');
+        if (Auth::user()->first_time_login == 1) {
+            return view('change-password');
+        } else {
+            return redirect()->route('nchargeable');
+        }
     }
     
     public function updatePassword(Request $request){

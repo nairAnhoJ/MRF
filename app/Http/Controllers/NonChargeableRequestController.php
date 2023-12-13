@@ -119,13 +119,63 @@ class NonChargeableRequestController extends Controller
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
     public function add(){
         $brands = Brand::where('is_deleted', 0)->orderBy('id', 'asc')->get();
         $customers = Customer::where('is_deleted', 0)->get();
         $site = Site::where('id', Auth::user()->site)->first()->name;
+        $brand = '';
+        $model = '';
+        $models = [];
+        $partsInfo = [];
         
-        return view('user.non-chargeable.add', compact('customers', 'brands', 'site'));
+        return view('user.non-chargeable.add', compact('customers', 'brands', 'models', 'site', 'brand', 'model', 'partsInfo'));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -730,10 +780,6 @@ class NonChargeableRequestController extends Controller
         return redirect()->route('nchargeable')->with('success', 'Request Has Been Validated Successfully!');
     }
 
-
-
-
-
     public function approveRequest(Request $request){
         $thisRequest = NonChargeableRequest::where('id', $request->id)->first();
         $thisRequest->is_returned = 0;
@@ -817,18 +863,11 @@ class NonChargeableRequestController extends Controller
 
     }
 
-
-
-
     public function viewSerialNumbers(Request $request){
         $id = $request->id;
         $thisRequest = NonChargeableRequest::where('id', $request->id)->first();
         echo $thisRequest->serial_numbers;
     }
-
-
-
-
 
     public function returnParts(Request $request){
         $id = $request->id;
