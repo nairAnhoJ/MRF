@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Approver;
 use App\Models\Brand;
+use App\Models\BrandModel;
 use App\Models\Customer;
 use App\Models\NonChargeableRequest;
 use App\Models\NonChargeableRequestParts;
+use App\Models\Part;
 use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class NonChargeableRequestController extends Controller
 {
@@ -154,6 +157,63 @@ class NonChargeableRequestController extends Controller
         $partsInfo = [];
         
         return view('user.non-chargeable.add', compact('customers', 'brands', 'models', 'site', 'brand', 'model', 'partsInfo'));
+    }
+
+    public function getModels(Request $request){
+        $models = BrandModel::where('brand_id', $request->id)->get();
+        $res = '';
+
+        foreach($models as $bmodel){
+            $res .= '
+                <li data-name="'.$bmodel->name.'" class="flex items-center pl-3 leading-9 rounded-md cursor-pointer h-9 hover:bg-gray-200">'.$bmodel->name.'</li>
+            ';
+        }
+        echo $res;
+    }
+
+    public function getParts(Request $request){
+        $search = $request->search;
+        $selectedParts = json_decode($request->selectedParts, true);
+        $parts = Part::with('part_brand')->whereRaw("CONCAT_WS(' ', partno, partname) LIKE ?", ['%' . $search . '%'])->where('status', 1)->where('is_deleted', 0)->orderBy('id', 'asc')->take(30)->get();
+        $res = '';
+
+        foreach($parts as $rpart){
+            if($selectedParts != null){
+                if (in_array($rpart->id, $selectedParts)) {
+                    $res .= '
+                        <tr data-id="'.$rpart->id.'" class="text-center border-b cursor-pointer hover:bg-gray-100 selectPart">
+                            <td><input checked type="checkbox" class="rounded cursor-pointer"></td>
+                            <td>'.$rpart->partno.'</td>
+                            <td>'.$rpart->partname.'</td>
+                            <td>'.$rpart->part_brand->name.'</td>
+                            <td>'.number_format(str_replace(",", "", $rpart->price), 2, ".", ",").'</td>
+                        </tr>
+                    ';
+                } else {
+                    $res .= '
+                        <tr data-id="'.$rpart->id.'" class="text-center border-b cursor-pointer hover:bg-gray-100 selectPart">
+                            <td><input type="checkbox" class="rounded cursor-pointer"></td>
+                            <td>'.$rpart->partno.'</td>
+                            <td>'.$rpart->partname.'</td>
+                            <td>'.$rpart->part_brand->name.'</td>
+                            <td>'.number_format(str_replace(",", "", $rpart->price), 2, ".", ",").'</td>
+                        </tr>
+                    ';
+                }
+            }else{
+                $res .= '
+                    <tr data-id="'.$rpart->id.'" class="text-center border-b cursor-pointer hover:bg-gray-100 selectPart">
+                        <td><input type="checkbox" class="rounded cursor-pointer"></td>
+                        <td>'.$rpart->partno.'</td>
+                        <td>'.$rpart->partname.'</td>
+                        <td>'.$rpart->part_brand->name.'</td>
+                        <td>'.number_format(str_replace(",", "", $rpart->price), 2, ".", ",").'</td>
+                    </tr>
+                ';
+            }
+        }
+        
+        echo $res;
     }
 
 
@@ -540,20 +600,40 @@ class NonChargeableRequestController extends Controller
 
     public function viewFSRR(Request $request){
         $id = $request->id;
-        $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
-        $fsrr_fileExt = pathinfo($rental_request->fsrr_path, PATHINFO_EXTENSION);
-
-        if ($fsrr_fileExt == 'jpeg' || $fsrr_fileExt == 'jpg' || $fsrr_fileExt == 'png'){
-            echo '<img src="'.$rental_request->fsrr_path.'" class="w-full h-auto">';
+        if($id != 0){
+            $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
+            $fsrr_fileExt = pathinfo($rental_request->fsrr_path, PATHINFO_EXTENSION);
+    
+            if ($fsrr_fileExt == 'jpeg' || $fsrr_fileExt == 'jpg' || $fsrr_fileExt == 'png'){
+                echo '<img src="'.$rental_request->fsrr_path.'" class="w-full h-auto">';
+            }else{
+                echo '<embed src="'.$rental_request->fsrr_path.'" type="application/pdf" class="w-full h-full">';
+            }
         }else{
-            echo '<embed src="'.$rental_request->fsrr_path.'" type="application/pdf" class="w-full h-full">';
+            $file = $request->file('fsrrFile');
+            $fsrr_fileExt = $file->getClientOriginalExtension();
+            $folder = 'temporary_files/'.Auth::user()->id;
+            File::cleanDirectory(public_path($folder));
+            $file->move(public_path($folder), $file->getClientOriginalName());
+            
+            if ($fsrr_fileExt == 'jpeg' || $fsrr_fileExt == 'jpg' || $fsrr_fileExt == 'png'){
+                echo '<img src="'.asset($folder.'/'.$file->getClientOriginalName()).'" class="w-full h-auto">';
+            }else{
+                echo '<embed src="'.asset($folder.'/'.$file->getClientOriginalName()).'" type="application/pdf" class="w-full h-full">';
+            }
         }
     }
 
     public function viewHistory(Request $request){
         $id = $request->id;
         $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
-        $fleetHistory = NonChargeableRequest::where('fleet_number', $rental_request->fleet_number)->where('is_cancelled', 0)->where('id', '!=', $rental_request->id)->get();
+        if($id == 0){
+            $fleet_number = $request->fleet_number;
+        }else{
+            $fleet_number = $rental_request->fleet_number;
+        }
+
+        $fleetHistory = NonChargeableRequest::where('fleet_number', $fleet_number)->where('is_cancelled', 0)->where('id', '!=', $id)->get();
         $history = '';
         $parts = '';
 

@@ -42,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/non-chargeable', [NonChargeableRequestController::class, 'index'])->name('nchargeable');
 
     Route::get('/non-chargeable/add', [NonChargeableRequestController::class, 'add'])->name('nchargeable.add');
+    Route::post('/non-chargeable/add/get-models', [NonChargeableRequestController::class, 'getModels'])->name('nchargeable.add.getModels');
+    Route::post('/non-chargeable/add/get-parts', [NonChargeableRequestController::class, 'getParts'])->name('nchargeable.add.getParts');
     Route::post('/non-chargeable/store', [NonChargeableRequestController::class, 'store'])->name('nchargeable.store');
 
     Route::post('/non-chargeable/view', [NonChargeableRequestController::class, 'view'])->name('nchargeable.view');
