@@ -112,7 +112,6 @@
                     <div class="p-4 h-[calc(100%-140px)] overflow-hidden">
                         <div class="flex items-center justify-between h-11">
                             <h1 class="text-lg font-medium text-neutral-700 whitespace-nowrap">
-                                {{-- {{ count($selectedparts) }} Selected --}}
                             </h1>
                             <div class="relative w-1/2 h-full mb-2">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -135,22 +134,12 @@
                                     </tr>
                                 </thead>
                                 <tbody id="partsBody">
-                                    {{-- @foreach ($parts as $partRow)
-                                        <tr wire:click='toggleCheckbox({{ $partRow->id }})' wire:key="{{ $partRow->id }}" class="text-center border-b cursor-pointer hover:bg-gray-100">
-                                            <td><input {{ in_array($partRow->id, $selectedparts) ? 'checked' : '' }} type="checkbox" class="rounded cursor-pointer"></td>
-                                            <td>{{ $partRow->partno }}</td>
-                                            <td>{{ $partRow->partname }}</td>
-                                            <td>{{ $partRow->part_brand->name }}</td>
-                                            <td>{{ number_format(str_replace(",", "", $partRow->price), 2, '.', ',') }}</td>
-                                        </tr>
-                                    @endforeach --}}
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <!-- Modal footer -->
                     <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
-                        {{-- <button type="button" wire:click='addSelectedParts' class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-24">ADD</button> --}}
                         <button type="button" class="addSelectedParts text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10">CLOSE</button>
                     </div>
                 </form>
@@ -360,7 +349,7 @@
                                     </svg>
                                 </button>
                             </div>
-                            <input type="hidden" name="selectedParts">
+                            <input type="hidden" id="selectedParts" name="selectedParts">
                             <div class="w-full">
                                 <div class="w-full ">
                                     <table class="w-full text-center">
@@ -376,29 +365,7 @@
                                                 <th class="pb-2">Delete</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="text-sm">
-                                            @foreach ($partsInfo as $index => $partInfo)
-                                                <tr class="border-b">
-                                                    <th class="px-2">{{ $index + 1 }}</th>
-                                                    <td>{{ $partInfo->partno }}</td>
-                                                    <td>{{ $partInfo->partname }}</td>
-                                                    <td>{{ $partInfo->brand }}</td>
-                                                    <td class="py-2">
-                                                        <input type="text" class="w-16 text-sm text-center rounded-lg numberOnly text-neutral-700" wire:keyup="updateQuantity({{ $partInfo->id }}, $event.target.value)" value="{{ $partInfo->quantity }}">
-                                                    </td>
-                                                    <td>
-                                                        <input type="text" class="text-sm text-center rounded-lg w-28 numberOnly text-neutral-700" wire:keyup="updatePrice({{ $partInfo->id }}, $event.target.value)" value="{{ str_replace(",", "", $partInfo->price) }}">
-                                                    </td>
-                                                    <td>{{ number_format((str_replace(",", "", $partInfo->price) * $partInfo->quantity), 2, '.', ',') }}</td>
-                                                    <td>
-                                                        <button wire:click='deletePart({{ $partInfo->id }})' type="button" class="mt-1 text-red-500 hover:text-red-600">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
-                                                                <path d="m363-289 117-118 118 118 60-60-117-119 117-119-60-61-118 119-117-119-60 61 117 119-117 119 60 60ZM253-95q-39.462 0-67.231-27.475Q158-149.95 158-189v-553h-58v-94h231v-48h297v48h232v94h-58v553q0 39.05-27.769 66.525Q746.463-95 707-95H253Z"/>
-                                                            </svg>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
+                                        <tbody id="selectedPartsBody" class="text-sm">
                                         </tbody>
                                     </table>
                                 </div>
@@ -741,9 +708,32 @@
             });
 
             jQuery(document).on("click", ".addSelectedParts", function() {
-                $('#partsModal').addClass('hidden');
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('nchargeable.add.updateSelected') }}",
+                    method:"POST",
+                    data:{
+                        selectedParts: JSON.stringify(selectedParts),
+                        _token: _token
+                    },
+                    success:function(result){
+                        $('#selectedPartsBody').html(result);
+                        $('#selectedParts').val(selectedParts);
+
+                        $('#loading').addClass('hidden');
+                        $('#partsModal').addClass('hidden');
+                    }
+                })
             });
             
+            jQuery(document).on("keyup", 'input[name="partQuantity"], input[name="partPrice"]', function(){
+                var row = $(this).closest('tr');
+                var partQuantity = row.find('input[name="partQuantity"]').val();
+                var partPrice = row.find('input[name="partPrice"]').val();
+                var total = (partQuantity * partPrice).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                total = total.replace('$', '');
+                row.find('.partTotal').html(total);
+            });
         });
     </script>
 @endsection

@@ -216,7 +216,38 @@ class NonChargeableRequestController extends Controller
         echo $res;
     }
 
+    public function updateSelected(Request $request){
+        $selectedParts = json_decode($request->selectedParts, true);
+        $res = '';
 
+        foreach($selectedParts as $index => $selectedPart){
+            $part = Part::where('id', $selectedPart)->first();
+            $res .= '
+                <tr class="border-b">
+                    <th class="px-2">'.($index + 1).'</th>
+                    <td>'.$part->partno.'</td>
+                    <td>'.$part->partname.'</td>
+                    <td>'.$part->brand.'</td>
+                    <td class="py-2">
+                        <input type="text" name="partQuantity" class="w-16 text-sm text-center rounded-lg partQuantity numberOnly text-neutral-700" value="1">
+                    </td>
+                    <td>
+                        <input type="text" name="partPrice" class="text-sm text-center rounded-lg w-28 partPrice numberOnly text-neutral-700" value="'.str_replace(",", "", $part->price).'">
+                    </td>
+                    <td class="partTotal">'.number_format((str_replace(",", "", $part->price)), 2, ".", ",").'</td>
+                    <td>
+                        <button data-id="'.$part->id.'" id="partDelete" type="button" class="mt-1 text-red-500 hover:text-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
+                                <path d="m363-289 117-118 118 118 60-60-117-119 117-119-60-61-118 119-117-119-60 61 117 119-117 119 60 60ZM253-95q-39.462 0-67.231-27.475Q158-149.95 158-189v-553h-58v-94h231v-48h297v48h232v94h-58v553q0 39.05-27.769 66.525Q746.463-95 707-95H253Z"/>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            ';
+        }
+
+        echo $res;
+    }
 
 
 
