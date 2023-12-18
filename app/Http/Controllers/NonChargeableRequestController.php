@@ -13,6 +13,7 @@ use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
 
 class NonChargeableRequestController extends Controller
 {
@@ -217,36 +218,169 @@ class NonChargeableRequestController extends Controller
     }
 
     public function updateSelected(Request $request){
+        $tab = $request->tab;
         $selectedParts = json_decode($request->selectedParts, true);
+        $quantities = json_decode($request->quantities, true);
+        $prices = json_decode($request->prices, true);
         $res = '';
 
-        foreach($selectedParts as $index => $selectedPart){
-            $part = Part::where('id', $selectedPart)->first();
-            $res .= '
-                <tr class="border-b">
-                    <th class="px-2">'.($index + 1).'</th>
-                    <td>'.$part->partno.'</td>
-                    <td>'.$part->partname.'</td>
-                    <td>'.$part->brand.'</td>
-                    <td class="py-2">
-                        <input type="text" name="partQuantity" class="w-16 text-sm text-center rounded-lg partQuantity numberOnly text-neutral-700" value="1">
-                    </td>
-                    <td>
-                        <input type="text" name="partPrice" class="text-sm text-center rounded-lg w-28 partPrice numberOnly text-neutral-700" value="'.str_replace(",", "", $part->price).'">
-                    </td>
-                    <td class="partTotal">'.number_format((str_replace(",", "", $part->price)), 2, ".", ",").'</td>
-                    <td>
-                        <button data-id="'.$part->id.'" id="partDelete" type="button" class="mt-1 text-red-500 hover:text-red-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
-                                <path d="m363-289 117-118 118 118 60-60-117-119 117-119-60-61-118 119-117-119-60 61 117 119-117 119 60 60ZM253-95q-39.462 0-67.231-27.475Q158-149.95 158-189v-553h-58v-94h231v-48h297v48h232v94h-58v553q0 39.05-27.769 66.525Q746.463-95 707-95H253Z"/>
-                            </svg>
-                        </button>
-                    </td>
-                </tr>
-            ';
+        if($tab == 2){
+            foreach($selectedParts as $index => $selectedPart){
+                $part = Part::where('id', $selectedPart)->first();
+                $res .= '
+                    <tr class="border-b">
+                        <th class="px-2">'.($index + 1).'</th>
+                        <td>'.$part->partno.'</td>
+                        <td>'.$part->partname.'</td>
+                        <td>'.$part->brand.'</td>
+                        <td class="py-2">
+                            <input type="text" name="partQuantity'.($index + 1).'" class="w-16 text-sm text-center rounded-lg lowestOne partQuantity numberOnly text-neutral-700" value="1">
+                        </td>
+                        <td>
+                            <input type="text" name="partPrice'.($index + 1).'" class="text-sm text-center rounded-lg w-28 partPrice lowestOne numberOnly text-neutral-700" value="'.str_replace(",", "", $part->price).'">
+                        </td>
+                        <td class="partTotal">'.number_format((str_replace(",", "", $part->price)), 2, ".", ",").'</td>
+                        <td>
+                            <button data-id="'.$part->id.'" id="partDelete" type="button" class="mt-1 text-red-500 hover:text-red-600">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
+                                    <path d="m363-289 117-118 118 118 60-60-117-119 117-119-60-61-118 119-117-119-60 61 117 119-117 119 60 60ZM253-95q-39.462 0-67.231-27.475Q158-149.95 158-189v-553h-58v-94h231v-48h297v48h232v94h-58v553q0 39.05-27.769 66.525Q746.463-95 707-95H253Z"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                ';
+            }
+        }else{
+            foreach($selectedParts as $index => $selectedPart){
+                $part = Part::where('id', $selectedPart)->first();
+                $res .= '
+                    <tr class="border-b">
+                        <th class="px-2 whitespace-nowrap">'.($index + 1).'</th>
+                        <td class="px-2 whitespace-nowrap">'.$part->partno.'</td>
+                        <td class="px-2 whitespace-nowrap">'.$part->partname.'</td>
+                        <td class="px-2 text-center whitespace-nowrap">'.$part->brand.'</td>
+                        <td class="px-2 py-2 text-center whitespace-nowrap">
+                            '.$quantities[$index].'
+                        </td>
+                        <td class="px-2 text-center whitespace-nowrap">
+                            '.str_replace(",", "", $prices[$index]).'
+                        </td>
+                        <td class="px-2 text-center whitespace-nowrap">
+                            '.number_format((str_replace(",", "", $prices[$index]) * $quantities[$index]), 2, ".", ",").'
+                        </td>
+                    </tr>
+                ';
+            }
         }
 
+
         echo $res;
+    }
+
+    public function store(Request $request){
+        $validator = Validator::make($request->all(), [
+            'for' => 'required',
+            'order_type' => 'required',
+            'date_needed' => 'required|date|after:now',
+            'customer_name' => 'required',
+            'brand' => 'required',
+            'model' => 'required', 
+            'serial_number' => 'required',
+            'fleet_number' => 'required',
+            'fsrr_number' => 'required',
+            'fsrrFile' => 'required|mimes:jpeg,jpg,png,pdf',
+            'delivery_type' => 'required',
+        ]);
+
+        $customMessages = [
+            'for.required' => 'Please select an option from the list.',
+            'order_type.required' => 'Please select an option from the list.',
+            'date_needed.required' => 'Please select a date.',
+            'date_needed.date' => 'Invalid date format. Please use the calendar to select a valid date.',
+            'date_needed.after' => 'The selected date is invalid. Please choose a date after today.',
+            'customer_name.required' => 'Please select an option from the list.',
+            'brand.required' => 'Please select an option from the list.',
+            'model.required' => 'Please select an option from the list.',
+            'serial_number.required' => 'Please provide the required information.',
+            'fleet_number.required' => 'Please provide the required information.',
+            'fsrr_number.required' => 'Please provide the required information.',
+            'fsrrFile.required' => 'Please choose a file for upload.',
+            'fsrrFile.mimes' => 'Please upload a file with the correct format (.jpeg, .jpg, .png, .pdf).',
+            'delivery_type.required' => 'Please select an option from the list.',
+        ];
+
+        $validator->setCustomMessages($customMessages);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $customer_name = $request->customer_name;
+        $customer_address = $request->customer_address;
+        $customer_area = $request->customer_area;
+        
+        $for = $request->for;
+        $order_type = $request->order_type;
+        $date_needed = $request->date_needed;
+        $brand = $request->brand;
+        $model = $request->model;
+        $fleet_number = $request->fleet_number;
+        $fsrr_number = $request->fsrr_number;
+        $requestor_remarks = $request->requestor_remarks;
+        $serial_number = $request->serial_number;
+        $delivery_type = $request->delivery_type;
+        $fsrrFile = $request->file('fsrrFile');
+        $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
+        
+        $selectedParts = $request->selectedParts;
+        $selectedPartsQuantity = $request->selectedPartsQuantity;
+        $selectedPartsPrice = $request->selectedPartsPrice;
+
+        $request_id = NonChargeableRequest::select('id')->max('id') + 1;
+
+        $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
+        $fsrrFile->storeAs('storage/attachments/rental', $fileName, 'public_uploads');
+
+        $fsrrPath = 'storage/attachments/rental/' . $fileName;
+
+        $new_request = new NonChargeableRequest();
+        $new_request->number = 'R-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
+        $new_request->site = Auth::user()->site;
+        $new_request->area = Auth::user()->area;
+        $new_request->customer_name = $customer_name;
+        $new_request->customer_address = $customer_address;
+        $new_request->customer_area = $customer_area;
+        $new_request->for = $for;
+        $new_request->order_type = $order_type;
+        $new_request->fleet_number = $fleet_number;
+        $new_request->brand = $brand;
+        $new_request->model = $model;
+        $new_request->serial_number = $serial_number;
+        $new_request->fsrr_number = $fsrr_number;
+        $new_request->fsrr_path = $fsrrPath;
+        $new_request->delivery_type = $delivery_type;
+        $new_request->date_requested = date('Y-m-d h:i:s');
+        $new_request->requestor = Auth::user()->name;
+        $new_request->requestor_remarks = $requestor_remarks;
+        $new_request->date_needed = $date_needed;
+        $new_request->save();
+
+        foreach ($selectedParts as $index => $selectedPart) {
+            $sPart = Part::with('part_brand')->where('id', $selectedPart->id)->first();
+
+            $perPart = new NonChargeableRequestParts();
+            $perPart->rental_request_id = $new_request->id;
+            $perPart->part_id = $selectedPart->id;
+            $perPart->part_number = $sPart->partno;
+            $perPart->part_name = $sPart->partname;
+            $perPart->brand = $sPart->part_brand->name;
+            $perPart->quantity = $selectedPartsQuantity[$index];
+            $perPart->price = $selectedPartsPrice[$index];
+            $perPart->total_price = (float)$selectedPartsPrice[$index] * (float)$selectedPartsQuantity[$index];
+            $perPart->save();
+        }
+        
+        return redirect()->route('nchargeable')->with('success', 'Request Has Been Added Successfully!');
     }
 
 
@@ -910,7 +1044,7 @@ class NonChargeableRequestController extends Controller
             //     $thisRequest->is_rental_approved = 1;
             //     $thisRequest->rental_approver = Auth()->user()->name;
             //     $thisRequest->datetime_rental_approved = date('Y-m-d h:i:s');
-            //     $thisRequest->rental_remarks = $this->remarks;
+            //     $thisRequest->rental_remarks = $remarks;
             //     request()->session()->flash('success', 'Request Has Been Approved Successfully!');
 
             //     break;

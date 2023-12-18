@@ -160,10 +160,10 @@
                             <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="for" class="block text-sm font-medium text-gray-900">Request For</label>
-                                    <select id="for" name='for' value="{{ old('for') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option hidden>Select Request For</option>
-                                        <option value="FOR PM">For PM</option>
-                                        <option value="FOR REPAIR">For Repair</option>
+                                    <select id="for" name='for' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Request For</option>
+                                        <option value="FOR PM" {{ (old('for') == 'FOR PM') ? 'selected' : '' }}>For PM</option>
+                                        <option value="FOR REPAIR" {{ (old('for') == 'FOR REPAIR') ? 'selected' : '' }}>For Repair</option>
                                     </select>
                                     @error('for')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -171,10 +171,10 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="order_type" class="block text-sm font-medium text-gray-900">Order Type</label>
-                                    <select id="order_type" name='order_type' value="{{ old('order_type') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option hidden>Select Order Type</option>
-                                        <option value="IN STOCK">In Stock</option>
-                                        <option value="REQUEST PARTS">Request Parts</option>
+                                    <select id="order_type" name='order_type'" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Order Type</option>
+                                        <option value="IN STOCK" {{ (old('order_type') == 'IN STOCK') ? 'selected' : '' }}>In Stock</option>
+                                        <option value="REQUEST PARTS" {{ (old('order_type') == 'REQUEST PARTS') ? 'selected' : '' }}>Request Parts</option>
                                     </select>
                                     @error('order_type')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -197,7 +197,7 @@
                                 <label class="block mt-3 text-sm font-medium text-gray-900">Customer</label>
                                 <div class="relative w-full wrapper">
                                     <div class="flex items-center justify-between p-2.5 border border-gray-300 rounded-md cursor-pointer bg-gray-50 select-btn h-[42px]">
-                                        <span id="customer_name">Select Customer</span>
+                                        <span id="customer_name">{{ (old('customer_name') == '') ? 'Select Customer' : old('customer_name') }}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-full text-gray-700 transition-transform duration-300" viewBox="0 -960 960 960" fill='currentColor'><path d="M480-322 216-586l67-67 197 198 197-197 67 67-264 263Z"/></svg>
                                     </div>
                                     <div class="absolute z-50 hidden w-full p-3 mt-1 border border-gray-300 rounded-md bg-gray-50 content">
@@ -238,10 +238,10 @@
                             <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="brand" class="block text-sm font-medium text-gray-900">Brand</label>
-                                    <select id="brand" name='brand' value="{{ old('brand') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option hidden>Select Brand</option>
+                                    <select id="brand" name='brand' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Brand</option>
                                         @foreach ($brands as $brandOption)
-                                            <option value="{{ $brandOption->id }}">{{ $brandOption->name }}</option>
+                                            <option data-name="{{ $brandOption->name }}" value="{{ $brandOption->id }}" {{ (old('brand') == $brandOption->id) ? 'selected' : '' }}>{{ $brandOption->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('brand')
@@ -252,7 +252,7 @@
                                     <label class="block text-sm font-medium text-gray-900">Model</label>
                                     <div class="relative w-full wrapper">
                                         <div id="modelSelect" class="flex items-center justify-between p-2.5 border border-gray-300 rounded-md bg-gray-50  h-[42px] opacity-60">
-                                            <span id="model">Select Model</span>
+                                            <span id="model">{{ (old('model') == '') ? 'Select Model' : old('model') }}</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-full text-gray-700 transition-transform duration-300" viewBox="0 -960 960 960" fill='currentColor'><path d="M480-322 216-586l67-67 197 198 197-197 67 67-264 263Z"/></svg>
                                         </div>
                                         <div class="absolute z-50 hidden w-full p-3 mt-1 border border-gray-300 rounded-md bg-gray-50 content">
@@ -307,7 +307,7 @@
                                     <label for="fsrrFile" class="block text-sm font-medium text-gray-900">Upload FSRR</label>
                                     <div class="flex gap-x-2">
                                         <input type="file" id='fsrrFile' name="fsrrFile" value="{{ old('fsrrFile') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png, .pdf">
-                                        <button disabled type="button" id='viewFsrrButton' class="disabled:pointer-events-none disabled:opacity-60 h-[42px] bg-gray-100 border rounded-lg border-gray-300 aspect-square p-[6px] text-gray-700">
+                                        <button {{ (old('fsrrFile') == null) ? 'disabled' : '' }} type="button" id='viewFsrrButton' class="disabled:pointer-events-none disabled:opacity-60 h-[42px] bg-gray-100 border rounded-lg border-gray-300 aspect-square p-[6px] text-gray-700">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill=currentColor>
                                                 <path xmlns="http://www.w3.org/2000/svg" d="M480.118-330Q551-330 600.5-379.618q49.5-49.617 49.5-120.5Q650-571 600.382-620.5q-49.617-49.5-120.5-49.5Q409-670 359.5-620.382q-49.5 49.617-49.5 120.5Q310-429 359.618-379.5q49.617 49.5 120.5 49.5ZM480-404q-40 0-68-28t-28-68q0-40 28-68t68-28q40 0 68 28t28 68q0 40-28 68t-68 28Zm0 227q-154 0-278-90T17-500q61-143 185-233t278-90q154 0 278 90t185 233q-61 143-185 233t-278 90Z"/>
                                             </svg>
@@ -319,14 +319,14 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="delivery_type" class="block text-sm font-medium text-gray-900">Delivery Type</label>
-                                    <select id="delivery_type" name='delivery_type' value="{{ old('delivery_type') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option hidden>Select Order Type</option>
-                                        <option value="REGULAR">Regular</option>
-                                        <option value="SAME DAY">Same Day</option>
-                                        <option value="PICKUP">Pick Up</option>
-                                        <option value="AIR">Air</option>
-                                        <option value="SEA">Sea</option>
-                                        <option value="OTHERS">Others</option>
+                                    <select id="delivery_type" name='delivery_type' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Order Type</option>
+                                        <option value="REGULAR" {{ (old('delivery_type') == 'REGULAR') ? 'selected' : '' }}>Regular</option>
+                                        <option value="SAME DAY" {{ (old('delivery_type') == 'SAME DAY') ? 'selected' : '' }}>Same Day</option>
+                                        <option value="PICKUP" {{ (old('delivery_type') == 'PICKUP') ? 'selected' : '' }}>Pick Up</option>
+                                        <option value="AIR" {{ (old('delivery_type') == 'AIR') ? 'selected' : '' }}>Air</option>
+                                        <option value="SEA" {{ (old('delivery_type') == 'SEA') ? 'selected' : '' }}>Sea</option>
+                                        <option value="OTHERS" {{ (old('delivery_type') == 'OTHERS') ? 'selected' : '' }}>Others</option>
                                     </select>
                                     @error('delivery_type')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -336,7 +336,7 @@
 
                             <div class="w-full">
                                 <label for="requestor_remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                <textarea style="resize: none;" name='requestor_remarks' value="{{ old('requestor_remarks') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-32" autocomplete="off"></textarea>
+                                <textarea style="resize: none;" id='requestor_remarks' name='requestor_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-32" autocomplete="off">{{ old('requestor_remarks') }}</textarea>
                             </div>
                             
                         </div>
@@ -350,6 +350,8 @@
                                 </button>
                             </div>
                             <input type="hidden" id="selectedParts" name="selectedParts">
+                            <input type="hidden" id="selectedPartsQuantity" name="selectedPartsQuantity">
+                            <input type="hidden" id="selectedPartsPrice" name="selectedPartsPrice">
                             <div class="w-full">
                                 <div class="w-full ">
                                     <table class="w-full text-center">
@@ -374,49 +376,49 @@
                         <div id="tab3" class="flex w-1/4 h-full space-y-4 overflow-hidden">
                             <div class="w-full pr-4 border-r">
                                 <h1 class="mb-10 text-xl font-bold text-neutral-800">Confirmation</h1>
-                                <div class="w-full h-[calc(100%-48px)] overflow-x-hidden overflow-y-auto">
-                                    {{-- <div class="flex w-full mb-2">
-                                        <p class="w-36">Customer: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $customer_name }}</p>
+                                <div class="w-full h-[calc(100%-64px)] overflow-x-hidden overflow-y-auto pr-4">
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Customer: </p><p id="con_customer_name" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Address: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $customer_address }} <span class=" whitespace-nowrap">〈 {{ $customer_area }} 〉</span></p>
+                                        <p class="w-36">Address: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg"><span id="con_customer_address"></span><span class=" whitespace-nowrap">〈 <span id="con_customer_area"></span> 〉</span></p>
                                     </div>
                                     <div class="flex w-full mb-5">
                                         <p class="w-36">Site: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $site }}</p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Request for: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $for }}</p>
+                                        <p class="w-36">Request for: </p><p id="con_for" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Order Type: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $order_type }}</p>
+                                        <p class="w-36">Order Type: </p><p id="con_order_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Date Needed: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $date_needed }}</p>
+                                        <p class="w-36">Date Needed: </p><p id="con_date_needed" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Brand: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $brandName }}</p>
+                                        <p class="w-36">Brand: </p><p id="con_brand" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36 w-">Model: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $model }}</p>
+                                        <p class="w-36 w-">Model: </p><p id="con_model" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Serial Number: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $serial_number }}</p>
+                                        <p class="w-36">Serial Number: </p><p id="con_serial_number" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Fleet Number: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $fleet_number }}</p>
+                                        <p class="w-36">Fleet Number: </p><p id="con_fleet_number" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">FSRR Number: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $fsrr_number }}</p>
+                                        <p class="w-36">FSRR Number: </p><p id="con_fsrr_number" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
-                                        <p class="w-36">Delivery Type: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $delivery_type }}</p>
+                                        <p class="w-36">Delivery Type: </p><p id="con_delivery_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Remarks: </p>
-                                        <textarea style="resize:none;" class="w-full h-10 overflow-y-hidden border-0 rounded-lg outline-none autoResize" readonly>{{ $requestor_remarks }}</textarea>
+                                        <textarea style="resize:none;" id="con_requestor_remarks" class="w-full h-10 overflow-y-hidden rounded-lg outline-none autoResize" readonly></textarea>
                                         
-                                        <p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $requestor_remarks }}</p>
-                                    </div> --}}
+                                        {{-- <p id="con_requestor_remarks" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p> --}}
+                                    </div>
                                 </div>
                             </div>
                             <div class="w-full pl-4 !m-0 h-full overflow-auto">
@@ -433,7 +435,7 @@
                                                 <th class="px-2 pb-2 whitespace-nowrap">Total Price(₱)</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="text-sm">
+                                        <tbody id="con_selectedPartsBody" class="text-sm">
                                             {{-- @foreach ($partsInfo as $index => $partInfo)
                                                 <tr class="border-b">
                                                     <th class="px-2 whitespace-nowrap">{{ $index + 1 }}</th>
@@ -464,7 +466,7 @@
                     <div>
                         <button id="backBtn" type="button" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center w-24">BACK</button>
                         <button id="nextBtn" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center w-24">NEXT</button>
-                        <button id="submitBtn" type="submit" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center w-24">SUBMIT</button>
+                        <button id="submitBtn" type="submit" class="hidden loading text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center w-24">SUBMIT</button>
                     </div>
                 </div>
             </form>
@@ -478,7 +480,11 @@
             var delayTimer;
             var selectedParts = [];
 
-            
+            function searchFilter(searchInput){
+                $(".listOption li").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(searchInput) > -1)
+                });
+            }
 
             jQuery(document).on( "click", ".customerOption li", function(){
                 var name = $(this).data('name');
@@ -498,6 +504,8 @@
 
             jQuery(document).on( "change", "#brand", function(){
                 var id = $(this).val();
+                var name = $(this).find(':selected').data('name');
+                $('#con_brand').html(name);
                 
                 $.ajax({
                     url:"{{ route('nchargeable.add.getModels') }}",
@@ -626,13 +634,86 @@
                     $('#tab-container').addClass('-translate-x-[calc(25%+16px)]');
                     $('#backBtn').removeClass('hidden');
                 }else if(tab== 2){
+                    $('#loading').removeClass('hidden');
                     tab = 3;
+                    
+                    var customer_name = $('input[name="customer_name"]').val();
+                    $('#con_customer_name').html(customer_name);
+
+                    var customer_address = $('input[name="customer_address"]').val();
+                    $('#con_customer_address').html(customer_address);
+
+                    var customer_area = $('input[name="customer_area"]').val();
+                    $('#con_customer_area').html(customer_area);
+
+                    var cfor = $('#for').val();
+                    $('#con_for').html(cfor);
+
+                    var order_type = $('#order_type').val();
+                    $('#con_order_type').html(order_type);
+
+                    var date_needed = $('input[name="date_needed"]').val();
+                    $('#con_date_needed').html(date_needed);
+
+                    var model = $('input[name="model"]').val();
+                    $('#con_model').html(model);
+
+                    var serial_number = $('input[name="serial_number"]').val();
+                    $('#con_serial_number').html(serial_number);
+
+                    var fleet_number = $('input[name="fleet_number"]').val();
+                    $('#con_fleet_number').html(fleet_number);
+
+                    var fsrr_number = $('input[name="fsrr_number"]').val();
+                    $('#con_fsrr_number').html(fsrr_number);
+
+                    var delivery_type = $('#delivery_type').val();
+                    $('#con_delivery_type').html(delivery_type);
+
+                    var requestor_remarks = $('#requestor_remarks').val();
+                    $('#con_requestor_remarks').val(requestor_remarks);
+
+                    $('.autoResize').click();
+
+                    var quantities = [];
+                    var prices = [];
+
+                    jQuery('#selectedPartsBody tr').each(function(index, row) {
+                        var quantity = $(row).find('.partQuantity').val();
+                        var price = $(row).find('.partPrice').val();
+
+                        quantities.push(quantity);
+                        prices.push(price);
+                    });
+
+                    $('#selectedPartsQuantity').val(quantities);
+                    $('#selectedPartsPrice').val(prices);
+
+                    $.ajax({
+                        url:"{{ route('nchargeable.add.updateSelected') }}",
+                        method:"POST",
+                        data:{
+                            tab: tab,
+                            quantities: JSON.stringify(quantities),
+                            prices: JSON.stringify(prices),
+                            selectedParts: JSON.stringify(selectedParts),
+                            _token: _token
+                        },
+                        success:function(result){
+                            $('#con_selectedPartsBody').html(result);
+                            $('#selectedParts').val(selectedParts);
+
+                            $('#partsModal').addClass('hidden');
+                        }
+                    })
+
                     $('#tab-container').removeClass('-translate-x-0');
                     $('#tab-container').removeClass('-translate-x-[calc(25%+16px)]');
                     $('#tab-container').removeClass('-translate-x-[calc(50%+32px)]');
                     $('#tab-container').addClass('-translate-x-[calc(50%+32px)]');
                     $('#nextBtn').addClass('hidden');
                     $('#submitBtn').removeClass('hidden');
+                    $('#loading').addClass('hidden');
                 }
             });
         
@@ -713,6 +794,7 @@
                     url:"{{ route('nchargeable.add.updateSelected') }}",
                     method:"POST",
                     data:{
+                        tab: tab,
                         selectedParts: JSON.stringify(selectedParts),
                         _token: _token
                     },
@@ -726,14 +808,18 @@
                 })
             });
             
-            jQuery(document).on("keyup", 'input[name="partQuantity"], input[name="partPrice"]', function(){
+            jQuery(document).on("keyup", '.partQuantity, .partPrice', function(){
                 var row = $(this).closest('tr');
-                var partQuantity = row.find('input[name="partQuantity"]').val();
-                var partPrice = row.find('input[name="partPrice"]').val();
+                var partQuantity = row.find('.partQuantity').val();
+                var partPrice = row.find('.partPrice').val();
                 var total = (partQuantity * partPrice).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
                 total = total.replace('$', '');
                 row.find('.partTotal').html(total);
             });
+            
+            // jQuery(document).on("click", "#submitBtn", function() {
+            //     $('#requestForm').submit();
+            // });
         });
     </script>
 @endsection

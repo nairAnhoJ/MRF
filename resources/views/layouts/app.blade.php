@@ -86,6 +86,19 @@
                     $(this).val(inputValue);
                 });
 
+                jQuery(document).on( "blur", ".lowestOne", function(){
+                    var inputValue = $(this).val();
+                    if(inputValue == ""){
+                        $(this).val(1);
+                        var row = $(this).closest('tr');
+                        var partQuantity = row.find('.partQuantity').val();
+                        var partPrice = row.find('.partPrice').val();
+                        var total = (partQuantity * partPrice).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                        total = total.replace('$', '');
+                        row.find('.partTotal').html(total);
+                    }
+                });
+
                 jQuery(document).on( "click", ".hideAlert", function(){
                     $(this).parent('div').addClass('hidden');
                 });
@@ -117,9 +130,6 @@
                     $('.content').addClass('hidden');
                     $('.uil-angle-down').removeClass('-rotate-180');
                 });
-
-
-
 
                 jQuery(document).on("input", ".partSearch", function(){
                     var value = $(this).val().toLowerCase();
