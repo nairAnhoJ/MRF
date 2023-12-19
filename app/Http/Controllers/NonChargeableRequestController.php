@@ -332,16 +332,16 @@ class NonChargeableRequestController extends Controller
         $fsrrFile = $request->file('fsrrFile');
         $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
         
-        $selectedParts = $request->selectedParts;
-        $selectedPartsQuantity = $request->selectedPartsQuantity;
-        $selectedPartsPrice = $request->selectedPartsPrice;
+        $selectedParts = array_map('intval', explode(",", $request->selectedParts));
+        $selectedPartsQuantity = array_map('intval', explode(",", $request->selectedPartsQuantity));
+        $selectedPartsPrice = array_map('intval', explode(",", $request->selectedPartsPrice));
 
         $request_id = NonChargeableRequest::select('id')->max('id') + 1;
 
         $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/attachments/rental', $fileName, 'public_uploads');
+        $fsrrFile->storeAs('storage/attachments/non-chargable', $fileName, 'public_uploads');
 
-        $fsrrPath = 'storage/attachments/rental/' . $fileName;
+        $fsrrPath = 'storage/attachments/non-chargable/' . $fileName;
 
         $new_request = new NonChargeableRequest();
         $new_request->number = 'R-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
@@ -366,11 +366,11 @@ class NonChargeableRequestController extends Controller
         $new_request->save();
 
         foreach ($selectedParts as $index => $selectedPart) {
-            $sPart = Part::with('part_brand')->where('id', $selectedPart->id)->first();
+            $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
 
             $perPart = new NonChargeableRequestParts();
             $perPart->rental_request_id = $new_request->id;
-            $perPart->part_id = $selectedPart->id;
+            $perPart->part_id = $selectedPart;
             $perPart->part_number = $sPart->partno;
             $perPart->part_name = $sPart->partname;
             $perPart->brand = $sPart->part_brand->name;

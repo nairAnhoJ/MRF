@@ -112,6 +112,7 @@
                     <div class="p-4 h-[calc(100%-140px)] overflow-hidden">
                         <div class="flex items-center justify-between h-11">
                             <h1 class="text-lg font-medium text-neutral-700 whitespace-nowrap">
+                                <span id="selectedPartsCount">0</span> Selected
                             </h1>
                             <div class="relative w-1/2 h-full mb-2">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -745,6 +746,7 @@
                     url:"{{ route('nchargeable.add.getParts') }}",
                     method:"POST",
                     data:{
+                        selectedParts: JSON.stringify(selectedParts),
                         search: search,
                         _token: _token
                     },
@@ -786,6 +788,8 @@
                 } else {
                     selectedParts.splice(index, 1);
                 }
+
+                $('#selectedPartsCount').html(selectedParts.length);
             });
 
             jQuery(document).on("click", ".addSelectedParts", function() {
