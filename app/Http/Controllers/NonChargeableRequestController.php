@@ -322,7 +322,7 @@ class NonChargeableRequestController extends Controller
         $for = $request->for;
         $order_type = $request->order_type;
         $date_needed = $request->date_needed;
-        $brand = $request->brand;
+        $brand = Brand::where('id', $request->brand)->first()->name;
         $model = $request->model;
         $fleet_number = $request->fleet_number;
         $fsrr_number = $request->fsrr_number;
@@ -381,6 +381,38 @@ class NonChargeableRequestController extends Controller
         }
         
         return redirect()->route('nchargeable')->with('success', 'Request Has Been Added Successfully!');
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function edit(Request $request){
+        $nc_request = NonChargeableRequest::where('number', $request->request_number)->first();
+        $nc_request_parts = NonChargeableRequestParts::where('rental_request_id', $nc_request->id)->get();
+        $brands = Brand::where('is_deleted', 0)->orderBy('id', 'asc')->get();
+        $customers = Customer::where('is_deleted', 0)->get();
+        $site = Site::where('id', Auth::user()->site)->first()->name;
+        $rbrand = Brand::where('name', $nc_request->brand)->first();
+        if($rbrand != null){
+            $brand = $rbrand->id;
+        }else{
+            $brand = 0;
+        }
+        $models = BrandModel::where('is_deleted', 0)->get();
+
+        // $pathInfo = pathinfo($nc_request->fsrr_path);
+        // $fileExtension = $pathInfo['extension'];
+        
+        return view('user.non-chargeable.edit', compact('nc_request', 'nc_request_parts', 'customers', 'brands', 'models', 'site', 'brand'));
     }
 
 
@@ -572,7 +604,7 @@ class NonChargeableRequestController extends Controller
             if($rental_request->is_cancelled == 0){
                 if ((Auth::user()->role == 1 || Auth::user()->role == 2) && $rental_request->is_validated == 0 ){
                     $controls1 = '
-                        <a type="button" class="inline-flex items-center justify-center h-8 px-2 ml-auto text-sm text-blue-500 bg-transparent rounded-lg hover:bg-gray-200 hover:text-blue-600 hover:underline">
+                        <a href="'.route('nchargeable.edit', ['request_number' => $rental_request->number]).'" class="inline-flex items-center justify-center h-8 px-2 ml-auto text-sm text-blue-500 bg-transparent rounded-lg hover:bg-gray-200 hover:text-blue-600 hover:underline">
                             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 -960 960 960" xmlns="http://www.w3.org/2000/svg">
                                 <path xmlns="http://www.w3.org/2000/svg" d="M181.913-182.152h44.239l459.804-458.804-43.761-44-460.282 459.043v43.761Zm-67.891 68.13V-253.5l574.521-573.761q8.239-8.478 19.803-13.217 11.563-4.74 24.11-4.74 11.479 0 22.957 4.74 11.478 4.739 21.196 12.978l51.891 51.174q9.239 9.717 13.478 21.315 4.24 11.598 4.24 23.315 0 11.718-4.74 23.696-4.739 11.978-12.978 20.457L253.739-114.022H114.022Zm661.152-618.674-41.239-41.478 41.239 41.478Zm-110.979 69.501-22-21.761 43.761 44-21.761-22.239Z"/>
                             </svg>

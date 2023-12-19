@@ -6,6 +6,8 @@
 <div class="w-screen h-screen pt-14">
     <div class="w-full h-full p-4">
 
+        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)]"></div>
+
         {{-- LOADING --}}
             {{-- <div id="loading" class="hidden fixed top-0 left-0 flex items-center justify-center w-screen h-screen bg-neutral-700 z-[999] bg-opacity-30 gap-x-2">
                 <div role="status">
@@ -381,7 +383,7 @@
                                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                     </svg>
                                 </div>
-                                <input type="text" id="search" name="search" value="{{ $search }}" class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg !pl-9 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search...">
+                                <input type="text" id="search" name="search" value="{{ $search }}" class="block w-full p-4 text-sm text-gray-900 border border-gray-300 rounded-lg !pl-9 bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search..." autocomplete="off">
                                 <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Search</button>
                             </div>
                         </form>
