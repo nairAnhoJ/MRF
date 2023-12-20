@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/non-chargeable/store', [NonChargeableRequestController::class, 'store'])->name('nchargeable.store');
     
     Route::get('/non-chargeable/edit/{request_number}', [NonChargeableRequestController::class, 'edit'])->name('nchargeable.edit');
+    Route::post('/non-chargeable/update', [NonChargeableRequestController::class, 'update'])->name('nchargeable.update');
 
     Route::post('/non-chargeable/view', [NonChargeableRequestController::class, 'view'])->name('nchargeable.view');
     Route::post('/non-chargeable/view-history', [NonChargeableRequestController::class, 'viewHistory'])->name('nchargeable.viewHistory');

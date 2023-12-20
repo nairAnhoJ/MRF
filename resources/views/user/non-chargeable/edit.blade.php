@@ -150,14 +150,14 @@
 
     {{-- CONTENT --}}
         <div class="w-screen h-screen pt-14">
-            <form action="{{ route('nchargeable.store') }}" method="POST" enctype="multipart/form-data" id="requestForm" class="relative h-full">
+            <form action="{{ route('nchargeable.update') }}" method="POST" enctype="multipart/form-data" id="requestForm" class="relative h-full">
                 @csrf
                 <!-- body -->
                 <div class="p-4 h-[calc(100%-75px)] overflow-hidden">
                     <div id="tab-container" class="w-[400%] h-full transition-all duration-1000 ease-in flex -translate-x-0">
                         <div id="tab1" class="w-1/4 h-full mr-4 space-y-4 overflow-x-hidden overflow-y-auto">
                             <h1 class="text-xl font-bold text-neutral-800">Request Info</h1>
-
+                            <input type="hidden" name="number" value="{{ $nc_request->number }}">
                             <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="for" class="block text-sm font-medium text-gray-900">Request For</label>
@@ -284,7 +284,7 @@
                                     <label for="fleet_number" class="block text-sm font-medium text-gray-900">Fleet Number</label>
                                     <div class="flex gap-x-2">
                                         <input type="text" name='fleet_number' id="fleet_number" value="{{ $nc_request->fleet_number }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
-                                        <button type="button" id="viewHistoryButton" disabled class="disabled:pointer-events-none disabled:opacity-60 h-[42px] bg-gray-100 border rounded-lg border-gray-300 aspect-square p-[6px] text-gray-700">
+                                        <button type="button" id="viewHistoryButton" class="disabled:pointer-events-none disabled:opacity-60 h-[42px] bg-gray-100 border rounded-lg border-gray-300 aspect-square p-[6px] text-gray-700">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill=currentColor>
                                                 <path d="M476.056-95Q315-95 203.795-207.427 92.591-319.853 94-481h94q1.152 121.3 84.005 206.65Q354.859-189 476-189q122 0 208-86.321t86-209.5Q770-605 683.627-688T476-771q-60 0-113.5 24.5T268-680h84v73H123v-227h71v95q55-59 127.5-93T476-866q80 0 150.5 30.5t123.74 82.511q53.241 52.011 83.5 121.5Q864-562 864-482t-30.26 150.489q-30.259 70.489-83.5 123Q697-156 626.5-125.5 556-95 476.056-95ZM600-311 446-463v-220h71v189l135 131-52 52Z"/>
                                             </svg>
@@ -347,9 +347,6 @@
                                     </svg>
                                 </button>
                             </div>
-                            <input type="hidden" id="selectedParts" name="selectedParts">
-                            <input type="hidden" id="selectedPartsQuantity" name="selectedPartsQuantity">
-                            <input type="hidden" id="selectedPartsPrice" name="selectedPartsPrice">
                             <div class="w-full">
                                 <div class="w-full ">
                                     <table class="w-full text-center">
@@ -366,8 +363,51 @@
                                             </tr>
                                         </thead>
                                         <tbody id="selectedPartsBody" class="text-sm">
+                                            @php
+                                                $x = 1;
+                                                $allSelectedParts = '';
+                                                $selectedPartsQuantity = '';
+                                                $selectedPartsPrice = '';
+                                            @endphp
+                                            @foreach($selectedParts as $index => $selectedPart)
+                                                    <tr class="border-b">
+                                                        <th class="px-2"> {{ ($index + 1) }}</th>
+                                                        <td>{{ $selectedPart->part_number }}</td>
+                                                        <td>{{ $selectedPart->part_name }}</td>
+                                                        <td>{{ $selectedPart->brand }}</td>
+                                                        <td class="py-2">
+                                                            <input type="text" name="partQuantity{{ ($index + 1) }}" class="w-16 text-sm text-center rounded-lg lowestOne partQuantity numberOnly text-neutral-700" value="{{ $selectedPart->quantity }}">
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" name="partPrice'.{{ ($index + 1) }}" class="text-sm text-center rounded-lg w-28 partPrice lowestOne numberOnly text-neutral-700" value="{{ str_replace(',', '', $selectedPart->price) }}">
+                                                        </td>
+                                                        <td class="partTotal">{{ number_format((str_replace(",", "", $selectedPart->price)), 2, ".", ",") }}</td>
+                                                        <td>
+                                                            <button data-id="{{ $selectedPart->id }}" id="partDelete" type="button" class="mt-1 text-red-500 hover:text-red-600">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
+                                                                    <path d="m363-289 117-118 118 118 60-60-117-119 117-119-60-61-118 119-117-119-60 61 117 119-117 119 60 60ZM253-95q-39.462 0-67.231-27.475Q158-149.95 158-189v-553h-58v-94h231v-48h297v48h232v94h-58v553q0 39.05-27.769 66.525Q746.463-95 707-95H253Z"/>
+                                                                </svg>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    @php
+                                                        if($x == 1){
+                                                            $allSelectedParts .= $selectedPart->part_id;
+                                                            $selectedPartsQuantity .= $selectedPart->quantity;
+                                                            $selectedPartsPrice .= $selectedPart->price;
+                                                        }else{
+                                                            $allSelectedParts .= ', '.$selectedPart->part_id;
+                                                            $selectedPartsQuantity .= ', '.$selectedPart->quantity;
+                                                            $selectedPartsPrice .= ', '.$selectedPart->price;
+                                                        }
+                                                        $x++;
+                                                    @endphp
+                                            @endforeach
                                         </tbody>
                                     </table>
+                                    <input type="hidden" id="selectedParts" name="selectedParts" value="{{ $allSelectedParts }}">
+                                    <input type="hidden" id="selectedPartsQuantity" name="selectedPartsQuantity" value="{{ $selectedPartsQuantity }}">
+                                    <input type="hidden" id="selectedPartsPrice" name="selectedPartsPrice" value="{{ $selectedPartsPrice }}">
                                 </div>
                             </div>
                         </div>
@@ -474,9 +514,10 @@
     <script>
         $(document).ready(function () {
             var tab = 1;
+            var id = {{ $nc_request->id }};
             var _token = $('input[name="_token"]').val();
             var delayTimer;
-            var selectedParts = [];
+            var selectedParts = [{{ $allSelectedParts }}];
 
             function searchFilter(searchInput){
                 $(".listOption li").filter(function() {
@@ -501,7 +542,7 @@
             });
 
             jQuery(document).on( "change", "#brand", function(){
-                var id = $(this).val();
+                var bid = $(this).val();
                 var name = $(this).find(':selected').data('name');
                 $('#con_brand').html(name);
                 
@@ -509,7 +550,7 @@
                     url:"{{ route('nchargeable.add.getModels') }}",
                     method:"POST",
                     data:{
-                        id: id,
+                        id: bid,
                         _token: _token
                     },
                     success:function(result){
@@ -549,7 +590,6 @@
             
             jQuery(document).on( "click", "#viewHistoryButton", function(){
                 var fleet_number = $('#fleet_number').val();
-                var id = 0;
                 $('#loading').removeClass('hidden');
                 $.ajax({
                     url:"{{ route('nchargeable.viewHistory') }}",
@@ -590,33 +630,48 @@
             
             $('input[name="fsrrFile"]').change(function() {
                 if (this.files.length > 0) {
-                    $('#viewFsrrButton').prop('disabled', false);
+                    id = 0;
                 } else {
-                    $('#viewFsrrButton').prop('disabled', true);
+                    id = {{ $nc_request->id }}
                 }
             });
         
             jQuery(document).on("click", "#viewFsrrButton", function() {
                 $('#loading').removeClass('hidden');
-                var id = 0;
-                var formData = new FormData();
-                formData.append('fsrrFile', $('input[name="fsrrFile"]')[0].files[0]);
-                formData.append('id', id);
-                formData.append('_token', _token);
+                if(id != 0){
+                    $.ajax({
+                        url:"{{ route('nchargeable.viewFSRR') }}",
+                        method:"POST",
+                        data: {
+                            id: id,
+                            _token: _token,
+                        },
+                        success: function (response) {
+                            $('#fsrrModalContent').html(response);
+                            $('#fsrrModal').removeClass('hidden');
+                            $('#loading').addClass('hidden');
+                        }
+                    });
+                }else{
+                    var formData = new FormData();
+                    formData.append('fsrrFile', $('input[name="fsrrFile"]')[0].files[0]);
+                    formData.append('id', id);
+                    formData.append('_token', _token);
 
-                var fsrrFile = $('input[name="fsrrFile"]').val();
-                $.ajax({
-                    url:"{{ route('nchargeable.viewFSRR') }}",
-                    method:"POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (response) {
-                        $('#fsrrModalContent').html(response);
-                        $('#fsrrModal').removeClass('hidden');
-                        $('#loading').addClass('hidden');
-                    }
-                });
+                    var fsrrFile = $('input[name="fsrrFile"]').val();
+                    $.ajax({
+                        url:"{{ route('nchargeable.viewFSRR') }}",
+                        method:"POST",
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            $('#fsrrModalContent').html(response);
+                            $('#fsrrModal').removeClass('hidden');
+                            $('#loading').addClass('hidden');
+                        }
+                    });
+                }
             });
         
             jQuery(document).on("click", "#closeFsrrModal", function() {
@@ -652,6 +707,9 @@
 
                     var date_needed = $('input[name="date_needed"]').val();
                     $('#con_date_needed').html(date_needed);
+                    
+                    var brand = $('#brand').find(':selected').data('name');
+                    $('#con_brand').html(brand);
 
                     var model = $('input[name="model"]').val();
                     $('#con_model').html(model);
@@ -775,13 +833,13 @@
             });
 
             jQuery(document).on("click", ".selectPart", function() {
-                var id = $(this).data('id');
+                var pid = $(this).data('id');
                 var cb = $(this).find('input[type="checkbox"]');
                 cb.prop('checked', !cb.prop('checked'));
 
-                var index = selectedParts.indexOf(id);
+                var index = selectedParts.indexOf(pid);
                 if (index === -1) {
-                    selectedParts.push(id);
+                    selectedParts.push(pid);
                 } else {
                     selectedParts.splice(index, 1);
                 }

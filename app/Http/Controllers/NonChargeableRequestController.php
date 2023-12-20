@@ -263,7 +263,7 @@ class NonChargeableRequestController extends Controller
                             '.$quantities[$index].'
                         </td>
                         <td class="px-2 text-center whitespace-nowrap">
-                            '.str_replace(",", "", $prices[$index]).'
+                            '.number_format((str_replace(",", "", $prices[$index])), 2, ".", ",").'
                         </td>
                         <td class="px-2 text-center whitespace-nowrap">
                             '.number_format((str_replace(",", "", $prices[$index]) * $quantities[$index]), 2, ".", ",").'
@@ -332,16 +332,16 @@ class NonChargeableRequestController extends Controller
         $fsrrFile = $request->file('fsrrFile');
         $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
         
-        $selectedParts = array_map('intval', explode(",", $request->selectedParts));
-        $selectedPartsQuantity = array_map('intval', explode(",", $request->selectedPartsQuantity));
-        $selectedPartsPrice = array_map('intval', explode(",", $request->selectedPartsPrice));
+        $selectedParts = array_map('floatval', explode(",", $request->selectedParts));
+        $selectedPartsQuantity = array_map('floatval', explode(",", $request->selectedPartsQuantity));
+        $selectedPartsPrice = array_map('floatval', explode(",", $request->selectedPartsPrice));
 
         $request_id = NonChargeableRequest::select('id')->max('id') + 1;
 
         $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/attachments/non-chargable', $fileName, 'public_uploads');
+        $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
 
-        $fsrrPath = 'storage/attachments/non-chargable/' . $fileName;
+        $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
 
         $new_request = new NonChargeableRequest();
         $new_request->number = 'R-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
@@ -367,7 +367,6 @@ class NonChargeableRequestController extends Controller
 
         foreach ($selectedParts as $index => $selectedPart) {
             $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
-
             $perPart = new NonChargeableRequestParts();
             $perPart->rental_request_id = $new_request->id;
             $perPart->part_id = $selectedPart;
@@ -408,11 +407,114 @@ class NonChargeableRequestController extends Controller
             $brand = 0;
         }
         $models = BrandModel::where('is_deleted', 0)->get();
-
-        // $pathInfo = pathinfo($nc_request->fsrr_path);
-        // $fileExtension = $pathInfo['extension'];
+        $selectedParts = NonChargeableRequestParts::where('rental_request_id', $nc_request->id)->get();
         
-        return view('user.non-chargeable.edit', compact('nc_request', 'nc_request_parts', 'customers', 'brands', 'models', 'site', 'brand'));
+        return view('user.non-chargeable.edit', compact('nc_request', 'nc_request_parts', 'customers', 'brands', 'models', 'site', 'brand', 'selectedParts'));
+    }
+
+    public function update(Request $request){
+        $validator = Validator::make($request->all(), [
+            'for' => 'required',
+            'order_type' => 'required',
+            'date_needed' => 'required|date|after:now',
+            'customer_name' => 'required',
+            'brand' => 'required',
+            'model' => 'required', 
+            'serial_number' => 'required',
+            'fleet_number' => 'required',
+            'fsrr_number' => 'required',
+            'delivery_type' => 'required',
+        ]);
+
+        $customMessages = [
+            'for.required' => 'Please select an option from the list.',
+            'order_type.required' => 'Please select an option from the list.',
+            'date_needed.required' => 'Please select a date.',
+            'date_needed.date' => 'Invalid date format. Please use the calendar to select a valid date.',
+            'date_needed.after' => 'The selected date is invalid. Please choose a date after today.',
+            'customer_name.required' => 'Please select an option from the list.',
+            'brand.required' => 'Please select an option from the list.',
+            'model.required' => 'Please select an option from the list.',
+            'serial_number.required' => 'Please provide the required information.',
+            'fleet_number.required' => 'Please provide the required information.',
+            'fsrr_number.required' => 'Please provide the required information.',
+            'delivery_type.required' => 'Please select an option from the list.',
+        ];
+
+        $validator->setCustomMessages($customMessages);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $customer_name = $request->customer_name;
+        $customer_address = $request->customer_address;
+        $customer_area = $request->customer_area;
+        
+        $for = $request->for;
+        $order_type = $request->order_type;
+        $date_needed = $request->date_needed;
+        $brand = Brand::where('id', $request->brand)->first()->name;
+        $model = $request->model;
+        $fleet_number = $request->fleet_number;
+        $fsrr_number = $request->fsrr_number;
+        $requestor_remarks = $request->requestor_remarks;
+        $serial_number = $request->serial_number;
+        $delivery_type = $request->delivery_type;
+        
+        $selectedParts = array_map('floatval', explode(",", $request->selectedParts));
+        $selectedPartsQuantity = array_map('floatval', explode(",", $request->selectedPartsQuantity));
+        $selectedPartsPrice = array_map('floatval', explode(",", $request->selectedPartsPrice));
+
+        $request_id = NonChargeableRequest::select('id')->max('id') + 1;
+
+        $fsrrFile = $request->file('fsrrFile');
+
+        $nc_request = NonChargeableRequest::where('number', $request->number)->first();
+        $nc_request->site = Auth::user()->site;
+        $nc_request->area = Auth::user()->area;
+        $nc_request->customer_name = $customer_name;
+        $nc_request->customer_address = $customer_address;
+        $nc_request->customer_area = $customer_area;
+        $nc_request->for = $for;
+        $nc_request->order_type = $order_type;
+        $nc_request->fleet_number = $fleet_number;
+        $nc_request->brand = $brand;
+        $nc_request->model = $model;
+        $nc_request->serial_number = $serial_number;
+        $nc_request->fsrr_number = $fsrr_number;
+        if($fsrrFile != null){
+            $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
+            $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
+            $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
+            $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
+
+            $nc_request->fsrr_path = $fsrrPath;
+        }
+        $nc_request->delivery_type = $delivery_type;
+        $nc_request->date_requested = date('Y-m-d h:i:s');
+        $nc_request->requestor = Auth::user()->name;
+        $nc_request->requestor_remarks = $requestor_remarks;
+        $nc_request->date_needed = $date_needed;
+        $nc_request->save();
+
+        NonChargeableRequestParts::where('rental_request_id', $nc_request->id)->delete();
+
+        foreach ($selectedParts as $index => $selectedPart) {
+            $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
+            $perPart = new NonChargeableRequestParts();
+            $perPart->rental_request_id = $nc_request->id;
+            $perPart->part_id = $selectedPart;
+            $perPart->part_number = $sPart->partno;
+            $perPart->part_name = $sPart->partname;
+            $perPart->brand = $sPart->part_brand->name;
+            $perPart->quantity = $selectedPartsQuantity[$index];
+            $perPart->price = $selectedPartsPrice[$index];
+            $perPart->total_price = (float)$selectedPartsPrice[$index] * (float)$selectedPartsQuantity[$index];
+            $perPart->save();
+        }
+        
+        return redirect()->route('nchargeable')->with('success', 'Request Has Been Updated Successfully!');
     }
 
 
@@ -802,9 +904,9 @@ class NonChargeableRequestController extends Controller
             $fsrr_fileExt = pathinfo($rental_request->fsrr_path, PATHINFO_EXTENSION);
     
             if ($fsrr_fileExt == 'jpeg' || $fsrr_fileExt == 'jpg' || $fsrr_fileExt == 'png'){
-                echo '<img src="'.$rental_request->fsrr_path.'" class="w-full h-auto">';
+                echo '<img src="'.url($rental_request->fsrr_path).'" class="w-full h-auto">';
             }else{
-                echo '<embed src="'.$rental_request->fsrr_path.'" type="application/pdf" class="w-full h-full">';
+                echo '<embed src="'.url($rental_request->fsrr_path).'" type="application/pdf" class="w-full h-full">';
             }
         }else{
             $file = $request->file('fsrrFile');
