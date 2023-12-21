@@ -241,7 +241,7 @@ class NonChargeableRequestController extends Controller
                         </td>
                         <td class="partTotal">'.number_format((str_replace(",", "", $part->price)), 2, ".", ",").'</td>
                         <td>
-                            <button data-id="'.$part->id.'" id="partDelete" type="button" class="mt-1 text-red-500 hover:text-red-600">
+                            <button data-id="'.$part->id.'" type="button" class="mt-1 text-red-500 hover:text-red-600 partDelete">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
                                     <path d="m363-289 117-118 118 118 60-60-117-119 117-119-60-61-118 119-117-119-60 61 117 119-117 119 60 60ZM253-95q-39.462 0-67.231-27.475Q158-149.95 158-189v-553h-58v-94h231v-48h297v48h232v94h-58v553q0 39.05-27.769 66.525Q746.463-95 707-95H253Z"/>
                                 </svg>

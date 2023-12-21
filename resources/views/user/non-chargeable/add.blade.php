@@ -820,6 +820,30 @@
                 total = total.replace('$', '');
                 row.find('.partTotal').html(total);
             });
+
+            jQuery(document).on("click", ".partDelete", function() {
+                $('#loading').removeClass('hidden');
+                var id = $(this).data('id');
+                var index = selectedParts.indexOf(id);
+                selectedParts.splice(index, 1);
+                
+                $.ajax({
+                    url:"{{ route('nchargeable.add.updateSelected') }}",
+                    method:"POST",
+                    data:{
+                        tab: tab,
+                        selectedParts: JSON.stringify(selectedParts),
+                        _token: _token
+                    },
+                    success:function(result){
+                        $('#selectedPartsBody').html(result);
+                        $('#selectedParts').val(selectedParts);
+
+                        $('#loading').addClass('hidden');
+                        $('#partsModal').addClass('hidden');
+                    }
+                })
+            });
             
             // jQuery(document).on("click", "#submitBtn", function() {
             //     $('#requestForm').submit();
