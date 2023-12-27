@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ChargeableRequestController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NonChargeableRequestController;
+use App\Models\ChargeableRequest;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -62,6 +64,29 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/non-chargeable/return-request', [NonChargeableRequestController::class, 'returnRequest'])->name('nchargeable.returnRequest');
     Route::post('/non-chargeable/view-return-parts', [NonChargeableRequestController::class, 'viewReturnParts'])->name('nchargeable.viewReturnParts');
     Route::post('/non-chargeable/view-serial-numbers', [NonChargeableRequestController::class, 'viewSerialNumbers'])->name('nchargeable.viewSerialNumbers');
+
+
+
+
+
+
+
+    
+
+    // NON-CHARGEABLE
+    Route::get('/chargeable', [ChargeableRequestController::class, 'index'])->name('chargeable');
+
+    Route::get('/chargeable/add', [ChargeableRequestController::class, 'add'])->name('chargeable.add');
+    Route::post('/chargeable/add/get-models', [ChargeableRequestController::class, 'getModels'])->name('chargeable.add.getModels');
+    Route::post('/chargeable/add/get-parts', [ChargeableRequestController::class, 'getParts'])->name('chargeable.add.getParts');
+    Route::post('/chargeable/add/update-selected-parts', [ChargeableRequestController::class, 'updateSelected'])->name('chargeable.add.updateSelected');
+    Route::post('/chargeable/store', [ChargeableRequestController::class, 'store'])->name('chargeable.store');
+
+
+
+
+
+
 
 
 

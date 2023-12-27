@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mrf_non_chargeable_request_parts', function (Blueprint $table) {
+        Schema::create('mrf_chargeable_request_parts', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('rental_request_id');
             $table->bigInteger('part_id');
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mrf_non_chargeable_request_parts');
+        Schema::dropIfExists('mrf_chargeable_request_parts');
     }
 };

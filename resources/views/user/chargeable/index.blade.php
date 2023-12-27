@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title','Non-Chargeable Requests')
+@section('title','Chargeable Requests')
 
 @section('content')
 
@@ -369,7 +369,7 @@
                 <div class="h-full">
                     {{-- ADD USER --}}
                         @if (Auth::user()->role == 1 || Auth::user()->role == 2)
-                            <a href="{{ route('nchargeable.add') }}" class="flex items-center h-full px-8 text-lg font-bold text-white bg-blue-500 rounded-lg loading">ADD</a>
+                            <a href="{{ route('chargeable.add') }}" class="flex items-center h-full px-8 text-lg font-bold text-white bg-blue-500 rounded-lg loading">ADD</a>
                         @endif
                     {{-- ADD USER --}}
                 </div>

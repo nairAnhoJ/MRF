@@ -42,11 +42,11 @@
                 </button>
                 <ul id="requestDd" class="hidden py-2 space-y-2">
                     <li>
-                        <a href="{{ route('nchargeable') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">Non-chargeable</a>
+                        <a href="{{ route('nchargeable') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">Non-Chargeable</a>
                     </li>
-                    {{-- <li>
-                        <a href="{{ route('chargeable') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">chargeable</a>
-                    </li> --}}
+                    <li>
+                        <a href="{{ route('chargeable') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">Chargeable</a>
+                    </li>
                 </ul>
             </li>
             @if (Auth::user()->role == 0)

@@ -11,23 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('mrf_non_chargeable_requests', function (Blueprint $table) {
+        Schema::create('mrf_chargeable_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('number')->nullable();
+            $table->string('number');
+
             $table->string('site');
             $table->string('area');
+
             $table->string('customer_name');
             $table->string('customer_address');
             $table->string('customer_area');
-            $table->string('for'); // PM or REPAIR
-            $table->string('order_type'); // IN-STOCK or REQUEST PARTS
-            $table->string('fleet_number');
+
+            $table->string('fsrr_number');
+            $table->string('fsrr_date_received');
+            
             $table->string('brand');
             $table->string('model');
             $table->string('serial_number');
-            $table->string('fsrr_number');
-            $table->string('fsrr_path');
-            $table->string('delivery_type'); // REGULAR , SAME DAY , PICK UP , AIR , SEA , OTHERS
+            
+            $table->string('hm');
+            $table->string('technician');
+            $table->string('working_environment');
+            $table->string('status');
+
+            $table->string('disc');
 
             $table->date('date_requested');
             $table->string('requestor');
@@ -36,7 +43,6 @@ return new class extends Migration
             $table->boolean('is_validated')->default(0);
             $table->string('validator')->nullable();
             $table->string('datetime_validated')->nullable();
-            $table->binary('validator_remarks')->nullable();
 
             $table->boolean('is_verified')->default(0);
             $table->string('verifier')->nullable();
@@ -48,10 +54,16 @@ return new class extends Migration
             $table->string('datetime_service_approved')->nullable();
             $table->binary('service_remarks')->nullable();
 
-            // $table->boolean('is_rental_approved')->default(0);
-            // $table->string('rental_approver')->nullable();
-            // $table->string('datetime_rental_approved')->nullable();
-            // $table->binary('rental_remarks')->nullable();
+            $table->string('is_sq_number_encoded')->default(0);
+            $table->string('sq_number')->nullable();
+            $table->string('sq_encoder')->nullable();
+            $table->string('datetime_sq_encoded')->nullable();
+            $table->binary('sq_remarks')->nullable();
+
+            $table->boolean('is_adviser_approved')->default(0);
+            $table->string('adviser_approver')->nullable();
+            $table->string('datetime_adviser_approved')->nullable();
+            $table->binary('adviser_remarks')->nullable();
 
             $table->string('is_mri_number_encoded')->default(0);
             $table->string('mri_number')->nullable();
@@ -59,18 +71,15 @@ return new class extends Migration
             $table->string('datetime_mri_encoded')->nullable();
             $table->binary('mri_remarks')->nullable();
 
-            $table->string('is_edoc_number_encoded')->default(0);
-            $table->string('edoc_number')->nullable();
-            $table->string('serial_numbers')->nullable();
-            $table->string('edoc_encoder')->nullable();
-            $table->string('datetime_edoc_encoded')->nullable();
-            $table->binary('edoc_remarks')->nullable();
 
-            $table->string('is_dr_number_encoded')->default(0);
+            $table->string('is_invoice_encoded')->default(0);
+            $table->string('ref_number')->nullable();
             $table->string('dr_number')->nullable();
-            $table->string('dr_encoder')->nullable();
-            $table->string('datetime_dr_encoded')->nullable();
-            $table->binary('dr_remarks')->nullable();
+            $table->string('si_number')->nullable();
+            $table->string('bs_number')->nullable();
+            $table->string('invoice_encoder')->nullable();
+            $table->string('datetime_invoice_encoded')->nullable();
+            $table->binary('invoice_remarks')->nullable();
 
             $table->boolean('is_confirmed')->default(0);
             $table->string('signatory')->nullable();
@@ -99,6 +108,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('mrf_non_chargeable_requests');
+        Schema::dropIfExists('mrf_chargeable_requests');
     }
 };
