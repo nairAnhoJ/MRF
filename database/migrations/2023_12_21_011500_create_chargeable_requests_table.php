@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('brand');
             $table->string('model');
             $table->string('serial_number');
+            $table->string('fleet_number');
             
             $table->string('hm');
             $table->string('technician');

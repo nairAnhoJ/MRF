@@ -158,7 +158,7 @@
                         <div id="tab1" class="w-1/4 h-full mr-4 space-y-4 overflow-x-hidden overflow-y-auto">
                             <h1 class="text-xl font-bold text-neutral-800">Request Info</h1>
 
-                            <div class="flex gap-x-4">
+                            {{-- <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="for" class="block text-sm font-medium text-gray-900">Request For</label>
                                     <select id="for" name='for' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
@@ -192,7 +192,7 @@
                                     <label for="site" class="block text-sm font-medium text-gray-900">Site</label>
                                     <input type="text" id="site" value='{{ $site }}' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off" disabled>
                                 </div>
-                            </div>
+                            </div> --}}
                             
                             <div>
                                 <label class="block mt-3 text-sm font-medium text-gray-900">Customer</label>
@@ -319,6 +319,20 @@
                                     @enderror
                                 </div>
                                 <div class="w-full">
+                                    <label for="date_received" class="block text-sm font-medium text-gray-900">Date Received</label>
+                                    <input type="date" id="date_received" name='date_received' value="{{ old('date_received') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('date_received')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="technician" class="block text-sm font-medium text-gray-900">Technician</label>
+                                    <input type="text" id="technician" name='technician' value="{{ old('technician') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('technician')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                {{-- <div class="w-full">
                                     <label for="delivery_type" class="block text-sm font-medium text-gray-900">Delivery Type</label>
                                     <select id="delivery_type" name='delivery_type' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                         <option value="" hidden>Select Order Type</option>
@@ -330,6 +344,45 @@
                                         <option value="OTHERS" {{ (old('delivery_type') == 'OTHERS') ? 'selected' : '' }}>Others</option>
                                     </select>
                                     @error('delivery_type')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div> --}}
+                            </div>
+
+                            <div class="flex gap-x-4">
+                                <div class="w-full">
+                                    <label for="hm" class="block text-sm font-medium text-gray-900">HM</label>
+                                    <input type="text" id="hm" name='hm' value="{{ old('hm') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('hm')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="disc" class="block text-sm font-medium text-gray-900">Disc</label>
+                                    <input type="text" id="disc" name='disc' value="{{ old('disc') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('disc')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="working_environment" class="block text-sm font-medium text-gray-900">Working Environment</label>
+                                    <select id="working_environment" name='working_environment' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Working Environment</option>
+                                        <option value="COLD" {{ (old('working_environment') == 'COLD') ? 'selected' : '' }}>Cold</option>
+                                        <option value="DRY" {{ (old('working_environment') == 'DRY') ? 'selected' : '' }}>Dry</option>
+                                    </select>
+                                    @error('working_environment')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="status" class="block text-sm font-medium text-gray-900">Status</label>
+                                    <select id="status" name='status' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Status</option>
+                                        <option value="UP" {{ (old('status') == 'UP') ? 'selected' : '' }}>Up</option>
+                                        <option value="DOWN" {{ (old('status') == 'DOWN') ? 'selected' : '' }}>Down</option>
+                                    </select>
+                                    @error('status')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
