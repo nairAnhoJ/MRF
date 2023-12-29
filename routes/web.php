@@ -73,14 +73,30 @@ Route::middleware(['auth'])->group(function () {
 
     
 
-    // NON-CHARGEABLE
-    Route::get('/chargeable', [ChargeableRequestController::class, 'index'])->name('chargeable');
+    // CHARGEABLE
+    Route::get('/chargeable', [ChargeableRequestController::class, 'index'])->name('chargeable');//
 
-    Route::get('/chargeable/add', [ChargeableRequestController::class, 'add'])->name('chargeable.add');
-    Route::post('/chargeable/add/get-models', [ChargeableRequestController::class, 'getModels'])->name('chargeable.add.getModels');
-    Route::post('/chargeable/add/get-parts', [ChargeableRequestController::class, 'getParts'])->name('chargeable.add.getParts');
-    Route::post('/chargeable/add/update-selected-parts', [ChargeableRequestController::class, 'updateSelected'])->name('chargeable.add.updateSelected');
-    Route::post('/chargeable/store', [ChargeableRequestController::class, 'store'])->name('chargeable.store');
+    Route::get('/chargeable/add', [ChargeableRequestController::class, 'add'])->name('chargeable.add');//
+    Route::post('/chargeable/add/get-models', [ChargeableRequestController::class, 'getModels'])->name('chargeable.add.getModels');//
+    Route::post('/chargeable/add/get-parts', [ChargeableRequestController::class, 'getParts'])->name('chargeable.add.getParts');//
+    Route::post('/chargeable/add/update-selected-parts', [ChargeableRequestController::class, 'updateSelected'])->name('chargeable.add.updateSelected');//
+    Route::post('/chargeable/store', [ChargeableRequestController::class, 'store'])->name('chargeable.store');//
+    
+    Route::get('/chargeable/edit/{request_number}', [ChargeableRequestController::class, 'edit'])->name('chargeable.edit');
+    Route::post('/chargeable/update', [ChargeableRequestController::class, 'update'])->name('chargeable.update');
+
+    Route::post('/chargeable/view', [ChargeableRequestController::class, 'view'])->name('chargeable.view'); 
+    Route::post('/chargeable/view-history', [ChargeableRequestController::class, 'viewHistory'])->name('chargeable.viewHistory');
+    Route::post('/chargeable/view-history-parts', [ChargeableRequestController::class, 'viewHistoryParts'])->name('chargeable.viewHistoryParts');
+    Route::post('/chargeable/view-fsrr', [ChargeableRequestController::class, 'viewFSRR'])->name('chargeable.viewFSRR');
+    Route::post('/chargeable/validate-request', [ChargeableRequestController::class, 'validateRequest'])->name('chargeable.validateRequest');
+    Route::post('/chargeable/verify-request', [ChargeableRequestController::class, 'verifyRequest'])->name('chargeable.verifyRequest');
+    Route::post('/chargeable/approve-request', [ChargeableRequestController::class, 'approveRequest'])->name('chargeable.approveRequest');
+
+    Route::post('/chargeable/return-parts', [ChargeableRequestController::class, 'returnParts'])->name('chargeable.returnParts');
+    Route::post('/chargeable/return-request', [ChargeableRequestController::class, 'returnRequest'])->name('chargeable.returnRequest');
+    Route::post('/chargeable/view-return-parts', [ChargeableRequestController::class, 'viewReturnParts'])->name('chargeable.viewReturnParts');
+    Route::post('/chargeable/view-serial-numbers', [ChargeableRequestController::class, 'viewSerialNumbers'])->name('chargeable.viewSerialNumbers');
 
 
 

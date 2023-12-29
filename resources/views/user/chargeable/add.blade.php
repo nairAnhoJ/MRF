@@ -440,7 +440,7 @@
                                     <div class="flex w-full mb-5">
                                         <p class="w-36">Site: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $site }}</p>
                                     </div>
-                                    <div class="flex w-full mb-2">
+                                    {{-- <div class="flex w-full mb-2">
                                         <p class="w-36">Request for: </p><p id="con_for" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
@@ -448,7 +448,7 @@
                                     </div>
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Date Needed: </p><p id="con_date_needed" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div>
+                                    </div> --}}
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Brand: </p><p id="con_brand" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
@@ -464,8 +464,23 @@
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">FSRR Number: </p><p id="con_fsrr_number" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
-                                    <div class="flex w-full mb-2">
+                                    {{-- <div class="flex w-full mb-2">
                                         <p class="w-36">Delivery Type: </p><p id="con_delivery_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div> --}}
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Technician: </p><p id="con_technician" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">HM: </p><p id="con_hm" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Disc: </p><p id="con_disc" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Working Environment: </p><p id="con_working_environment" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Status: </p><p id="con_status" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Remarks: </p>
@@ -516,7 +531,7 @@
                 </div>
                 <!-- footer -->
                 <div class="flex items-center justify-between p-4 space-x-2 border-t border-gray-200 rounded-b">
-                    <a href="{{ route('nchargeable') }}" class="text-gray-500 loading text-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium py-2.5 hover:text-gray-900 focus:z-10 ml-2 w-24">CANCEL</a>
+                    <a href="{{ route('chargeable') }}" class="text-gray-500 loading text-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium py-2.5 hover:text-gray-900 focus:z-10 ml-2 w-24">CANCEL</a>
                     <div>
                         <button id="backBtn" type="button" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center w-24">BACK</button>
                         <button id="nextBtn" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm py-2.5 text-center w-24">NEXT</button>
@@ -562,7 +577,7 @@
                 $('#con_brand').html(name);
                 
                 $.ajax({
-                    url:"{{ route('nchargeable.add.getModels') }}",
+                    url:"{{ route('chargeable.add.getModels') }}",
                     method:"POST",
                     data:{
                         id: id,
@@ -608,7 +623,7 @@
                 var id = 0;
                 $('#loading').removeClass('hidden');
                 $.ajax({
-                    url:"{{ route('nchargeable.viewHistory') }}",
+                    url:"{{ route('chargeable.viewHistory') }}",
                     method:"POST",
                     data: {
                         id: id,
@@ -627,7 +642,7 @@
                 $('#loading').removeClass('hidden');
                 var req_id = $(this).data('id');
                 $.ajax({
-                    url:"{{ route('nchargeable.viewHistoryParts') }}",
+                    url:"{{ route('chargeable.viewHistoryParts') }}",
                     method:"POST",
                     data: {
                         id: req_id,
@@ -662,7 +677,7 @@
 
                 var fsrrFile = $('input[name="fsrrFile"]').val();
                 $.ajax({
-                    url:"{{ route('nchargeable.viewFSRR') }}",
+                    url:"{{ route('chargeable.viewFSRR') }}",
                     method:"POST",
                     data: formData,
                     contentType: false,
@@ -700,14 +715,14 @@
                     var customer_area = $('input[name="customer_area"]').val();
                     $('#con_customer_area').html(customer_area);
 
-                    var cfor = $('#for').val();
-                    $('#con_for').html(cfor);
+                    // var cfor = $('#for').val();
+                    // $('#con_for').html(cfor);
 
-                    var order_type = $('#order_type').val();
-                    $('#con_order_type').html(order_type);
+                    // var order_type = $('#order_type').val();
+                    // $('#con_order_type').html(order_type);
 
-                    var date_needed = $('input[name="date_needed"]').val();
-                    $('#con_date_needed').html(date_needed);
+                    // var date_needed = $('input[name="date_needed"]').val();
+                    // $('#con_date_needed').html(date_needed);
 
                     var model = $('input[name="model"]').val();
                     $('#con_model').html(model);
@@ -721,8 +736,23 @@
                     var fsrr_number = $('input[name="fsrr_number"]').val();
                     $('#con_fsrr_number').html(fsrr_number);
 
-                    var delivery_type = $('#delivery_type').val();
-                    $('#con_delivery_type').html(delivery_type);
+                    // var delivery_type = $('#delivery_type').val();
+                    // $('#con_delivery_type').html(delivery_type);
+
+                    var technician = $('input[name="technician"]').val();
+                    $('#con_technician').html(technician);
+
+                    var hm = $('input[name="hm"]').val();
+                    $('#con_hm').html(hm);
+
+                    var disc = $('input[name="disc"]').val();
+                    $('#con_disc').html(disc);
+
+                    var working_environment = $('#working_environment').val();
+                    $('#con_working_environment').html(working_environment);
+
+                    var status = $('#status').val();
+                    $('#con_status').html(status);
 
                     var requestor_remarks = $('#requestor_remarks').val();
                     $('#con_requestor_remarks').val(requestor_remarks);
@@ -744,7 +774,7 @@
                     $('#selectedPartsPrice').val(prices);
 
                     $.ajax({
-                        url:"{{ route('nchargeable.add.updateSelected') }}",
+                        url:"{{ route('chargeable.add.updateSelected') }}",
                         method:"POST",
                         data:{
                             tab: tab,
@@ -796,7 +826,7 @@
                 var search = '';
                 
                 $.ajax({
-                    url:"{{ route('nchargeable.add.getParts') }}",
+                    url:"{{ route('chargeable.add.getParts') }}",
                     method:"POST",
                     data:{
                         selectedParts: JSON.stringify(selectedParts),
@@ -816,7 +846,7 @@
 
                 delayTimer = setTimeout(function() {
                     $.ajax({
-                        url:"{{ route('nchargeable.add.getParts') }}",
+                        url:"{{ route('chargeable.add.getParts') }}",
                         method:"POST",
                         data:{
                             selectedParts: JSON.stringify(selectedParts),
@@ -848,7 +878,7 @@
             jQuery(document).on("click", ".addSelectedParts", function() {
                 $('#loading').removeClass('hidden');
                 $.ajax({
-                    url:"{{ route('nchargeable.add.updateSelected') }}",
+                    url:"{{ route('chargeable.add.updateSelected') }}",
                     method:"POST",
                     data:{
                         tab: tab,
@@ -881,7 +911,7 @@
                 selectedParts.splice(index, 1);
                 
                 $.ajax({
-                    url:"{{ route('nchargeable.add.updateSelected') }}",
+                    url:"{{ route('chargeable.add.updateSelected') }}",
                     method:"POST",
                     data:{
                         tab: tab,

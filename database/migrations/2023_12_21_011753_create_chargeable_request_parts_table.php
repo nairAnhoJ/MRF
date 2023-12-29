@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('mrf_chargeable_request_parts', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('rental_request_id');
+            $table->bigInteger('request_id');
             $table->bigInteger('part_id');
             $table->string('part_number');
             $table->string('part_name');

@@ -404,7 +404,7 @@
                                 {{-- <th>Brand</th> --}}
                                 <th>Fleet Number</th>
                                 <th>Status</th>
-                                <th>Date Needed</th>
+                                {{-- <th>Date Needed</th> --}}
                                 <th>Requestor</th>
                             </tr>
                         </thead>
@@ -451,7 +451,7 @@
                                             @endif
                                         {{-- Status --}}
                                     </td>
-                                    <td>{{ date('F j, Y', strtotime($result->date_needed)) }}</td>
+                                    {{-- <td>{{ date('F j, Y', strtotime($result->date_needed)) }}</td> --}}
                                     <td>{{ $result->requestor }}</td>
                                 </tr>
                             @endforeach

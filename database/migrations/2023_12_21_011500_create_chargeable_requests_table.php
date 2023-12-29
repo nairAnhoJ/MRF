@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('customer_area');
 
             $table->string('fsrr_number');
+            $table->string('fsrr_path');
             $table->string('fsrr_date_received');
             
             $table->string('brand');
@@ -92,8 +93,6 @@ return new class extends Migration
             $table->string('returned_by')->nullable();
             $table->string('datetime_returned')->nullable();
             $table->binary('returned_remarks')->nullable();
-
-            $table->date('date_needed');
 
             $table->boolean('is_cancelled')->default(0);
             $table->string('cancelled_by')->nullable();

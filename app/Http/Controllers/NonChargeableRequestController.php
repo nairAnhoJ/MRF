@@ -344,7 +344,7 @@ class NonChargeableRequestController extends Controller
         $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
 
         $new_request = new NonChargeableRequest();
-        $new_request->number = 'R-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
+        $new_request->number = 'NR-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
         $new_request->site = Auth::user()->site;
         $new_request->area = Auth::user()->area;
         $new_request->customer_name = $customer_name;
@@ -368,7 +368,7 @@ class NonChargeableRequestController extends Controller
         foreach ($selectedParts as $index => $selectedPart) {
             $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
             $perPart = new NonChargeableRequestParts();
-            $perPart->rental_request_id = $new_request->id;
+            $perPart->request_id = $new_request->id;
             $perPart->part_id = $selectedPart;
             $perPart->part_number = $sPart->partno;
             $perPart->part_name = $sPart->partname;
@@ -396,7 +396,7 @@ class NonChargeableRequestController extends Controller
 
     public function edit(Request $request){
         $nc_request = NonChargeableRequest::where('number', $request->request_number)->first();
-        $nc_request_parts = NonChargeableRequestParts::where('rental_request_id', $nc_request->id)->get();
+        $nc_request_parts = NonChargeableRequestParts::where('request_id', $nc_request->id)->get();
         $brands = Brand::where('is_deleted', 0)->orderBy('id', 'asc')->get();
         $customers = Customer::where('is_deleted', 0)->get();
         $site = Site::where('id', Auth::user()->site)->first()->name;
@@ -407,7 +407,7 @@ class NonChargeableRequestController extends Controller
             $brand = 0;
         }
         $models = BrandModel::where('is_deleted', 0)->get();
-        $selectedParts = NonChargeableRequestParts::where('rental_request_id', $nc_request->id)->get();
+        $selectedParts = NonChargeableRequestParts::where('request_id', $nc_request->id)->get();
         
         return view('user.non-chargeable.edit', compact('nc_request', 'nc_request_parts', 'customers', 'brands', 'models', 'site', 'brand', 'selectedParts'));
     }
@@ -498,12 +498,12 @@ class NonChargeableRequestController extends Controller
         $nc_request->date_needed = $date_needed;
         $nc_request->save();
 
-        NonChargeableRequestParts::where('rental_request_id', $nc_request->id)->delete();
+        NonChargeableRequestParts::where('request_id', $nc_request->id)->delete();
 
         foreach ($selectedParts as $index => $selectedPart) {
             $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
             $perPart = new NonChargeableRequestParts();
-            $perPart->rental_request_id = $nc_request->id;
+            $perPart->request_id = $nc_request->id;
             $perPart->part_id = $selectedPart;
             $perPart->part_number = $sPart->partno;
             $perPart->part_name = $sPart->partname;
@@ -552,7 +552,7 @@ class NonChargeableRequestController extends Controller
 
         $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
         // $fsrr_fileExt = pathinfo($rental_request->fsrr_path, PATHINFO_EXTENSION);
-        $allParts = NonChargeableRequestParts::where('rental_request_id', $id)->get();
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
         // $fleetHistory = NonChargeableRequest::where('fleet_number', $rental_request->fleet_number)->where('is_cancelled', 0)->where('id', '!=', $rental_request->id)->get();
 
         // Status
@@ -979,7 +979,7 @@ class NonChargeableRequestController extends Controller
 
         // Parts
             if ($fleetHistory->count() != 0){
-                $oldParts = NonChargeableRequestParts::where('rental_request_id', $fleetHistory[0]->id)->get();
+                $oldParts = NonChargeableRequestParts::where('request_id', $fleetHistory[0]->id)->get();
                 foreach ($oldParts as $index => $each){
                     $parts .= '
                         <tr class="border-b">
@@ -1081,7 +1081,7 @@ class NonChargeableRequestController extends Controller
 
     public function viewHistoryParts(Request $request){
         $id = $request->id;
-        $oldParts = NonChargeableRequestParts::where('rental_request_id', $id)->get();
+        $oldParts = NonChargeableRequestParts::where('request_id', $id)->get();
         $parts = '';
         
         // Parts
@@ -1130,7 +1130,7 @@ class NonChargeableRequestController extends Controller
         $thisRequest->is_returned_by_parts = 0;
         $thisRequest->save();
 
-        NonChargeableRequestParts::where('rental_request_id', $id)->update([
+        NonChargeableRequestParts::where('request_id', $id)->update([
             'with_error' => 0
         ]);
         
@@ -1152,7 +1152,7 @@ class NonChargeableRequestController extends Controller
 
         $thisRequest->save();
 
-        NonChargeableRequestParts::where('rental_request_id', $id)->update([
+        NonChargeableRequestParts::where('request_id', $id)->update([
             'with_error' => 0
         ]);
         
@@ -1250,7 +1250,7 @@ class NonChargeableRequestController extends Controller
 
     public function returnParts(Request $request){
         $id = $request->id;
-        $allParts = NonChargeableRequestParts::where('rental_request_id', $id)->get();
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
         $res = '<p class="mb-2 text-xs italic">*please select all the parts with error</p>';
         
         foreach ($allParts as $index => $eachPart){
@@ -1307,7 +1307,7 @@ class NonChargeableRequestController extends Controller
 
     public function viewReturnParts(Request $request){
         $id = $request->id;
-        $allParts = NonChargeableRequestParts::where('rental_request_id', $id)->get();
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
         $res = '';
 
         foreach ($allParts as $partInfo){
