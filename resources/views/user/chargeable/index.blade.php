@@ -107,7 +107,7 @@
             <div id="validateModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
                     <!-- Modal content -->
-                    <form action="{{ route('nchargeable.validateRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
+                    <form action="{{ route('chargeable.validateRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
                         @csrf
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -140,7 +140,7 @@
             <div id="verifyModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
                     <!-- Modal content -->
-                    <form action="{{ route('nchargeable.verifyRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
+                    <form action="{{ route('chargeable.verifyRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
                         @csrf
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -177,12 +177,12 @@
             <div id="approveModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
                     <!-- Modal content -->
-                    <form action="{{ route('nchargeable.approveRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
+                    <form action="{{ route('chargeable.approveRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
                         @csrf
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
                             <h3 class="text-xl font-semibold text-gray-900">
-                                @if (Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::user()->role == 8)
+                                @if (Auth::user()->role == 10 || Auth::user()->role == 6 || Auth::user()->role == 12)
                                     Encode
                                 @elseif(Auth::user()->role == 9)
                                     Confirm
@@ -200,7 +200,19 @@
                         <!-- Modal body -->
                         <div class="p-4 text-left">
                             <input type="hidden" id="approveID" name="id">
-                            @if (Auth::user()->role == 6)
+                            @if (Auth::user()->role == 10)
+                                <div class="w-full mb-2">
+                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">SQ Number</label>
+                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('encode_input')
+                                        <span class="text-xs text-red-500">The SQ Number you entered is invalid.</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
+                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                </div>
+                            @elseif (Auth::user()->role == 6)
                                 <div class="w-full mb-2">
                                     <label for="encode_input" class="block text-sm font-medium text-gray-900">MRI Number</label>
                                     <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
@@ -212,27 +224,32 @@
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
                                     <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
                                 </div>
-                            @elseif (Auth::user()->role == 7)
+                            @elseif (Auth::user()->role == 12)
                                 <div class="w-full mb-2">
-                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">eDoc Number</label>
-                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">Reference Number</label>
+                                    <input type="text" id="encode_input" name='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('encode_input')
-                                        <span class="text-xs text-red-500">The eDoc Number you entered is invalid.</span>
+                                        <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
                                     @enderror
                                 </div>
                                 <div class="w-full mb-2">
-                                    <label for="serial_numbers" class="block text-sm font-medium text-gray-900">Serial Numbers</label>
-                                    <textarea style="resize: none;" name='serial_numbers' id='serial_numbers' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <label for="dr_input" class="block text-sm font-medium text-gray-900">DR Number</label>
+                                    <input type="text" id="dr_input" name='dr_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('dr_input')
+                                        <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
+                                    @enderror
                                 </div>
-                                <div class="w-full">
-                                    <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
-                                </div>
-                            @elseif (Auth::user()->role == 8)
                                 <div class="w-full mb-2">
-                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">DR Number</label>
-                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
-                                    @error('encode_input')
+                                    <label for="si_input" class="block text-sm font-medium text-gray-900">SI Number</label>
+                                    <input type="text" id="si_input" name='si_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('si_input')
+                                        <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full mb-2">
+                                    <label for="bs_input" class="block text-sm font-medium text-gray-900">BS Number</label>
+                                    <input type="text" id="bs_input" name='bs_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    @error('bs_input')
                                         <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
                                     @enderror
                                 </div>
@@ -257,7 +274,7 @@
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
-                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm py-2.5 text-center w-24">YES</button>
+                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm py-2.5 text-center w-24">SUBMIT</button>
                             <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-gray-900 focus:z-10 w-24 approveCloseModal">CANCEL</button>
                         </div>
                     </form>
@@ -269,7 +286,7 @@
             <div id="returnModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
                     <!-- Modal content -->
-                    <form action="{{ route('nchargeable.returnRequest') }}" method="POST" class="relative h-full bg-white rounded-lg shadow">
+                    <form action="{{ route('chargeable.returnRequest') }}" method="POST" class="relative h-full bg-white rounded-lg shadow">
                         @csrf
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -374,7 +391,7 @@
                     {{-- ADD USER --}}
                 </div>
                     {{-- SEARCH --}}
-                        <form action="{{ route('nchargeable') }}" method="GET" class="w-96">
+                        <form action="{{ route('chargeable') }}" method="GET" class="w-96">
                             @csrf
                             <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only">Search</label>
                             <div class="relative">
@@ -438,14 +455,16 @@
                                                 Verified (For Service Approval)
                                             {{-- @elseif ($result->is_service_approved == 1 && $result->is_rental_approved == 0)
                                                 Service Approved (For Rental Approval) --}}
-                                            @elseif ($result->is_service_approved == 1 && $result->is_mri_number_encoded == 0)
-                                                Service Approved (For Encoding of MRI Number)
-                                            @elseif ($result->is_mri_number_encoded == 1 && $result->is_edoc_number_encoded == 0)
-                                                MRI Number Encoded (For Encoding of eDoc Number)
-                                            @elseif ($result->is_edoc_number_encoded == 1 && $result->is_dr_number_encoded == 0)
-                                                eDoc Number Encoded (For Encoding of DR Number)
-                                            @elseif ($result->is_dr_number_encoded == 1 && $result->is_confirmed == 0)
-                                                DR Number Encoded (For Signatories Confirmation)
+                                            @elseif ($result->is_service_approved == 1 && $result->is_sq_number_encoded == 0)
+                                                Service Approved (For Encoding of SQ Number)
+                                            @elseif ($result->is_sq_number_encoded == 1 && $result->is_adviser_approved == 0)
+                                                SQ Number Encoded (For Adviser Approval)
+                                            @elseif ($result->is_adviser_approved == 1 && $result->is_mri_number_encoded == 0)
+                                                Adviser-Approved (For Encoding of MRI Number)
+                                            @elseif ($result->is_mri_number_encoded == 1 && $result->is_invoice_encoded == 0)
+                                                MRI Number Encoded (For Encoding of Invoicing)
+                                            @elseif ($result->is_invoice_encoded == 1 && $result->is_confirmed == 0)
+                                                Invoicing Encoded (For Encoding of Invoicing)
                                             @elseif ($result->is_confirmed == 1)
                                                 Completed
                                             @endif
@@ -479,7 +498,7 @@
             var status;
             
             $.ajax({
-                url:"{{ route('nchargeable.view') }}",
+                url:"{{ route('chargeable.view') }}",
                 method:"POST",
                 dataType: "json",
                 data: {
@@ -502,7 +521,7 @@
         jQuery(document).on("click", "#viewFSRR", function() {
             $('#loading').removeClass('hidden');
             $.ajax({
-                url:"{{ route('nchargeable.viewFSRR') }}",
+                url:"{{ route('chargeable.viewFSRR') }}",
                 method:"POST",
                 data: {
                     id: id,
@@ -523,7 +542,7 @@
         jQuery(document).on("click", "#viewHistory", function() {
             $('#loading').removeClass('hidden');
             $.ajax({
-                url:"{{ route('nchargeable.viewHistory') }}",
+                url:"{{ route('chargeable.viewHistory') }}",
                 method:"POST",
                 data: {
                     id: id,
@@ -545,7 +564,7 @@
             $('#loading').removeClass('hidden');
             var req_id = $(this).data('id');
             $.ajax({
-                url:"{{ route('nchargeable.viewHistoryParts') }}",
+                url:"{{ route('chargeable.viewHistoryParts') }}",
                 method:"POST",
                 data: {
                     id: req_id,
@@ -589,7 +608,7 @@
             if(role == 3){
                 $('#loading').removeClass('hidden');
                 $.ajax({
-                    url:"{{ route('nchargeable.returnParts') }}",
+                    url:"{{ route('chargeable.returnParts') }}",
                     method:"POST",
                     data: {
                         id: id,
@@ -614,7 +633,7 @@
         jQuery(document).on("click", "#viewReturnedPartsButton", function() {
             $('#loading').removeClass('hidden');
             $.ajax({
-                url:"{{ route('nchargeable.viewReturnParts') }}",
+                url:"{{ route('chargeable.viewReturnParts') }}",
                 method:"POST",
                 data: {
                     id: id,
@@ -636,7 +655,7 @@
         jQuery(document).on("click", "#viewSerialNumbers", function() {
             $('#loading').removeClass('hidden');
             $.ajax({
-                url:"{{ route('nchargeable.viewSerialNumbers') }}",
+                url:"{{ route('chargeable.viewSerialNumbers') }}",
                 method:"POST",
                 data: {
                     id: id,
