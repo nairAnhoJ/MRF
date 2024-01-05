@@ -105,6 +105,14 @@ class ChargeableRequestController extends Controller
                     ->paginate(25);
                 break;
 
+            case '9':
+                $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
+                    ->where('is_invoice_encoded', 1)
+                    // ->where('is_deleted', 0)
+                    ->orderBy('id', 'desc')
+                    ->paginate(25);
+                break;
+    
             default:
                 break;
         }
@@ -558,7 +566,9 @@ class ChargeableRequestController extends Controller
         $new_request->model = $model;
         $new_request->serial_number = $serial_number;
         $new_request->fsrr_number = $fsrr_number;
+
         $new_request->fsrr_path = $fsrrPath;
+
         $new_request->technician = $technician;
         $new_request->hm = $hm;
         $new_request->disc = $disc;
@@ -628,7 +638,7 @@ class ChargeableRequestController extends Controller
             }else if($rental_request->is_mri_number_encoded == 1 && $rental_request->is_invoice_encoded == 0){
                 $status = 'MRI Number Encoded (For Encoding of Invoicing)';
             }else if($rental_request->is_invoice_encoded == 1 && $rental_request->is_confirmed == 0){
-                $status = 'MRI Number Encoded (For Encoding of Invoicing)';
+                $status = 'Invoicing Encoded (For Signatories Confirmation)';
             }else if($rental_request->is_confirmed == 1){
                 $status = 'Completed';
             }
@@ -813,6 +823,11 @@ class ChargeableRequestController extends Controller
                 }elseif (Auth::user()->role == 12 && $rental_request->is_mri_number_encoded == 1 && $rental_request->is_invoice_encoded == 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE</button>
+                        <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
+                    ';
+                }elseif (Auth::user()->role == 9 && $rental_request->is_invoice_encoded == 1 && $rental_request->is_confirmed == 0){
+                    $controls2 = '
+                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">CONFIRM</button>
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }
@@ -1085,6 +1100,163 @@ class ChargeableRequestController extends Controller
 
 
 
+
+
+
+
+
+
+
+
+
+    public function edit(Request $request){
+        $c_request = ChargeableRequest::where('number', $request->request_number)->first();
+        $c_request_parts = ChargeableRequestParts::where('request_id', $c_request->id)->get();
+        $brands = Brand::where('is_deleted', 0)->orderBy('id', 'asc')->get();
+        $customers = Customer::where('is_deleted', 0)->get();
+        $site = Site::where('id', Auth::user()->site)->first()->name;
+        $rbrand = Brand::where('name', $c_request->brand)->first();
+        if($rbrand != null){
+            $brand = $rbrand->id;
+        }else{
+            $brand = 0;
+        }
+        $models = BrandModel::where('is_deleted', 0)->get();
+        $selectedParts = ChargeableRequestParts::where('request_id', $c_request->id)->get();
+        
+        return view('user.chargeable.edit', compact('c_request', 'c_request_parts', 'customers', 'brands', 'models', 'site', 'brand', 'selectedParts'));
+    }
+
+    public function update(Request $request){
+        $validator = Validator::make($request->all(), [
+            'customer_name' => 'required',
+            'brand' => 'required',
+            'model' => 'required', 
+            'serial_number' => 'required',
+            'fleet_number' => 'required',
+            'fsrr_number' => 'required',
+            'fsrrFile' => 'required|mimes:jpeg,jpg,png,pdf',
+            'technician' => 'required',
+            'hm' => 'required',
+            'disc' => 'required',
+            'working_environment' => 'required',
+            'status' => 'required',
+            'date_received' => 'required|date|before:now',
+        ]);
+
+        $customMessages = [
+            'customer_name.required' => 'Please select an option from the list.',
+            'brand.required' => 'Please select an option from the list.',
+            'model.required' => 'Please select an option from the list.',
+            'serial_number.required' => 'Please provide the required information.',
+            'fleet_number.required' => 'Please provide the required information.',
+            'fsrr_number.required' => 'Please provide the required information.',
+            'fsrrFile.required' => 'Please choose a file for upload.',
+            'fsrrFile.mimes' => 'Please upload a file with the correct format (.jpeg, .jpg, .png, .pdf).',
+            'technician.required' => 'Please provide the required information.',
+            'hm.required' => 'Please provide the required information.',
+            'disc.required' => 'Please provide the required information.',
+            'working_environment.required' => 'Please select an option from the list.',
+            'status.required' => 'Please select an option from the list.',
+            'date_received.required' => 'Please select a date.',
+            'date_received.date' => 'Invalid date format. Please use the calendar to select a valid date.',
+            'date_received.before' => 'The selected date is invalid. Please choose a date before today.',
+        ];
+
+        $validator->setCustomMessages($customMessages);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $customer_name = $request->customer_name;
+        $customer_address = $request->customer_address;
+        $customer_area = $request->customer_area;
+        
+        $brand = Brand::where('id', $request->brand)->first()->name;
+        $model = $request->model;
+        $fleet_number = $request->fleet_number;
+        $fsrr_number = $request->fsrr_number;
+        $requestor_remarks = $request->requestor_remarks;
+        $serial_number = $request->serial_number;
+        $fsrrFile = $request->file('fsrrFile');
+        $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
+        
+        $technician = $request->technician;
+        $hm = $request->hm;
+        $disc = $request->disc;
+        $working_environment = $request->working_environment;
+        $status = $request->status;
+        $date_received = $request->date_received;
+        
+        $selectedParts = array_map('floatval', explode(",", $request->selectedParts));
+        $selectedPartsQuantity = array_map('floatval', explode(",", $request->selectedPartsQuantity));
+        $selectedPartsPrice = array_map('floatval', explode(",", $request->selectedPartsPrice));
+
+        $fsrrFile = $request->file('fsrrFile');
+
+        $nc_request = ChargeableRequest::where('number', $request->number)->first();
+        $nc_request->site = Auth::user()->site;
+        $nc_request->area = Auth::user()->area;
+        $nc_request->customer_name = $customer_name;
+        $nc_request->customer_address = $customer_address;
+        $nc_request->customer_area = $customer_area;
+        $nc_request->fleet_number = $fleet_number;
+        $nc_request->brand = $brand;
+        $nc_request->model = $model;
+        $nc_request->serial_number = $serial_number;
+        $nc_request->fsrr_number = $fsrr_number;
+
+        if($fsrrFile != null){
+            $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
+            $fileName = date('Ymd') . '_' . $nc_request . '.' . $fsrr_fileExt;
+            $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
+            $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
+
+            $nc_request->fsrr_path = $fsrrPath;
+        }
+
+        $nc_request->technician = $technician;
+        $nc_request->hm = $hm;
+        $nc_request->disc = $disc;
+        $nc_request->working_environment = $working_environment;
+        $nc_request->status = $status;
+        $nc_request->fsrr_date_received = $date_received;
+        $nc_request->date_requested = date('Y-m-d h:i:s');
+        $nc_request->requestor = Auth::user()->name;
+        $nc_request->requestor_remarks = $requestor_remarks;
+        $nc_request->save();
+
+        ChargeableRequestParts::where('request_id', $nc_request->id)->delete();
+
+        foreach ($selectedParts as $index => $selectedPart) {
+            $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
+            $perPart = new ChargeableRequestParts();
+            $perPart->request_id = $nc_request->id;
+            $perPart->part_id = $selectedPart;
+            $perPart->part_number = $sPart->partno;
+            $perPart->part_name = $sPart->partname;
+            $perPart->brand = $sPart->part_brand->name;
+            $perPart->quantity = $selectedPartsQuantity[$index];
+            $perPart->price = $selectedPartsPrice[$index];
+            $perPart->total_price = (float)$selectedPartsPrice[$index] * (float)$selectedPartsQuantity[$index];
+            $perPart->save();
+        }
+        
+        return redirect()->route('chargeable')->with('success', 'Request Has Been Updated Successfully!');
+    }
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
 

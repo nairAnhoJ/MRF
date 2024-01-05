@@ -464,7 +464,7 @@
                                             @elseif ($result->is_mri_number_encoded == 1 && $result->is_invoice_encoded == 0)
                                                 MRI Number Encoded (For Encoding of Invoicing)
                                             @elseif ($result->is_invoice_encoded == 1 && $result->is_confirmed == 0)
-                                                Invoicing Encoded (For Encoding of Invoicing)
+                                                Invoicing Encoded (For Signatories Confirmation)
                                             @elseif ($result->is_confirmed == 1)
                                                 Completed
                                             @endif
