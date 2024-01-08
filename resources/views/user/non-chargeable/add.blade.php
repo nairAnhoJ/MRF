@@ -844,10 +844,6 @@
                     }
                 })
             });
-            
-            // jQuery(document).on("click", "#submitBtn", function() {
-            //     $('#requestForm').submit();
-            // });
         });
     </script>
 @endsection

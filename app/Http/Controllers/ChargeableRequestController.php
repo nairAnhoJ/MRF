@@ -28,7 +28,6 @@ class ChargeableRequestController extends Controller
         switch (Auth::user()->role) {
             case '0':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -36,7 +35,6 @@ class ChargeableRequestController extends Controller
             case '1':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('site', Auth::user()->site)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -44,7 +42,6 @@ class ChargeableRequestController extends Controller
             case '2':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('site', Auth::user()->site)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -52,7 +49,6 @@ class ChargeableRequestController extends Controller
             case '3':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_validated', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25); 
                 break;
@@ -66,9 +62,7 @@ class ChargeableRequestController extends Controller
                 }
 
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
-                    // ->where('is_verified', 1)
                     ->whereIn('area', $area)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -76,7 +70,6 @@ class ChargeableRequestController extends Controller
             case '10':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_service_approved', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -84,7 +77,6 @@ class ChargeableRequestController extends Controller
             case '11':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_sq_number_encoded', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -92,7 +84,6 @@ class ChargeableRequestController extends Controller
             case '6':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_adviser_approved', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -100,7 +91,6 @@ class ChargeableRequestController extends Controller
             case '12':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_mri_number_encoded', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -108,7 +98,6 @@ class ChargeableRequestController extends Controller
             case '9':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_invoice_encoded', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -550,9 +539,9 @@ class ChargeableRequestController extends Controller
         $request_id = ChargeableRequest::select('id')->max('id') + 1;
 
         $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
+        $fsrrFile->storeAs('storage/attachments/chargeable', $fileName, 'public_uploads');
 
-        $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
+        $fsrrPath = 'storage/attachments/chargeable/' . $fileName;
 
         $new_request = new ChargeableRequest();
         $new_request->number = 'CR-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
@@ -612,9 +601,7 @@ class ChargeableRequestController extends Controller
         $status = '';
 
         $rental_request = ChargeableRequest::with('siteDetails')->where('id', $id)->first();
-        // $fsrr_fileExt = pathinfo($rental_request->fsrr_path, PATHINFO_EXTENSION);
         $allParts = ChargeableRequestParts::where('request_id', $id)->get();
-        // $fleetHistory = NonChargeableRequest::where('fleet_number', $rental_request->fleet_number)->where('is_cancelled', 0)->where('id', '!=', $rental_request->id)->get();
 
         // Status
             if($rental_request->is_cancelled == 1){
@@ -1135,7 +1122,6 @@ class ChargeableRequestController extends Controller
             'serial_number' => 'required',
             'fleet_number' => 'required',
             'fsrr_number' => 'required',
-            'fsrrFile' => 'required|mimes:jpeg,jpg,png,pdf',
             'technician' => 'required',
             'hm' => 'required',
             'disc' => 'required',
@@ -1180,7 +1166,6 @@ class ChargeableRequestController extends Controller
         $requestor_remarks = $request->requestor_remarks;
         $serial_number = $request->serial_number;
         $fsrrFile = $request->file('fsrrFile');
-        $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
         
         $technician = $request->technician;
         $hm = $request->hm;
@@ -1209,9 +1194,10 @@ class ChargeableRequestController extends Controller
 
         if($fsrrFile != null){
             $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
-            $fileName = date('Ymd') . '_' . $nc_request . '.' . $fsrr_fileExt;
-            $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
-            $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
+
+            $fileName = date('Ymd') . '_' . $nc_request->id . '.' . $fsrr_fileExt;
+            $fsrrFile->storeAs('storage/attachments/chargeable', $fileName, 'public_uploads');
+            $fsrrPath = 'storage/attachments/chargeable/' . $fileName;
 
             $nc_request->fsrr_path = $fsrrPath;
         }

@@ -158,79 +158,28 @@
                         <div id="tab1" class="w-1/4 h-full mr-4 space-y-4 overflow-x-hidden overflow-y-auto">
                             <h1 class="text-xl font-bold text-neutral-800">Request Info</h1>
                             <input type="hidden" name="number" value="{{ $c_request->number }}">
-
-                            {{-- <div class="flex gap-x-4">
-                                <div class="w-full">
-                                    <label for="for" class="block text-sm font-medium text-gray-900">Request For</label>
-                                    <select id="for" name='for' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Request For</option>
-                                        <option value="FOR PM" {{ ($c_request->for == 'FOR PM') ? 'selected' : '' }}>For PM</option>
-                                        <option value="FOR REPAIR" {{ ($c_request->for == 'FOR REPAIR') ? 'selected' : '' }}>For Repair</option>
-                                    </select>
-                                    @error('for')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="w-full">
-                                    <label for="order_type" class="block text-sm font-medium text-gray-900">Order Type</label>
-                                    <select id="order_type" name='order_type'" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Order Type</option>
-                                        <option value="IN STOCK" {{ ($c_request->order_type == 'IN STOCK') ? 'selected' : '' }}>In Stock</option>
-                                        <option value="REQUEST PARTS" {{ ($c_request->order_type == 'REQUEST PARTS') ? 'selected' : '' }}>Request Parts</option>
-                                    </select>
-                                    @error('order_type')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="w-full">
-                                    <label for="date_needed" class="block text-sm font-medium text-gray-900">Date Needed</label>
-                                    <input type="date" name='date_needed' id="date_needed" value="{{ $c_request->date_needed }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                    @error('date_needed')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="w-full">
-                                    <label for="site" class="block text-sm font-medium text-gray-900">Site</label>
-                                    <input type="text" id="site" value='{{ $site }}' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off" disabled>
-                                </div>
-                            </div> --}}
                             
                             <div>
-                                <label class="block mt-3 text-sm font-medium text-gray-900">Customer</label>
-                                <div class="relative w-full wrapper">
-                                    <div class="flex items-center justify-between p-2.5 border border-gray-300 rounded-md cursor-pointer bg-gray-50 select-btn h-[42px]">
-                                        <span id="customer_name">{{ $c_request->customer_name }}</span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-full text-gray-700 transition-transform duration-300" viewBox="0 -960 960 960" fill='currentColor'><path d="M480-322 216-586l67-67 197 198 197-197 67 67-264 263Z"/></svg>
-                                    </div>
-                                    <div class="absolute z-50 hidden w-full p-3 mt-1 border border-gray-300 rounded-md bg-gray-50 content">
-                                        <div class="relative search">
-                                            <i class="absolute leading-9 text-gray-500 uil uil-search left-3"></i>
-                                            <input type="text" class="w-full leading-9 text-gray-900 rounded-md outline-none selectSearch pl-9 h-9" placeholder="Search">
-                                        </div>
-                                        <ul class="mt-2 overflow-y-auto customerOption listOption options max-h-64">
-                                            @foreach ($customers as $customer)
-                                                <li data-name="{{ $customer->name }}" data-address="{{ $customer->address }}" data-area="{{ $customer->area }}" class="flex items-center pl-3 leading-9 rounded-md cursor-pointer h-9 hover:bg-gray-200 customerSelected"><span>{{ $customer->name }}</span><span class="ml-2">📌{{ $customer->address }}</span></li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                    <input type="hidden" name='customer_name' value="{{ $c_request->customer_name }}">
+                                <div class="w-full">
+                                    <label for="customer_name" class="block text-sm font-medium text-gray-900">Customer</label>
+                                    <input type="text" id="customer_name" name='customer_name' value="{{ (old('customer_name') == '') ? $c_request->customer_name : old('customer_name') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" readonly>
+                                    @error('customer_name')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
                                 </div>
-                                @error('customer_name')
-                                    <span class="text-xs text-red-500">{{ $message }}</span>
-                                @enderror
                             </div>
                             
                             <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="customer_address" class="block text-sm font-medium text-gray-900">Address</label>
-                                    <input type="text" id="customer_address" name='customer_address' value="{{ $c_request->customer_address }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" readonly>
+                                    <input type="text" id="customer_address" name='customer_address' value="{{ (old('customer_address') == '') ? $c_request->customer_address : old('customer_address') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" readonly>
                                     @error('customer_address')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class=" w-96">
                                     <label for="customer_area" class="block text-sm font-medium text-gray-900">Area</label>
-                                    <input type="text" id="customer_area" name='customer_area' value="{{ $c_request->customer_area }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" readonly>
+                                    <input type="text" id="customer_area" name='customer_area' value="{{ (old('customer_area') == '') ? $c_request->customer_area : old('customer_area') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" readonly>
                                     @error('customer_area')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
@@ -243,7 +192,17 @@
                                     <select id="brand" name='brand' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                         <option value="" hidden>Select Brand</option>
                                         @foreach ($brands as $brandOption)
-                                            <option data-name="{{ $brandOption->name }}" value="{{ $brandOption->id }}" {{ ($brand == $brandOption->id) ? 'selected' : '' }}>{{ $brandOption->name }}</option>
+                                            <option data-name="{{ $brandOption->name }}" value="{{ $brandOption->id }}"
+                                                @if (old('brand') == '')
+                                                    @if ($brand == $brandOption->id)
+                                                        selected
+                                                    @endif
+                                                @else
+                                                    @if (old('brand') == $brandOption->id)
+                                                        selected
+                                                    @endif
+                                                @endif
+                                            >{{ $brandOption->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('brand')
@@ -254,7 +213,7 @@
                                     <label class="block text-sm font-medium text-gray-900">Model</label>
                                     <div class="relative w-full wrapper">
                                         <div id="modelSelect" class="flex items-center justify-between p-2.5 border border-gray-300 rounded-md bg-gray-50  h-[42px] select-btn cursor-pointer">
-                                            <span id="model">{{ $c_request->model }}</span>
+                                            <span id="model">{{ (old('model') == '') ? $c_request->model : old('model') }}</span>
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-full text-gray-700 transition-transform duration-300" viewBox="0 -960 960 960" fill='currentColor'><path d="M480-322 216-586l67-67 197 198 197-197 67 67-264 263Z"/></svg>
                                         </div>
                                         <div class="absolute z-50 hidden w-full p-3 mt-1 border border-gray-300 rounded-md bg-gray-50 content">
@@ -268,7 +227,7 @@
                                                 @endforeach
                                             </ul>
                                         </div>
-                                        <input type="hidden" name='model' value="{{ $c_request->model }}">
+                                        <input type="hidden" name='model' value="{{ (old('model') == '') ? $c_request->model : old('model') }}">
                                     </div>
                                     @error('model')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -276,7 +235,7 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="serial_number" class="block text-sm font-medium text-gray-900">Serial Number</label>
-                                    <input type="text" id="serial_number" name='serial_number' value="{{ $c_request->serial_number }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="serial_number" name='serial_number' value="{{ (old('serial_number') == '') ? $c_request->serial_number : old('serial_number') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('serial_number')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
@@ -284,7 +243,7 @@
                                 <div class="w-full">
                                     <label for="fleet_number" class="block text-sm font-medium text-gray-900">Fleet Number</label>
                                     <div class="flex gap-x-2">
-                                        <input type="text" name='fleet_number' id="fleet_number" value="{{ $c_request->fleet_number }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                        <input type="text" name='fleet_number' id="fleet_number" value="{{ (old('fleet_number') == '') ? $c_request->fleet_number : old('fleet_number') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                         <button type="button" id="viewHistoryButton" class="disabled:pointer-events-none disabled:opacity-60 h-[42px] bg-gray-100 border rounded-lg border-gray-300 aspect-square p-[6px] text-gray-700">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill=currentColor>
                                                 <path d="M476.056-95Q315-95 203.795-207.427 92.591-319.853 94-481h94q1.152 121.3 84.005 206.65Q354.859-189 476-189q122 0 208-86.321t86-209.5Q770-605 683.627-688T476-771q-60 0-113.5 24.5T268-680h84v73H123v-227h71v95q55-59 127.5-93T476-866q80 0 150.5 30.5t123.74 82.511q53.241 52.011 83.5 121.5Q864-562 864-482t-30.26 150.489q-30.259 70.489-83.5 123Q697-156 626.5-125.5 556-95 476.056-95ZM600-311 446-463v-220h71v189l135 131-52 52Z"/>
@@ -300,7 +259,7 @@
                             <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="fsrr_number" class="block text-sm font-medium text-gray-900">FSRR Number</label>
-                                    <input type="text" id="fsrr_number" name='fsrr_number' value="{{ $c_request->fsrr_number }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="fsrr_number" name='fsrr_number' value="{{ (old('fsrr_number') == '') ? $c_request->fsrr_number : old('fsrr_number') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('fsrr_number')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
@@ -321,46 +280,31 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="date_received" class="block text-sm font-medium text-gray-900">Date Received</label>
-                                    <input type="date" id="date_received" name='date_received' value="{{ $c_request->fsrr_date_received }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="date" id="date_received" name='date_received' value="{{ (old('date_received') == '') ? $c_request->fsrr_date_received : old('date_received') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('date_received')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="w-full">
                                     <label for="technician" class="block text-sm font-medium text-gray-900">Technician</label>
-                                    <input type="text" id="technician" name='technician' value="{{ $c_request->technician }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="technician" name='technician' value="{{ (old('technician') == '') ? $c_request->technician : old('technician') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('technician')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                {{-- <div class="w-full">
-                                    <label for="delivery_type" class="block text-sm font-medium text-gray-900">Delivery Type</label>
-                                    <select id="delivery_type" name='delivery_type' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Order Type</option>
-                                        <option value="REGULAR" {{ (old('delivery_type') == 'REGULAR') ? 'selected' : '' }}>Regular</option>
-                                        <option value="SAME DAY" {{ (old('delivery_type') == 'SAME DAY') ? 'selected' : '' }}>Same Day</option>
-                                        <option value="PICKUP" {{ (old('delivery_type') == 'PICKUP') ? 'selected' : '' }}>Pick Up</option>
-                                        <option value="AIR" {{ (old('delivery_type') == 'AIR') ? 'selected' : '' }}>Air</option>
-                                        <option value="SEA" {{ (old('delivery_type') == 'SEA') ? 'selected' : '' }}>Sea</option>
-                                        <option value="OTHERS" {{ (old('delivery_type') == 'OTHERS') ? 'selected' : '' }}>Others</option>
-                                    </select>
-                                    @error('delivery_type')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div> --}}
                             </div>
 
                             <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="hm" class="block text-sm font-medium text-gray-900">HM</label>
-                                    <input type="text" id="hm" name='hm' value="{{ $c_request->hm }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="hm" name='hm' value="{{ (old('hm') == '') ? $c_request->hm : old('hm') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('hm')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
                                 <div class="w-full">
                                     <label for="disc" class="block text-sm font-medium text-gray-900">Disc</label>
-                                    <input type="text" id="disc" name='disc' value="{{ $c_request->disc }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="disc" name='disc' value="{{ (old('disc') == '') ? $c_request->disc : old('disc') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('disc')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
@@ -369,8 +313,28 @@
                                     <label for="working_environment" class="block text-sm font-medium text-gray-900">Working Environment</label>
                                     <select id="working_environment" name='working_environment' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                         <option value="" hidden>Select Working Environment</option>
-                                        <option value="COLD" {{ ($c_request->working_environment == 'COLD') ? 'selected' : '' }}>Cold</option>
-                                        <option value="DRY" {{ ($c_request->working_environment == 'DRY') ? 'selected' : '' }}>Dry</option>
+                                        <option value="COLD"
+                                            @if (old('working_environment') == '')
+                                                @if ($c_request->working_environment == 'COLD')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('working_environment') == 'COLD')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Cold</option>
+                                        <option value="DRY"
+                                            @if (old('working_environment') == '')
+                                                @if ($c_request->working_environment == 'DRY')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('working_environment') == 'DRY')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Dry</option>
                                     </select>
                                     @error('working_environment')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -380,8 +344,28 @@
                                     <label for="status" class="block text-sm font-medium text-gray-900">Status</label>
                                     <select id="status" name='status' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                                         <option value="" hidden>Select Status</option>
-                                        <option value="UP" {{ ($c_request->status == 'UP') ? 'selected' : '' }}>Up</option>
-                                        <option value="DOWN" {{ ($c_request->status == 'DOWN') ? 'selected' : '' }}>Down</option>
+                                        <option value="UP"
+                                            @if (old('status') == '')
+                                                @if ($c_request->status == 'UP')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('status') == 'UP')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Up</option>
+                                        <option value="DOWN"
+                                            @if (old('status') == '')
+                                                @if ($c_request->status == 'DOWN')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('status') == 'DOWN')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Down</option>
                                     </select>
                                     @error('status')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -481,15 +465,6 @@
                                     <div class="flex w-full mb-5">
                                         <p class="w-36">Site: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $site }}</p>
                                     </div>
-                                    {{-- <div class="flex w-full mb-2">
-                                        <p class="w-36">Request for: </p><p id="con_for" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div>
-                                    <div class="flex w-full mb-2">
-                                        <p class="w-36">Order Type: </p><p id="con_order_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div>
-                                    <div class="flex w-full mb-2">
-                                        <p class="w-36">Date Needed: </p><p id="con_date_needed" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div> --}}
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Brand: </p><p id="con_brand" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
@@ -505,9 +480,6 @@
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">FSRR Number: </p><p id="con_fsrr_number" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
-                                    {{-- <div class="flex w-full mb-2">
-                                        <p class="w-36">Delivery Type: </p><p id="con_delivery_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div> --}}
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Technician: </p><p id="con_technician" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
@@ -526,8 +498,6 @@
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Remarks: </p>
                                         <textarea style="resize:none;" id="con_requestor_remarks" class="w-full h-10 overflow-y-hidden rounded-lg outline-none autoResize" readonly></textarea>
-                                        
-                                        {{-- <p id="con_requestor_remarks" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p> --}}
                                     </div>
                                 </div>
                             </div>
@@ -546,23 +516,6 @@
                                             </tr>
                                         </thead>
                                         <tbody id="con_selectedPartsBody" class="text-sm">
-                                            {{-- @foreach ($partsInfo as $index => $partInfo)
-                                                <tr class="border-b">
-                                                    <th class="px-2 whitespace-nowrap">{{ $index + 1 }}</th>
-                                                    <td class="px-2 whitespace-nowrap">{{ $partInfo->partno }}</td>
-                                                    <td class="px-2 whitespace-nowrap">{{ $partInfo->partname }}</td>
-                                                    <td class="px-2 text-center whitespace-nowrap">{{ $partInfo->brand }}</td>
-                                                    <td class="px-2 py-2 text-center whitespace-nowrap">
-                                                        {{ $partInfo->quantity }}
-                                                    </td>
-                                                    <td class="px-2 text-center whitespace-nowrap">
-                                                        {{ str_replace(",", "", $partInfo->price) }}
-                                                    </td>
-                                                    <td class="px-2 text-center whitespace-nowrap">
-                                                        {{ number_format((str_replace(",", "", $partInfo->price) * $partInfo->quantity), 2, '.', ',') }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -598,6 +551,7 @@
             }
 
             jQuery(document).on( "click", ".customerOption li", function(){
+                $('#loading').removeClass('hidden');
                 var name = $(this).data('name');
                 var address = $(this).data('address');
                 var area = $(this).data('area');
@@ -611,9 +565,11 @@
                 $('.selectSearch').val('');
                 var value = $(".selectSearch").val().toLowerCase();
                 searchFilter(value);
+                $('#loading').addClass('hidden');
             });
 
             jQuery(document).on( "change", "#brand", function(){
+                $('#loading').removeClass('hidden');
                 var bid = $(this).val();
                 var name = $(this).find(':selected').data('name');
                 $('#con_brand').html(name);
@@ -632,9 +588,13 @@
                         $('#modelSelect').removeClass('opacity-60');
                         $('#modelSelect').addClass('select-btn cursor-pointer');
 
+                        $('input[name="model"]').val('');
+                        $('#model').html('Select Model');
+
                         $('.selectSearch').val('');
                         var value = $(".selectSearch").val().toLowerCase();
                         searchFilter(value);
+                        $('#loading').addClass('hidden');
                     }
                 })
             });
@@ -986,10 +946,6 @@
                     }
                 })
             });
-            
-            // jQuery(document).on("click", "#submitBtn", function() {
-            //     $('#requestForm').submit();
-            // });
         });
     </script>
 @endsection

@@ -28,7 +28,6 @@ class NonChargeableRequestController extends Controller
         switch (Auth::user()->role) {
             case '0':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -36,7 +35,6 @@ class NonChargeableRequestController extends Controller
             case '1':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('site', Auth::user()->site)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -44,7 +42,6 @@ class NonChargeableRequestController extends Controller
             case '2':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('site', Auth::user()->site)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -52,7 +49,6 @@ class NonChargeableRequestController extends Controller
             case '3':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_validated', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25); 
                 break;
@@ -66,9 +62,7 @@ class NonChargeableRequestController extends Controller
                 }
 
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
-                    // ->where('is_verified', 1)
                     ->whereIn('area', $area)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -76,7 +70,6 @@ class NonChargeableRequestController extends Controller
             case '5':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_service_approved', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -84,7 +77,6 @@ class NonChargeableRequestController extends Controller
             case '6':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_service_approved', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -92,7 +84,6 @@ class NonChargeableRequestController extends Controller
             case '7':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_mri_number_encoded', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -100,7 +91,6 @@ class NonChargeableRequestController extends Controller
             case '8':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_edoc_number_encoded', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -108,7 +98,6 @@ class NonChargeableRequestController extends Controller
             case '9':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_dr_number_encoded', 1)
-                    // ->where('is_deleted', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -551,9 +540,7 @@ class NonChargeableRequestController extends Controller
         $status = '';
 
         $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
-        // $fsrr_fileExt = pathinfo($rental_request->fsrr_path, PATHINFO_EXTENSION);
         $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
-        // $fleetHistory = NonChargeableRequest::where('fleet_number', $rental_request->fleet_number)->where('is_cancelled', 0)->where('id', '!=', $rental_request->id)->get();
 
         // Status
             if($rental_request->is_cancelled == 1){
@@ -1173,15 +1160,6 @@ class NonChargeableRequestController extends Controller
                 return redirect()->route('nchargeable')->with('success', 'Request Has Been Approved Successfully!');
 
                 break;
-
-            // case '5':
-            //     $thisRequest->is_rental_approved = 1;
-            //     $thisRequest->rental_approver = Auth()->user()->name;
-            //     $thisRequest->datetime_rental_approved = date('Y-m-d h:i:s');
-            //     $thisRequest->rental_remarks = $remarks;
-            //     request()->session()->flash('success', 'Request Has Been Approved Successfully!');
-
-            //     break;
 
             case '6':
                 $request->validate([

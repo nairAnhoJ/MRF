@@ -474,23 +474,6 @@
                                             </tr>
                                         </thead>
                                         <tbody id="con_selectedPartsBody" class="text-sm">
-                                            {{-- @foreach ($partsInfo as $index => $partInfo)
-                                                <tr class="border-b">
-                                                    <th class="px-2 whitespace-nowrap">{{ $index + 1 }}</th>
-                                                    <td class="px-2 whitespace-nowrap">{{ $partInfo->partno }}</td>
-                                                    <td class="px-2 whitespace-nowrap">{{ $partInfo->partname }}</td>
-                                                    <td class="px-2 text-center whitespace-nowrap">{{ $partInfo->brand }}</td>
-                                                    <td class="px-2 py-2 text-center whitespace-nowrap">
-                                                        {{ $partInfo->quantity }}
-                                                    </td>
-                                                    <td class="px-2 text-center whitespace-nowrap">
-                                                        {{ str_replace(",", "", $partInfo->price) }}
-                                                    </td>
-                                                    <td class="px-2 text-center whitespace-nowrap">
-                                                        {{ number_format((str_replace(",", "", $partInfo->price) * $partInfo->quantity), 2, '.', ',') }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -899,10 +882,6 @@
                     }
                 })
             });
-            
-            // jQuery(document).on("click", "#submitBtn", function() {
-            //     $('#requestForm').submit();
-            // });
         });
     </script>
 @endsection

@@ -440,15 +440,6 @@
                                     <div class="flex w-full mb-5">
                                         <p class="w-36">Site: </p><p class="ml-1 font-bold w-[calc(100%-144px)] text-lg">{{ $site }}</p>
                                     </div>
-                                    {{-- <div class="flex w-full mb-2">
-                                        <p class="w-36">Request for: </p><p id="con_for" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div>
-                                    <div class="flex w-full mb-2">
-                                        <p class="w-36">Order Type: </p><p id="con_order_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div>
-                                    <div class="flex w-full mb-2">
-                                        <p class="w-36">Date Needed: </p><p id="con_date_needed" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div> --}}
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Brand: </p><p id="con_brand" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
@@ -464,9 +455,6 @@
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">FSRR Number: </p><p id="con_fsrr_number" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
-                                    {{-- <div class="flex w-full mb-2">
-                                        <p class="w-36">Delivery Type: </p><p id="con_delivery_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
-                                    </div> --}}
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Technician: </p><p id="con_technician" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
@@ -485,8 +473,6 @@
                                     <div class="flex w-full mb-2">
                                         <p class="w-36">Remarks: </p>
                                         <textarea style="resize:none;" id="con_requestor_remarks" class="w-full h-10 overflow-y-hidden rounded-lg outline-none autoResize" readonly></textarea>
-                                        
-                                        {{-- <p id="con_requestor_remarks" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p> --}}
                                     </div>
                                 </div>
                             </div>
@@ -505,23 +491,6 @@
                                             </tr>
                                         </thead>
                                         <tbody id="con_selectedPartsBody" class="text-sm">
-                                            {{-- @foreach ($partsInfo as $index => $partInfo)
-                                                <tr class="border-b">
-                                                    <th class="px-2 whitespace-nowrap">{{ $index + 1 }}</th>
-                                                    <td class="px-2 whitespace-nowrap">{{ $partInfo->partno }}</td>
-                                                    <td class="px-2 whitespace-nowrap">{{ $partInfo->partname }}</td>
-                                                    <td class="px-2 text-center whitespace-nowrap">{{ $partInfo->brand }}</td>
-                                                    <td class="px-2 py-2 text-center whitespace-nowrap">
-                                                        {{ $partInfo->quantity }}
-                                                    </td>
-                                                    <td class="px-2 text-center whitespace-nowrap">
-                                                        {{ str_replace(",", "", $partInfo->price) }}
-                                                    </td>
-                                                    <td class="px-2 text-center whitespace-nowrap">
-                                                        {{ number_format((str_replace(",", "", $partInfo->price) * $partInfo->quantity), 2, '.', ',') }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -927,10 +896,6 @@
                     }
                 })
             });
-            
-            // jQuery(document).on("click", "#submitBtn", function() {
-            //     $('#requestForm').submit();
-            // });
         });
     </script>
 @endsection
