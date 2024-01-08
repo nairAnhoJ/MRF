@@ -53,11 +53,11 @@
                     </button>
                     <ul id="systemDd" class="hidden py-2 space-y-2">
                         <li>
-                            <a href="{{ route('users') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">Users</a>
+                            <a href="{{ route('users.index') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">Users</a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a href="{{ route('approver') }}" class="flex items-center w-full p-2 text-gray-600 transition duration-75 rounded-lg hover:text-gray-700 pl-11 group hover:bg-gray-200">Approver Setup</a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
             @endif
