@@ -111,6 +111,11 @@ Route::middleware(['auth'])->group(function () {
         // USERS
             Route::get('/users', [UserController::class, 'index'])->name('users.index');
             Route::get('/users/add', [UserController::class, 'add'])->name('users.add');
+            Route::post('/users/store', [UserController::class, 'store'])->name('users.store');
+            Route::get('/user/edit/{key}', [UserController::class, 'edit'])->name('users.edit');
+            Route::post('/user/update/{key}', [UserController::class, 'update'])->name('users.update');
+            Route::get('/user/delete/{key}', [UserController::class, 'delete'])->name('users.delete');
+            Route::get('/user/reset/{key}', [UserController::class, 'reset'])->name('users.reset');
         // USERS
     
     // SYSTEM MANAGEMENT

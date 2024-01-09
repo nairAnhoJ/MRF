@@ -6,6 +6,86 @@
 <div class="w-screen h-screen pt-14">
     <div class="w-full h-full p-4">
 
+        {{-- SUCCESS ALERT --}}
+            @if (session('success'))
+                <div class="absolute flex items-center p-4 mb-4 text-green-800 -translate-x-1/2 border border-green-700 rounded-lg left-1/2 top-20 bg-green-50">
+                    <svg class="flex-shrink-0 w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <div class="pr-5 ml-3 text-sm font-medium">
+                        {{ session('success') }}
+                    </div>
+                    <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-green-50 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex items-center justify-center h-8 w-8 hideAlert">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
+                    </button>
+                </div>
+            @endif
+        {{-- SUCCESS ALERT// --}}
+    
+        {{-- DELETE MODAL --}}
+            <div id="deleteModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
+                <div class="bg-white rounded-lg max-w-[500px]">
+                    <!-- Modal content -->
+                    <div class="relative h-full bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-4 border-b rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                DELETE USER
+                            </h3>
+                            <button type="button" id="closeDeleteModal" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="w-full px-5 py-4 overflow-x-hidden overflow-y-auto text-center">
+                            Are you sure you want to delete this user?
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-4 space-x-2 text-center border-t border-gray-200 rounded-b">
+                            <a id="confirmDelete" href="" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold w-1/2 py-2.5 focus:z-10">DELETE</a>
+                            <button type="button" id="closeDeleteModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold w-1/2 py-2.5 hover:text-gray-900 focus:z-10">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{-- DELETE MODAL// --}}
+    
+        {{-- RESET MODAL --}}
+            <div id="resetModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
+                <div class="bg-white rounded-lg max-w-[500px]">
+                    <!-- Modal content -->
+                    <div class="relative h-full bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-4 border-b rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                RESET PASSWORD
+                            </h3>
+                            <button type="button" id="closeResetModal" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="w-full px-5 py-4 overflow-x-hidden overflow-y-auto text-center">
+                            Are you sure you want to reset the password of this user?
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-4 space-x-2 text-center border-t border-gray-200 rounded-b">
+                            <a id="confirmReset" href="" class="text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold w-1/2 py-2.5 focus:z-10">RESET</a>
+                            <button type="button" id="closeResetModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold w-1/2 py-2.5 hover:text-gray-900 focus:z-10">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{-- RESET MODAL// --}}
+
         {{-- CONTROLS --}}
             <div class="flex items-center justify-between w-full h-12">
                 <div class="h-full">
@@ -80,9 +160,9 @@
                                     </td>
                                     <td class="text-center">{{ $user->siteDetails->name }}</td>
                                     <td class="font-semibold text-center">
-                                        <a href="#" class="text-blue-500 hover:underline">EDIT</a> | 
-                                        <a href="#" class="text-orange-500 hover:underline">RESET</a> | 
-                                        <a href="#" class="text-red-500 hover:underline">DELETE</a>
+                                        <a href="{{ route('users.edit', ['key' => $user->key]) }}" class="text-blue-500 hover:underline">EDIT</a> | 
+                                        <button type="button" data-key="{{ $user->key }}" class="text-orange-500 hover:underline resetButton">RESET</button> | 
+                                        <button type="button" data-key="{{ $user->key }}" class="text-red-500 hover:underline deleteButton">DELETE</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -101,7 +181,29 @@
 
 <script>
     $(document).ready(function () {
+        jQuery(document).on("click", ".deleteButton", function() {
+            var key = $(this).data('key');
+            var newHref = "{{ route('users.delete', ['key' => ':newKey']) }}".replace(':newKey', key);
+            $('#confirmDelete').attr('href', newHref);
+            $('#deleteModal').removeClass('hidden');
+        });
+        
+        jQuery(document).on("click", "#closeDeleteModal", function() {
+            $('#deleteModal').addClass('hidden');
 
+        });
+        
+        jQuery(document).on("click", ".resetButton", function() {
+            var key = $(this).data('key');
+            var newHref = "{{ route('users.reset', ['key' => ':newKey']) }}".replace(':newKey', key);
+            $('#confirmReset').attr('href', newHref);
+            $('#resetModal').removeClass('hidden');
+        });
+        
+        jQuery(document).on("click", "#closeResetModal", function() {
+            $('#resetModal').addClass('hidden');
+
+        });
     });
 </script>
 
