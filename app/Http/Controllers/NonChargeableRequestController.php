@@ -103,6 +103,7 @@ class NonChargeableRequestController extends Controller
                 break;
 
             default:
+                return redirect()->route('dashboard');
                 break;
         }
 

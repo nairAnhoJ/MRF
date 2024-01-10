@@ -103,6 +103,8 @@ class ChargeableRequestController extends Controller
                 break;
     
             default:
+                return redirect()->route('dashboard');
+                
                 break;
         }
 

@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title','Change Password')
 
 @section('content')
     <div class="w-screen h-screen overflow-hidden">

@@ -11,7 +11,7 @@ class LoginController extends Controller
 {
     public function index(){
         if(Auth::user()){
-            return redirect()->route('nchargeable');
+            return redirect()->route('dashboard');
         }else{
             return view('login');
         }
@@ -25,7 +25,7 @@ class LoginController extends Controller
             if (Auth::user()->first_time_login == 1) {
                 return redirect()->route('change.password');
             } else {
-                return redirect()->route('nchargeable');
+                return redirect()->route('dashboard');
             }
         }
 
@@ -36,7 +36,7 @@ class LoginController extends Controller
         if (Auth::user()->first_time_login == 1) {
             return view('change-password');
         } else {
-            return redirect()->route('nchargeable');
+            return redirect()->route('dashboard');
         }
     }
     
@@ -56,7 +56,7 @@ class LoginController extends Controller
             $user->first_time_login = 0;
             $user->save();
 
-            return redirect()->route('nchargeable');
+            return redirect()->route('dashboard');
         } else {
             return redirect()->back()->with('error', 'Password does not match. Please try again.');
         }

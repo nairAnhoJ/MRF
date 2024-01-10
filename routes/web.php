@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ApproverController;
 use App\Http\Controllers\ChargeableRequestController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\NonChargeableRequestController;
@@ -26,8 +28,8 @@ Route::get('/', function () {
         if (Auth::user()->first_time_login == 1) {
             return redirect()->route('change.password');
         } else {
-            // return redirect()->route('dashboard');
-            return redirect()->route('nchargeable');
+            return redirect()->route('dashboard');
+            // return redirect()->route('nchargeable');
         }
     }
 });
@@ -37,6 +39,7 @@ Route::post('/login/authenticate', [LoginController::class, 'authenticate'])->na
 
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/change-password', [LoginController::class, 'changePassword'])->name('change.password');
     Route::post('/update-password', [LoginController::class, 'updatePassword'])->name('update.password');
@@ -117,6 +120,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/user/delete/{key}', [UserController::class, 'delete'])->name('users.delete');
             Route::get('/user/reset/{key}', [UserController::class, 'reset'])->name('users.reset');
         // USERS
+
+        // APPROVERS
+            Route::get('/approvers', [ApproverController::class, 'index'])->name('approvers.index');
+            Route::get('/approvers/add', [ApproverController::class, 'add'])->name('approvers.add');
+            Route::post('/approvers/store', [ApproverController::class, 'store'])->name('approvers.store');
+            Route::get('/approver/edit/{id}', [ApproverController::class, 'edit'])->name('approvers.edit');
+            Route::post('/approver/update/{id}', [ApproverController::class, 'update'])->name('approvers.update');
+            Route::get('/approver/delete/{id}', [ApproverController::class, 'delete'])->name('approvers.delete');
+        // APPROVERS
     
     // SYSTEM MANAGEMENT
 
