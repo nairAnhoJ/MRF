@@ -505,8 +505,6 @@
 
             jQuery(document).on( "change", "#brand", function(){
                 var id = $(this).val();
-                var name = $(this).find(':selected').data('name');
-                $('#con_brand').html(name);
                 
                 $.ajax({
                     url:"{{ route('nchargeable.add.getModels') }}",
@@ -655,6 +653,9 @@
 
                     var date_needed = $('input[name="date_needed"]').val();
                     $('#con_date_needed').html(date_needed);
+
+                    var brand = $('#brand').find(':selected').data('name');
+                    $('#con_brand').html(brand);
 
                     var model = $('input[name="model"]').val();
                     $('#con_model').html(model);

@@ -6,7 +6,7 @@
 <div class="w-screen h-screen pt-14">
     <div class="w-full h-full p-4">
 
-        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2"></div>
+        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2 ms-2"></div>
 
         {{-- LOADING --}}
             {{-- <div id="loading" class="hidden fixed top-0 left-0 flex items-center justify-center w-screen h-screen bg-neutral-700 z-[999] bg-opacity-30 gap-x-2">
@@ -177,7 +177,7 @@
             <div id="approveModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
                     <!-- Modal content -->
-                    <form action="{{ route('nchargeable.approveRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
+                    <form action="{{ route('nchargeable.approveRequest') }}" method="POST" class="relative bg-white rounded-lg shadow h-[calc(100%-140px)]">
                         @csrf
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -198,7 +198,7 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div class="p-4 text-left">
+                        <div class="p-4 text-left h-[calc(100%-140px)]">
                             <input type="hidden" id="approveID" name="id">
                             @if (Auth::user()->role == 6)
                                 <div class="w-full mb-2">
@@ -213,6 +213,7 @@
                                     <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
                                 </div>
                             @elseif (Auth::user()->role == 7)
+                                <div id="edoc_parts"></div>
                                 <div class="w-full mb-2">
                                     <label for="encode_input" class="block text-sm font-medium text-gray-900">eDoc Number</label>
                                     <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
@@ -267,7 +268,7 @@
     
         {{-- RETURN MODAL --}}
             <div id="returnModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
-                <div class="w-1/3 bg-white rounded-lg">
+                <div class="w-1/3 bg-white rounded-lg h-[calc(100%-140px)]">
                     <!-- Modal content -->
                     <form action="{{ route('nchargeable.returnRequest') }}" method="POST" class="relative h-full bg-white rounded-lg shadow">
                         @csrf
@@ -284,7 +285,7 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div class="p-4 text-left max-h-[calc(100%-140px)] overflow-y-auto">
+                        <div class="p-4 text-left h-[calc(100%-140px)] overflow-y-auto">
                             <input type="hidden" id="returnID" name="id">
                             <div id="returnParts" class="w-full mb-2"></div>
                             <div class="w-full mb-2">
@@ -307,7 +308,7 @@
     
         {{-- PARTS REMARKS MODAL --}}
             <div id="partsRemarksModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
-                <div class="w-1/2 max-h-full bg-white rounded-lg">
+                <div class="w-1/2 max-h-full bg-white rounded-lg h-[calc(100%-140px)] overflow-y-auto">
                     <!-- Modal content -->
                     <div class="relative h-full bg-white rounded-lg shadow">
                         <!-- Modal header -->
@@ -323,7 +324,7 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div id="returnPartsContent" class="py-4 px-10 max-h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex flex-col items-start">
+                        <div id="returnPartsContent" class="py-4 px-10 h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex flex-col items-start">
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
@@ -577,6 +578,22 @@
         });
 
         jQuery(document).on("click", ".approveButton ", function() {
+            if(role == 7){
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('nchargeable.edocParts') }}",
+                    method:"POST",
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('#edoc_parts').html(response);
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }
+
             jQuery('#approveModal').removeClass('hidden');
             jQuery('#approveID').val(id);
         });

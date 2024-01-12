@@ -860,7 +860,10 @@ class ChargeableRequestController extends Controller
                     <div class="py-4 px-10 h-[calc(100%-140px)] w-full overflow-hidden flex items-start justify-center">
                         <div class="flex w-full h-full space-y-4 overflow-hidden">
                             <div class="w-1/2 h-full pr-2 text-left border-r">
-                                <h1 class="mb-10 text-2xl font-bold text-neutral-800">Request Details</h1>
+                                <div class="flex items-center justify-between">
+                                    <h1 class="mb-10 text-2xl font-bold text-neutral-800">Request Details</h1>
+                                    <h1 class="mb-10 text-lg font-bold text-neutral-800">Date</h1>
+                                </div>
                                 <div class="w-full h-[calc(100%-72px)] overflow-x-hidden overflow-y-auto">
                                     <div class="flex w-full mb-5">
                                         <p class="w-44">Status: </p>

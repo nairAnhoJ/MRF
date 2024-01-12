@@ -28,28 +28,32 @@ class NonChargeableRequestController extends Controller
         switch (Auth::user()->role) {
             case '0':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '1':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('site', Auth::user()->site)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '2':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('site', Auth::user()->site)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '3':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_validated', 1)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25); 
                 break;
 
@@ -63,42 +67,48 @@ class NonChargeableRequestController extends Controller
 
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->whereIn('area', $area)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '5':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_service_approved', 1)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '6':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_service_approved', 1)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '7':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_mri_number_encoded', 1)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '8':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_edoc_number_encoded', 1)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
             case '9':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
                     ->where('is_dr_number_encoded', 1)
-                    ->orderBy('id', 'desc')
+                    ->orderBy('is_confirmed', 'asc')
+                    ->orderBy('updated_at', 'desc')
                     ->paginate(25);
                 break;
 
@@ -791,7 +801,10 @@ class NonChargeableRequestController extends Controller
                     <div class="py-4 px-10 h-[calc(100%-140px)] w-full overflow-hidden flex items-start justify-center">
                         <div class="flex w-full h-full space-y-4 overflow-hidden">
                             <div class="w-1/2 h-full pr-2 text-left border-r">
-                                <h1 class="mb-10 text-2xl font-bold text-neutral-800">Request Details</h1>
+                                <div class="flex items-center justify-between pr-4">
+                                    <h1 class="mb-10 text-2xl font-bold text-neutral-800">Request Details</h1>
+                                    <h1 class="mb-10 text-lg font-medium text-neutral-800">'.date('F j, Y  h:i A', strtotime($rental_request->updated_at)).'</h1>
+                                </div>
                                 <div class="w-full h-[calc(100%-72px)] overflow-x-hidden overflow-y-auto">
                                     <div class="flex w-full mb-5">
                                         <p class="w-44">Status: </p>
@@ -1114,8 +1127,8 @@ class NonChargeableRequestController extends Controller
         $thisRequest->is_validated = 1;
         $thisRequest->validator = Auth()->user()->name;
         $thisRequest->datetime_validated = date('Y-m-d h:i:s');
-        $thisRequest->is_returned = 0;
-        $thisRequest->is_returned_by_parts = 0;
+        // $thisRequest->is_returned = 0;
+        // $thisRequest->is_returned_by_parts = 0;
         $thisRequest->save();
 
         NonChargeableRequestParts::where('request_id', $id)->update([
@@ -1145,6 +1158,25 @@ class NonChargeableRequestController extends Controller
         ]);
         
         return redirect()->route('nchargeable')->with('success', 'Request Has Been Validated Successfully!');
+    }
+
+    public function edocParts(Request $request){
+        $id = $request->id;
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
+        $res = '<p class="mb-2 text-xs italic">*please select all the parts with error</p>';
+        
+        foreach ($allParts as $index => $eachPart){
+            $res .= '
+                <div class="mb-4">
+                    <div class="flex items-center mb-1">
+                        <input checked id="part'.$eachPart->id.'" name="selectedParts[]" type="checkbox" value="'.$eachPart->id.'" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                        <label for="part'.$eachPart->id.'" class="text-xs font-medium text-gray-900 ms-2">'.$eachPart->part_number.' - '.$eachPart->part_name.'</label>
+                    </div>
+                </div>
+            ';
+        }
+
+        echo $res;
     }
 
     public function approveRequest(Request $request){
@@ -1239,7 +1271,7 @@ class NonChargeableRequestController extends Controller
                         <input id="part'.$eachPart->id.'" name="selectedParts[]" type="checkbox" value="'.$eachPart->id.'" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
                         <label for="part'.$eachPart->id.'" class="text-xs font-medium text-gray-900 ms-2">'.$eachPart->part_number.' - '.$eachPart->part_name.'</label>
                     </div>
-                    <input type="text" id="part'.$eachPart->id.'_remarks" name="selectedPartsRemarks'.$eachPart->id.'" maxlength="250" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Remarks">
+                    <input type="text" id="part'.$eachPart->id.'_remarks" name="selectedPartsRemarks'.$eachPart->id.'" maxlength="250" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500" placeholder="Remarks" autocomplete="off">
                 </div>
             ';
         }
@@ -1265,6 +1297,7 @@ class NonChargeableRequestController extends Controller
             $thisRequest->is_returned_by_parts = 1;
         }
 
+        $thisRequest->returned_count++;
         $thisRequest->returned_by = Auth()->user()->name;
         $thisRequest->datetime_returned = date('Y-m-d h:i:s');
         $thisRequest->returned_remarks = $return_remarks;

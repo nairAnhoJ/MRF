@@ -3,7 +3,7 @@
 
 @section('content')
 
-    <div class="w-screen h-screen pt-14">
+    <div class="w-screen h-screen px-4 pt-14">
         Dashboard
     </div>
 
