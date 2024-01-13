@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/non-chargeable/return-parts', [NonChargeableRequestController::class, 'returnParts'])->name('nchargeable.returnParts');
         Route::post('/non-chargeable/return-request', [NonChargeableRequestController::class, 'returnRequest'])->name('nchargeable.returnRequest');
         Route::post('/non-chargeable/view-return-parts', [NonChargeableRequestController::class, 'viewReturnParts'])->name('nchargeable.viewReturnParts');
+        Route::post('/non-chargeable/view-edoc-parts', [NonChargeableRequestController::class, 'viewEdocParts'])->name('nchargeable.viewEdocParts');
         Route::post('/non-chargeable/view-serial-numbers', [NonChargeableRequestController::class, 'viewSerialNumbers'])->name('nchargeable.viewSerialNumbers');
     // NON-CHARGEABLE
 

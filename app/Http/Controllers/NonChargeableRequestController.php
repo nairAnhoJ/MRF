@@ -591,7 +591,7 @@ class NonChargeableRequestController extends Controller
             if($rental_request->is_edoc_number_encoded == 1){
                 $encoded .= '
                     <div class="flex items-center w-full mb-2">
-                        <p class="w-44">eDoc Number: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->edoc_number.'</p>
+                        <p class="w-44">eDoc Number: </p><p id="viewEdocPartsButton" data-edoc="'.$rental_request->edoc_number.'" class="ml-1 cursor-pointer text-blue-600 font-bold w-[calc(100%-176px)] text-lg hover:underline hover:text-blue-700">'.$rental_request->edoc_number.'</p>
                     </div>
                 ';
             }
@@ -787,6 +787,17 @@ class NonChargeableRequestController extends Controller
             }
         // Parts
 
+        // Return Count
+            $return_count = "";
+            if($rental_request->is_returned == 1){
+                $return_count = '
+                    <div class="flex items-center w-full text-red-500">
+                        <p class="w-44">Return Count: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->returned_count.'</p>
+                    </div>
+                ';
+            }
+        // Return Count
+
         $viewDetails = '
             <div class="relative h-full bg-white rounded-lg shadow">
                 <!-- Modal header -->
@@ -848,9 +859,10 @@ class NonChargeableRequestController extends Controller
                                     <div class="flex items-center w-full mb-2">
                                     <p class="w-44">FSRR Number: </p><p id="viewFSRR" class="ml-1 cursor-pointer text-blue-600 font-bold w-[calc(100%-176px)] text-lg hover:underline hover:text-blue-700">'.$rental_request->fsrr_number.'</p>
                                     </div>
-                                    <div class="flex items-center w-full">
+                                    <div class="flex items-center w-full mb-2">
                                         <p class="w-44">Delivery Type: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->delivery_type.'</p>
                                     </div>
+                                    '.$return_count.'
                                     <hr class="my-6">
                                     <div class="flex items-start w-full pr-2 mb-2">
                                         <p class="w-44">Requestor Remarks: </p>
@@ -1131,9 +1143,9 @@ class NonChargeableRequestController extends Controller
         // $thisRequest->is_returned_by_parts = 0;
         $thisRequest->save();
 
-        NonChargeableRequestParts::where('request_id', $id)->update([
-            'with_error' => 0
-        ]);
+        // NonChargeableRequestParts::where('request_id', $id)->update([
+        //     'with_error' => 0
+        // ]);
         
         return redirect()->route('nchargeable')->with('success', 'Request Has Been Validated Successfully!');
     }
@@ -1149,21 +1161,21 @@ class NonChargeableRequestController extends Controller
         $thisRequest->datetime_verified = date('Y-m-d h:i:s');
         $thisRequest->verifier_remarks = $remarks;
 
-        $thisRequest->is_returned = 0;
+        // $thisRequest->is_returned = 0;
 
         $thisRequest->save();
 
-        NonChargeableRequestParts::where('request_id', $id)->update([
-            'with_error' => 0
-        ]);
+        // NonChargeableRequestParts::where('request_id', $id)->update([
+        //     'with_error' => 0
+        // ]);
         
         return redirect()->route('nchargeable')->with('success', 'Request Has Been Validated Successfully!');
     }
 
     public function edocParts(Request $request){
         $id = $request->id;
-        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
-        $res = '<p class="mb-2 text-xs italic">*please select all the parts with error</p>';
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->where('with_edoc', 0)->get();
+        $res = '<p class="mb-2 text-xs italic">*please select all the parts with eDoc</p>';
         
         foreach ($allParts as $index => $eachPart){
             $res .= '
@@ -1181,7 +1193,7 @@ class NonChargeableRequestController extends Controller
 
     public function approveRequest(Request $request){
         $thisRequest = NonChargeableRequest::where('id', $request->id)->first();
-        $thisRequest->is_returned = 0;
+        // $thisRequest->is_returned = 0;
 
         switch (Auth::user()->role) {
             case '4':
@@ -1219,6 +1231,13 @@ class NonChargeableRequestController extends Controller
                 $thisRequest->datetime_edoc_encoded = date('Y-m-d h:i:s');
                 $thisRequest->edoc_remarks = $request->remarks;
                 $thisRequest->save();
+                
+                foreach($request->selectedParts as $partID => $value){
+                    $selectPartVar = 'selectedPartsRemarks'.$value;
+                    $thisPart = NonChargeableRequestParts::where('id', $value)->first();
+                    $thisPart->with_edoc = $request->encode_input;
+                    $thisPart->save();
+                }
                 return redirect()->route('nchargeable')->with('success', 'eDoc Number Has Been Encoded Successfully!');
 
                 break;
@@ -1331,6 +1350,26 @@ class NonChargeableRequestController extends Controller
                         </div>
                         <div class="w-full px-4 py-2 border border-gray-500 rounded-lg">
                             '.$partInfo->remarks.'
+                        </div>
+                    </div>
+                ';
+            }
+        }
+
+        echo $res;
+    }
+
+    public function viewEdocParts(Request $request){
+        $id = $request->id;
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
+        $res = '';
+
+        foreach ($allParts as $partInfo){
+            if ($partInfo->with_error == 1){
+                $res .= '
+                    <div class="w-full mb-5">
+                        <div class="font-medium">
+                            '.$partInfo->part_number.' - '.$partInfo->part_name.'
                         </div>
                     </div>
                 ';

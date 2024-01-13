@@ -175,7 +175,7 @@
     
         {{-- APPROVE MODAL --}}
             <div id="approveModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
-                <div class="w-1/3 bg-white rounded-lg">
+                <div class="w-1/3 bg-white rounded-lg max-h-[calc(100%-140px)] overflow-y-auto">
                     <!-- Modal content -->
                     <form action="{{ route('nchargeable.approveRequest') }}" method="POST" class="relative bg-white rounded-lg shadow h-[calc(100%-140px)]">
                         @csrf
@@ -268,7 +268,7 @@
     
         {{-- RETURN MODAL --}}
             <div id="returnModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
-                <div class="w-1/3 bg-white rounded-lg h-[calc(100%-140px)]">
+                <div class="w-1/3 bg-white rounded-lg max-h-[calc(100%-140px)] overflow-y-auto">
                     <!-- Modal content -->
                     <form action="{{ route('nchargeable.returnRequest') }}" method="POST" class="relative h-full bg-white rounded-lg shadow">
                         @csrf
@@ -285,7 +285,7 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div class="p-4 text-left h-[calc(100%-140px)] overflow-y-auto">
+                        <div class="p-4 text-left max-h-[calc(100%-140px)] overflow-y-auto">
                             <input type="hidden" id="returnID" name="id">
                             <div id="returnParts" class="w-full mb-2"></div>
                             <div class="w-full mb-2">
@@ -308,7 +308,7 @@
     
         {{-- PARTS REMARKS MODAL --}}
             <div id="partsRemarksModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
-                <div class="w-1/2 max-h-full bg-white rounded-lg h-[calc(100%-140px)] overflow-y-auto">
+                <div class="w-1/2 max-h-full bg-white rounded-lg max-h-[calc(100%-140px)] overflow-y-auto">
                     <!-- Modal content -->
                     <div class="relative h-full bg-white rounded-lg shadow">
                         <!-- Modal header -->
@@ -324,7 +324,7 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div id="returnPartsContent" class="py-4 px-10 h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex flex-col items-start">
+                        <div id="returnPartsContent" class="py-4 px-10 max-h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex flex-col items-start">
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
@@ -334,6 +334,35 @@
                 </div>
             </div>
         {{-- PARTS REMARKS MODAL// --}}
+    
+        {{-- PARTS EDOC MODAL --}}
+            <div id="edocPartsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
+                <div class="w-1/2 max-h-full bg-white rounded-lg max-h-[calc(100%-140px)] overflow-y-auto">
+                    <!-- Modal content -->
+                    <div class="relative h-full bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-4 border-b rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                Parts Remarks
+                            </h3>
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 closePartsRemarksModal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div id="edocPartsContent" class="py-4 px-10 max-h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex flex-col items-start">
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
+                            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10 closeEdocPartsModal">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{-- PARTS EDOC MODAL// --}}
     
         {{-- SERIAL NUMBERS MODAL --}}
             <div id="serialNumbersModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
@@ -420,7 +449,7 @@
                                     <td class="
                                         @if ($result->is_confirmed == 1)
                                             text-emerald-600
-                                        @elseif ($result->is_returned == 1 || $result->is_cancelled == 1)
+                                        @elseif (($result->is_returned == 1 || $result->is_cancelled == 1) && $result->is_validated == 0)
                                             text-red-600
                                         @endif
                                     ">
@@ -648,6 +677,30 @@
 
         jQuery(document).on("click", ".closePartsRemarksModal", function() {
             jQuery('#partsRemarksModal').addClass('hidden');
+        });
+
+        jQuery(document).on("click", "#viewEdocPartsButton", function() {
+            var edoc = $(this).data('edoc');
+            $('#loading').removeClass('hidden');
+            $.ajax({
+                url:"{{ route('nchargeable.viewEdocParts') }}",
+                method:"POST",
+                data: {
+                    id: id,
+                    edoc: edoc,
+                    _token: _token,
+                },
+                success: function (response) {
+                    $('#edocPartsContent').html(response);
+                    $('#edocPartsModal').removeClass('hidden');
+                    $('#loading').addClass('hidden');
+                }
+            });
+            jQuery('#returnID').val(id);
+        });
+
+        jQuery(document).on("click", ".closeEdocPartsModal", function() {
+            jQuery('#edocPartsModal').addClass('hidden');
         });
 
         jQuery(document).on("click", "#viewSerialNumbers", function() {
