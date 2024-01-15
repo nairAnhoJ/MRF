@@ -60,8 +60,6 @@ return new class extends Migration
             $table->binary('mri_remarks')->nullable();
 
             $table->string('is_edoc_number_encoded')->default(0);
-            $table->string('edoc_number_count')->default(0);
-            $table->string('edoc_number_parts')->nullable();
             $table->string('edoc_number')->nullable();
             $table->string('serial_numbers')->nullable();
             $table->string('edoc_encoder')->nullable();

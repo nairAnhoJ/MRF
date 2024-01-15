@@ -552,6 +552,8 @@ class NonChargeableRequestController extends Controller
 
         $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
         $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
+        $edocparts = NonChargeableRequestParts::where('request_id', $id)->where('edoc_number', 0)->count();
+
 
         // Status
             if($rental_request->is_cancelled == 1){
@@ -589,11 +591,62 @@ class NonChargeableRequestController extends Controller
                 ';
             }
             if($rental_request->is_edoc_number_encoded == 1){
-                $encoded .= '
-                    <div class="flex items-center w-full mb-2">
-                        <p class="w-44">eDoc Number: </p><p id="viewEdocPartsButton" data-edoc="'.$rental_request->edoc_number.'" class="ml-1 cursor-pointer text-blue-600 font-bold w-[calc(100%-176px)] text-lg hover:underline hover:text-blue-700">'.$rental_request->edoc_number.'</p>
-                    </div>
-                ';
+                $edocCount = '';
+                $edocArray = explode(",", $rental_request->edoc_number);
+                $count = count($edocArray);
+
+                if (($count % 100) >= 11 && ($count % 100) <= 13) {
+                    $suffix = 'th';
+                } else {
+                    switch ($count % 10) {
+                        case 1:
+                            $suffix = 'st';
+                            break;
+                        case 2:
+                            $suffix = 'nd';
+                            break;
+                        case 3:
+                            $suffix = 'rd';
+                            break;
+                        default:
+                            $suffix = 'th';
+                            break;
+                    }
+                }
+
+                $edocCount = $count . $suffix;
+                
+                foreach($edocArray as $index => $eachEdoc){
+                    $count = $index + 1;
+    
+                    if (($count % 100) >= 11 && ($count % 100) <= 13) {
+                        $suffix = 'th';
+                    } else {
+                        switch ($count % 10) {
+                            case 1:
+                                $suffix = 'st';
+                                break;
+                            case 2:
+                                $suffix = 'nd';
+                                break;
+                            case 3:
+                                $suffix = 'rd';
+                                break;
+                            default:
+                                $suffix = 'th';
+                                break;
+                        }
+                    }
+    
+                    $edocCount = $count . $suffix;
+                    
+                    
+                    $encoded .= '
+                        <div class="flex items-center w-full mb-2">
+                            <p class="w-44">'.$edocCount.' eDoc Number: </p><p id="viewEdocPartsButton" data-edoc="'.$eachEdoc.'" class="ml-1 cursor-pointer text-blue-600 font-bold w-[calc(100%-176px)] text-lg hover:underline hover:text-blue-700">'.$eachEdoc.'</p>
+                        </div>
+                    ';
+                }
             }
             if($rental_request->is_dr_number_encoded == 1){
                 $encoded .= '
@@ -619,7 +672,7 @@ class NonChargeableRequestController extends Controller
                     </div>
                 ';
             }
-            if ($rental_request->is_returned == 1){
+            if ($rental_request->returned_count > 0){
                 if($rental_request->is_returned_by_parts == 1){
                     $remarks .= '
                         <div class="flex items-start w-full pr-2 mb-2">
@@ -745,11 +798,17 @@ class NonChargeableRequestController extends Controller
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }
-                elseif (Auth::user()->role == 7 && $rental_request->is_mri_number_encoded == 1 && $rental_request->is_edoc_number_encoded == 0){
-                    $controls2 = '
-                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE EDOC Number</button>
-                        <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
-                    ';
+                elseif (Auth::user()->role == 7 && $rental_request->is_mri_number_encoded == 1 && $edocparts > 0){
+                    if($rental_request->is_edoc_number_encoded == 0){
+                        $controls2 = '
+                            <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE EDOC Number</button>
+                            <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST TO MRI ENCODER</button>
+                        ';
+                    }else{
+                        $controls2 = '
+                            <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE EDOC Number</button>
+                        ';
+                    }
                 }elseif (Auth::user()->role == 8 && $rental_request->is_edoc_number_encoded == 1 && $rental_request->is_dr_number_encoded == 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE DR Number</button>
@@ -872,8 +931,8 @@ class NonChargeableRequestController extends Controller
                                 </div>
                             </div>
                             <div class="w-1/2 h-full pl-4 !m-0 overflow-auto">
-                                <div class="min-w-full">
-                                    <table class="min-w-full">
+                                <div class="w-full">
+                                    <table class="w-full">
                                         <thead class="sticky top-0 text-sm bg-white border-b text-neutral-700">
                                             <tr>
                                                 <th class="px-2 pb-2 whitespace-nowrap">#</th>
@@ -1174,8 +1233,9 @@ class NonChargeableRequestController extends Controller
 
     public function edocParts(Request $request){
         $id = $request->id;
-        $allParts = NonChargeableRequestParts::where('request_id', $id)->where('with_edoc', 0)->get();
-        $res = '<p class="mb-2 text-xs italic">*please select all the parts with eDoc</p>';
+        $request = NonChargeableRequest::where('id', $id)->first();
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->where('edoc_number', 0)->get();
+        $res = '<p class="mb-2 text-xs italic">*please select all the parts on this eDoc</p>';
         
         foreach ($allParts as $index => $eachPart){
             $res .= '
@@ -1188,7 +1248,25 @@ class NonChargeableRequestController extends Controller
             ';
         }
 
-        echo $res;
+        $result = array(
+            'content' => $res,
+            'serial_numbers' => $request->serial_numbers,
+            'edoc_remarks' => $request->edoc_remarks,
+        );
+
+        echo json_encode($result);
+    }
+
+    public function mriNumber(Request $request){
+        $id = $request->id;
+        $request = NonChargeableRequest::where('id', $id)->first();
+
+        $result = array(
+            'mri_number' => $request->mri_number,
+            'mri_remarks' => $request->mri_remarks,
+        );
+
+        echo json_encode($result);
     }
 
     public function approveRequest(Request $request){
@@ -1225,7 +1303,11 @@ class NonChargeableRequestController extends Controller
                     'encode_input' => 'required'
                 ]);
                 $thisRequest->is_edoc_number_encoded = 1;
-                $thisRequest->edoc_number = $request->encode_input;
+                if($thisRequest->edoc_number != null){
+                    $thisRequest->edoc_number = $thisRequest->edoc_number.','.$request->encode_input;
+                }else{
+                    $thisRequest->edoc_number = $request->encode_input;
+                }
                 $thisRequest->serial_numbers = $request->serial_numbers;
                 $thisRequest->edoc_encoder = Auth()->user()->name;
                 $thisRequest->datetime_edoc_encoded = date('Y-m-d h:i:s');
@@ -1235,7 +1317,7 @@ class NonChargeableRequestController extends Controller
                 foreach($request->selectedParts as $partID => $value){
                     $selectPartVar = 'selectedPartsRemarks'.$value;
                     $thisPart = NonChargeableRequestParts::where('id', $value)->first();
-                    $thisPart->with_edoc = $request->encode_input;
+                    $thisPart->edoc_number = $request->encode_input;
                     $thisPart->save();
                 }
                 return redirect()->route('nchargeable')->with('success', 'eDoc Number Has Been Encoded Successfully!');
@@ -1303,24 +1385,22 @@ class NonChargeableRequestController extends Controller
         $return_remarks = $request->return_remarks;
         $thisRequest = NonChargeableRequest::where('id', $id)->first();
 
-        $thisRequest->is_validated = 0;
-        $thisRequest->is_verified = 0;
-        $thisRequest->is_service_approved = 0;
-        $thisRequest->is_mri_number_encoded = 0;
-        $thisRequest->is_edoc_number_encoded = 0;
-        $thisRequest->is_dr_number_encoded = 0;
-
-        $thisRequest->is_returned = 1;
-
-        if(Auth::user()->role == 3){
+        if(Auth::user()->role == 7){
+            $thisRequest->is_mri_number_encoded = 0;
+        }elseif(Auth::user()->role == 3){
+            $thisRequest->is_validated = 0;
             $thisRequest->is_returned_by_parts = 1;
+        }else{
+            $thisRequest->is_validated = 0;
+            $thisRequest->is_verified = 0;
+            $thisRequest->is_service_approved = 0;
         }
 
+        $thisRequest->is_returned = 1;
         $thisRequest->returned_count++;
         $thisRequest->returned_by = Auth()->user()->name;
         $thisRequest->datetime_returned = date('Y-m-d h:i:s');
         $thisRequest->returned_remarks = $return_remarks;
-
         $thisRequest->save();
 
         if(Auth::user()->role == 3){
@@ -1361,19 +1441,23 @@ class NonChargeableRequestController extends Controller
 
     public function viewEdocParts(Request $request){
         $id = $request->id;
-        $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
-        $res = '';
+        $allParts = NonChargeableRequestParts::where('request_id', $id)->where('edoc_number', $request->edoc)->get();
+        $res = '
+            <div class="w-full mb-5">
+                <div class="font-bold">
+                    eDoc Number: '.$request->edoc.'
+                </div>
+            </div>
+        ';
 
-        foreach ($allParts as $partInfo){
-            if ($partInfo->with_error == 1){
-                $res .= '
-                    <div class="w-full mb-5">
-                        <div class="font-medium">
-                            '.$partInfo->part_number.' - '.$partInfo->part_name.'
-                        </div>
+        foreach ($allParts as $index => $partInfo){
+            $res .= '
+                <div class="w-full mb-1">
+                    <div class="font-medium">
+                        <span>'.($index + 1).'</span><span class="mx-2"> ⇒ </span>'.$partInfo->part_number.' - '.$partInfo->part_name.'
                     </div>
-                ';
-            }
+                </div>
+            ';
         }
 
         echo $res;

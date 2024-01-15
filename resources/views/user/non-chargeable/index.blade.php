@@ -203,14 +203,14 @@
                             @if (Auth::user()->role == 6)
                                 <div class="w-full mb-2">
                                     <label for="encode_input" class="block text-sm font-medium text-gray-900">MRI Number</label>
-                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mri-number" autocomplete="off">
                                     @error('encode_input')
                                         <span class="text-xs text-red-500">The MRI Number you entered is invalid.</span>
                                     @enderror
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60 mri-remarks" autocomplete="off"></textarea>
                                 </div>
                             @elseif (Auth::user()->role == 7)
                                 <div id="edoc_parts"></div>
@@ -227,7 +227,7 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <textarea style="resize: none;" name='remarks' id='edoc_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
                                 </div>
                             @elseif (Auth::user()->role == 8)
                                 <div class="w-full mb-2">
@@ -258,7 +258,7 @@
                         </div>
                         <!-- Modal footer -->
                         <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
-                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm py-2.5 text-center w-24">YES</button>
+                            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-lg text-sm py-2.5 text-center w-24">{{ (Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::user()->role == 8) ? 'ENCODE' : 'YES' }}</button>
                             <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-gray-900 focus:z-10 w-24 approveCloseModal">CANCEL</button>
                         </div>
                     </form>
@@ -337,15 +337,15 @@
     
         {{-- PARTS EDOC MODAL --}}
             <div id="edocPartsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
-                <div class="w-1/2 max-h-full bg-white rounded-lg max-h-[calc(100%-140px)] overflow-y-auto">
+                <div class="w-1/2 max-h-full overflow-y-auto bg-white rounded-lg">
                     <!-- Modal content -->
                     <div class="relative h-full bg-white rounded-lg shadow">
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
                             <h3 class="text-xl font-semibold text-gray-900">
-                                Parts Remarks
+                                Parts on this eDoc Number
                             </h3>
-                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 closePartsRemarksModal">
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 closeEdocPartsModal">
                                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                                 </svg>
@@ -612,18 +612,41 @@
                 $.ajax({
                     url:"{{ route('nchargeable.edocParts') }}",
                     method:"POST",
+                    dataType: 'json',
                     data: {
                         id: id,
                         _token: _token,
                     },
                     success: function (response) {
-                        $('#edoc_parts').html(response);
+                        console.log(response);
+                        $('#edoc_parts').html(response.content);
+                        $('#serial_numbers').html(response.serial_numbers);
+                        $('#edoc_remarks').html(response.edoc_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
                         $('#loading').addClass('hidden');
                     }
                 });
+            }else if(role == 6){
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('nchargeable.mriNumber') }}",
+                    method:"POST",
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('.mri-number').val(response.mri_number);
+                        $('.mri-remarks').html(response.mri_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }else{
+                jQuery('#approveModal').removeClass('hidden');
             }
 
-            jQuery('#approveModal').removeClass('hidden');
             jQuery('#approveID').val(id);
         });
         
