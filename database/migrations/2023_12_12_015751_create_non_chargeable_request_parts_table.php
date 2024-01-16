@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('total_price');
             $table->string('with_error')->default(0);
             $table->string('edoc_number')->default(0);
+            $table->string('dr_number')->default(0);
             $table->string('remarks')->nullable();
             $table->timestamps();
         });

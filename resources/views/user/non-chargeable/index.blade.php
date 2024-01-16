@@ -230,6 +230,7 @@
                                     <textarea style="resize: none;" name='remarks' id='edoc_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
                                 </div>
                             @elseif (Auth::user()->role == 8)
+                                <div id="edoc_numbers"></div>
                                 <div class="w-full mb-2">
                                     <label for="encode_input" class="block text-sm font-medium text-gray-900">DR Number</label>
                                     <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
@@ -239,7 +240,7 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60 dr-remarks" autocomplete="off"></textarea>
                                 </div>
                             
                             @elseif (Auth::user()->role == 9)
@@ -618,7 +619,6 @@
                         _token: _token,
                     },
                     success: function (response) {
-                        console.log(response);
                         $('#edoc_parts').html(response.content);
                         $('#serial_numbers').html(response.serial_numbers);
                         $('#edoc_remarks').html(response.edoc_remarks);
@@ -639,6 +639,23 @@
                     success: function (response) {
                         $('.mri-number').val(response.mri_number);
                         $('.mri-remarks').html(response.mri_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }else if(role == 8){
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('nchargeable.drNumber') }}",
+                    method:"POST",
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('#edoc_numbers').html(response.content);
+                        $('.dr-remarks').html(response.dr_remarks);
                         jQuery('#approveModal').removeClass('hidden');
                         $('#loading').addClass('hidden');
                     }

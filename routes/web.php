@@ -62,8 +62,9 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/non-chargeable/view-fsrr', [NonChargeableRequestController::class, 'viewFSRR'])->name('nchargeable.viewFSRR');
         Route::post('/non-chargeable/validate-request', [NonChargeableRequestController::class, 'validateRequest'])->name('nchargeable.validateRequest');
         Route::post('/non-chargeable/verify-request', [NonChargeableRequestController::class, 'verifyRequest'])->name('nchargeable.verifyRequest');
-        Route::post('/non-chargeable/edoc-parts', [NonChargeableRequestController::class, 'edocParts'])->name('nchargeable.edocParts');
         Route::post('/non-chargeable/mri-number', [NonChargeableRequestController::class, 'mriNumber'])->name('nchargeable.mriNumber');
+        Route::post('/non-chargeable/edoc-parts', [NonChargeableRequestController::class, 'edocParts'])->name('nchargeable.edocParts');
+        Route::post('/non-chargeable/dr-number', [NonChargeableRequestController::class, 'drNumber'])->name('nchargeable.drNumber');
         Route::post('/non-chargeable/approve-request', [NonChargeableRequestController::class, 'approveRequest'])->name('nchargeable.approveRequest');
 
         Route::post('/non-chargeable/return-parts', [NonChargeableRequestController::class, 'returnParts'])->name('nchargeable.returnParts');
