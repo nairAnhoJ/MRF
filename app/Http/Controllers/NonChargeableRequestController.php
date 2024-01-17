@@ -553,7 +553,7 @@ class NonChargeableRequestController extends Controller
         $rental_request = NonChargeableRequest::with('siteDetails')->where('id', $id)->first();
         $allParts = NonChargeableRequestParts::where('request_id', $id)->get();
         $edocparts = NonChargeableRequestParts::where('request_id', $id)->where('edoc_number', 0)->count();
-        $pendingEdoc = NonChargeableRequestParts::where('request_id', $id)->where('edoc_number', '!=', 0)->where('dr_number', 0)->count();
+        $pendingEdoc = NonChargeableRequestParts::where('request_id', $id)->where('dr_number', 0)->count();
 
         // Status
             if($rental_request->is_cancelled == 1){
@@ -570,11 +570,11 @@ class NonChargeableRequestController extends Controller
                 $status = 'Verified (For Encoding of MRI Number)';
             }else if($rental_request->is_service_approved == 1 && $rental_request->is_mri_number_encoded == 0){
                 $status = 'Service Approved (For Encoding of MRI Number)';
-            }else if($rental_request->is_mri_number_encoded == 1 && $rental_request->is_edoc_number_encoded == 0){
+            }else if($rental_request->is_mri_number_encoded == 1 && $edocparts > 0){
                 $status = 'MRI Number Encoded (For Encoding of eDoc Number)';
-            }else if($rental_request->is_edoc_number_encoded == 1 && $rental_request->is_dr_number_encoded == 0){
+            }else if($edocparts == 0 && $pendingEdoc > 0){
                 $status = 'eDoc Number Encoded (For Encoding of DR Number)';
-            }else if($rental_request->is_dr_number_encoded == 1 && $rental_request->is_confirmed == 0){
+            }else if($pendingEdoc == 0 && $rental_request->is_confirmed == 0){
                 $status = 'DR Number Encoded (For Signatories Confirmation)';
             }else if($rental_request->is_confirmed == 1){
                 $status = 'Completed';
@@ -585,12 +585,12 @@ class NonChargeableRequestController extends Controller
             $encoded = '';
             if($rental_request->is_mri_number_encoded == 1){
                 $encoded .= '
-                    <div class="flex items-center w-full mb-2">
+                    <div class="flex items-center w-full mb-3">
                         <p class="w-44">MRI Number: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->mri_number.'</p>
                     </div>
                 ';
             }
-            if($rental_request->is_edoc_number_encoded == 1){
+            if($edocparts < count($allParts)){
                 $edocCount = '';
                 $edocArray = NonChargeableRequestParts::select('edoc_number', 'dr_number')
                 ->where('request_id', $id)
@@ -624,14 +624,14 @@ class NonChargeableRequestController extends Controller
                     $edocCount = $count . $suffix;
                     
                     $encoded .= '
-                        <div class="flex items-center w-full '.(($eachEdoc->dr_number == 0) ? 'mb-2' : '').'">
+                        <div class="flex items-center w-full '.(($eachEdoc->dr_number == 0) ? 'mb-3' : '').'">
                             <p class="w-44">'.$edocCount.' eDoc Number: </p><p id="viewEdocPartsButton" data-edoc="'.$eachEdoc->edoc_number.'" class="ml-1 cursor-pointer text-blue-600 font-bold w-[calc(100%-176px)] text-lg hover:underline hover:text-blue-700">'.$eachEdoc->edoc_number.'</p>
                         </div>
                     ';
 
                     if($eachEdoc->dr_number != 0){
                         $encoded .= '
-                            <div class="flex items-center w-full mb-2">
+                            <div class="flex items-center w-full mb-3">
                                 <p class="w-44">DR Number: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$eachEdoc->dr_number.'</p>
                             </div>
                         ';
@@ -802,12 +802,10 @@ class NonChargeableRequestController extends Controller
                 }elseif (Auth::user()->role == 8 && $rental_request->is_edoc_number_encoded == 1 && $pendingEdoc > 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE DR Number</button>
-                        <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }elseif (Auth::user()->role == 9 && $pendingEdoc == 0 && $rental_request->is_confirmed == 0){
                     $controls2 = '
-                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">CONFIRM REQUEST</button>
-                        <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
+                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">APPROVE REQUEST</button>
                     ';
                 }
             }
@@ -1323,7 +1321,17 @@ class NonChargeableRequestController extends Controller
                 $request->validate([
                     'encode_input' => 'required'
                 ]);
-                $thisRequest->is_edoc_number_encoded = 1;
+                
+                foreach($request->selectedParts as $value){
+                    $thisPart = NonChargeableRequestParts::where('id', $value)->first();
+                    $thisPart->edoc_number = $request->encode_input;
+                    $thisPart->save();
+                }
+                
+                $edocparts = NonChargeableRequestParts::where('request_id', $request->id)->where('edoc_number', 0)->count();
+                if($edocparts == 0){
+                    $thisRequest->is_edoc_number_encoded = 1;
+                }
                 // if($thisRequest->edoc_number != null){
                 //     $thisRequest->edoc_number = $thisRequest->edoc_number.','.$request->encode_input;
                 // }else{
@@ -1335,12 +1343,6 @@ class NonChargeableRequestController extends Controller
                 $thisRequest->edoc_remarks = $request->remarks;
                 $thisRequest->save();
                 
-                foreach($request->selectedParts as $value){
-                    $thisPart = NonChargeableRequestParts::where('id', $value)->first();
-                    $thisPart->edoc_number = $request->encode_input;
-                    $thisPart->save();
-                }
-                
                 return redirect()->route('nchargeable')->with('success', 'eDoc Number Has Been Encoded Successfully!');
 
                 break;
@@ -1350,16 +1352,19 @@ class NonChargeableRequestController extends Controller
                     'encode_input' => 'required'
                 ]);
                 
-                $thisRequest->is_dr_number_encoded = 1;
+                NonChargeableRequestParts::where('edoc_number', $request->selectedEdocNumber)->update([
+                    'dr_number' => $request->encode_input
+                ]);
+                
+                $pendingEdoc = NonChargeableRequestParts::where('request_id', $request->id)->where('dr_number', 0)->count();
+                if($pendingEdoc == 0){
+                    $thisRequest->is_dr_number_encoded = 1;
+                }
                 // $thisRequest->dr_number = $request->encode_input;
                 $thisRequest->dr_encoder = Auth()->user()->name;
                 $thisRequest->datetime_dr_encoded = date('Y-m-d h:i:s');
                 $thisRequest->dr_remarks = $request->remarks;
                 $thisRequest->save();
-                
-                NonChargeableRequestParts::where('edoc_number', $request->selectedEdocNumber)->update([
-                    'dr_number' => $request->encode_input
-                ]);
 
                 return redirect()->route('nchargeable')->with('success', 'DR Number Has Been Encoded Successfully!');
 

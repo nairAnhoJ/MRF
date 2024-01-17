@@ -184,8 +184,6 @@
                             <h3 class="text-xl font-semibold text-gray-900">
                                 @if (Auth::user()->role == 6 || Auth::user()->role == 7 || Auth::user()->role == 8)
                                     Encode
-                                @elseif(Auth::user()->role == 9)
-                                    Confirm
                                 @else
                                     Approve
                                 @endif
@@ -243,12 +241,6 @@
                                     <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60 dr-remarks" autocomplete="off"></textarea>
                                 </div>
                             
-                            @elseif (Auth::user()->role == 9)
-                                <div class="w-full mb-2">
-                                    <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
-                                </div>
-                                <p class="italic">Are you sure you want to confirm this request?</p>
                             @else
                                 <div class="w-full mb-2">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
