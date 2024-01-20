@@ -35,8 +35,16 @@ return new class extends Migration
             $table->string('technician');
             $table->string('working_environment');
             $table->string('status');
-
             $table->string('disc');
+
+            $table->string('delivery_type');
+            $table->date('date_needed');
+            
+            // $table->string('attachments');
+            $table->text('attachments');
+
+            $table->text('service_coordinator_id');
+            $table->text('service_coordinator_name');
 
             $table->date('date_requested');
             $table->string('requestor');

@@ -50,6 +50,7 @@
                     <option value="10">Service Encoder</option>
                     <option value="12">Invoicing Encoder</option>
                     <option value="9">Signatories</option>
+                    <option value="13">Service Coordinator</option>
                 </select>
                 @error('role')
                     <span class="text-xs text-red-500">{{ $message }}</span>

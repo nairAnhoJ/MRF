@@ -155,32 +155,10 @@
                 <!-- body -->
                 <div class="p-4 h-[calc(100%-75px)] overflow-hidden">
                     <div id="tab-container" class="w-[400%] h-full transition-all duration-1000 ease-in flex -translate-x-0">
-                        <div id="tab1" class="w-1/4 h-full mr-4 space-y-4 overflow-x-hidden overflow-y-auto">
+                        <div id="tab1" class="w-1/4 h-full pr-2 mr-4 space-y-4 overflow-x-hidden overflow-y-auto">
                             <h1 class="text-xl font-bold text-neutral-800">Request Info</h1>
 
-                            {{-- <div class="flex gap-x-4">
-                                <div class="w-full">
-                                    <label for="for" class="block text-sm font-medium text-gray-900">Request For</label>
-                                    <select id="for" name='for' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Request For</option>
-                                        <option value="FOR PM" {{ (old('for') == 'FOR PM') ? 'selected' : '' }}>For PM</option>
-                                        <option value="FOR REPAIR" {{ (old('for') == 'FOR REPAIR') ? 'selected' : '' }}>For Repair</option>
-                                    </select>
-                                    @error('for')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="w-full">
-                                    <label for="order_type" class="block text-sm font-medium text-gray-900">Order Type</label>
-                                    <select id="order_type" name='order_type'" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Order Type</option>
-                                        <option value="IN STOCK" {{ (old('order_type') == 'IN STOCK') ? 'selected' : '' }}>In Stock</option>
-                                        <option value="REQUEST PARTS" {{ (old('order_type') == 'REQUEST PARTS') ? 'selected' : '' }}>Request Parts</option>
-                                    </select>
-                                    @error('order_type')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                            <div class="flex gap-x-4">
                                 <div class="w-full">
                                     <label for="date_needed" class="block text-sm font-medium text-gray-900">Date Needed</label>
                                     <input type="date" name='date_needed' id="date_needed" value="{{ old('date_needed') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
@@ -189,10 +167,37 @@
                                     @enderror
                                 </div>
                                 <div class="w-full">
+                                    <label for="delivery_type" class="block text-sm font-medium text-gray-900">Delivery Type</label>
+                                    <select id="delivery_type" name='delivery_type' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Order Type</option>
+                                        <option value="REGULAR" {{ (old('delivery_type') == 'REGULAR') ? 'selected' : '' }}>Regular</option>
+                                        <option value="SAME DAY" {{ (old('delivery_type') == 'SAME DAY') ? 'selected' : '' }}>Same Day</option>
+                                        <option value="PICKUP" {{ (old('delivery_type') == 'PICKUP') ? 'selected' : '' }}>Pick Up</option>
+                                        <option value="AIR" {{ (old('delivery_type') == 'AIR') ? 'selected' : '' }}>Air</option>
+                                        <option value="SEA" {{ (old('delivery_type') == 'SEA') ? 'selected' : '' }}>Sea</option>
+                                        <option value="OTHERS" {{ (old('delivery_type') == 'OTHERS') ? 'selected' : '' }}>Others</option>
+                                    </select>
+                                    @error('delivery_type')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="service_coordinator" class="block text-sm font-medium text-gray-900">Service Coordinator</label>
+                                    <select id="service_coordinator" name='service_coordinator' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Service Coordinator</option>
+                                        @foreach ($coordinators as $coordinator)
+                                            <option value="{{ $coordinator->id }}" data-name="{{ $coordinator->name }}" {{ (old('delivery_type') == $coordinator->id) ? 'selected' : '' }}>{{ $coordinator->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('service_coordinator')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
                                     <label for="site" class="block text-sm font-medium text-gray-900">Site</label>
                                     <input type="text" id="site" value='{{ $site }}' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off" disabled>
                                 </div>
-                            </div> --}}
+                            </div>
                             
                             <div>
                                 <label class="block mt-3 text-sm font-medium text-gray-900">Customer</label>
@@ -358,7 +363,7 @@
                                     @enderror
                                 </div>
                                 <div class="w-full">
-                                    <label for="disc" class="block text-sm font-medium text-gray-900">Disc</label>
+                                    <label for="disc" class="block text-sm font-medium text-gray-900">Discount</label>
                                     <input type="text" id="disc" name='disc' value="{{ old('disc') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('disc')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
@@ -386,6 +391,24 @@
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
+                            </div>
+
+                            <div class="w-full">
+                                <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label>
+                                <div class="flex items-center justify-center w-full">
+                                    <label for="attachments" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                            </svg>
+                                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                            <p class="text-xs text-gray-500"> PNG, JPG, JPEG</p>
+                                        </div>
+                                        <input id="attachments" multiple name="attachments[]" type="file" class="hidden" />
+                                    </label>
+                                </div> 
+                                
+                                {{-- <textarea style="resize: none;" id='requestor_remarks' name='requestor_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-32" autocomplete="off">{{ old('requestor_remarks') }}</textarea> --}}
                             </div>
 
                             <div class="w-full">

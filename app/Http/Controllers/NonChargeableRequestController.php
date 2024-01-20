@@ -98,7 +98,7 @@ class NonChargeableRequestController extends Controller
 
             case '8':
                 $results = NonChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, fleet_number, brand, model, serial_number, fsrr_number) LIKE ?", ['%' . $search . '%'])
-                    ->where('is_edoc_number_encoded', 1)
+                    ->whereIn('is_edoc_number_encoded', [1, 2])
                     ->orderBy('is_confirmed', 'asc')
                     ->orderBy('updated_at', 'desc')
                     ->paginate(25);
@@ -1331,6 +1331,8 @@ class NonChargeableRequestController extends Controller
                 $edocparts = NonChargeableRequestParts::where('request_id', $request->id)->where('edoc_number', 0)->count();
                 if($edocparts == 0){
                     $thisRequest->is_edoc_number_encoded = 1;
+                }else{
+                    $thisRequest->is_edoc_number_encoded = 2;
                 }
                 // if($thisRequest->edoc_number != null){
                 //     $thisRequest->edoc_number = $thisRequest->edoc_number.','.$request->encode_input;

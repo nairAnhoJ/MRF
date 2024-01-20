@@ -102,6 +102,11 @@
                             selected
                         @endif
                     >Signatories</option>
+                    <option value="9"
+                        @if ((old('role') == '' && $user->role == 13) || (old('role') != '' &&  old('role') == 13))
+                            selected
+                        @endif
+                    >Service Coordinator</option>
                 </select>
                 @error('role')
                     <span class="text-xs text-red-500">{{ $message }}</span>

@@ -10,6 +10,7 @@ use App\Models\ChargeableRequestParts;
 use App\Models\Customer;
 use App\Models\Part;
 use App\Models\Site;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -143,12 +144,13 @@ class ChargeableRequestController extends Controller
         $brands = Brand::where('is_deleted', 0)->orderBy('id', 'asc')->get();
         $customers = Customer::where('is_deleted', 0)->get();
         $site = Site::where('id', Auth::user()->site)->first()->name;
+        $coordinators = User::where('role', 13)->get();
         $brand = '';
         $model = '';
         $models = [];
         $partsInfo = [];
         
-        return view('user.chargeable.add', compact('customers', 'brands', 'models', 'site', 'brand', 'model', 'partsInfo'));
+        return view('user.chargeable.add', compact('customers', 'brands', 'models', 'site', 'brand', 'model', 'partsInfo', 'coordinators'));
     }
 
     public function viewFSRR(Request $request){
