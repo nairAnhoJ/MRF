@@ -11,7 +11,11 @@ class LoginController extends Controller
 {
     public function index(){
         if(Auth::user()){
-            return redirect()->route('dashboard');
+            if (Auth::user()->first_time_login == 1) {
+                return redirect()->route('change.password');
+            } else {
+                return redirect()->route('dashboard');
+            }
         }else{
             return view('login');
         }

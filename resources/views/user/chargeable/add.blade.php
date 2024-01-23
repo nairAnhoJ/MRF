@@ -394,9 +394,23 @@
                             </div>
 
                             <div class="w-full">
-                                <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label>
-                                <div class="flex items-center justify-center w-full">
-                                    <label for="attachments" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                {{-- <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label> --}}
+                                <div class="w-full">
+                                    <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label>
+                                    <div class="flex gap-x-2">
+                                        <input type="file" id='attachments' name="attachments[]" multiple value="{{ old('attachments') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png">
+                                    </div>
+                                    <div class="flex items-end w-full h-40 p-4 gap-x-5">
+                                        <img src="" alt="" class="h-full border aspect-square">
+                                        <img src="" alt="" class="h-full border aspect-square">
+                                        <img src="" alt="" class="h-full border aspect-square">
+                                        <img src="" alt="" class="h-full border aspect-square">
+                                        <img src="" alt="" class="h-full border aspect-square">
+                                        <button class="font-bold text-red-500 hover:underline">CLEAR</button>
+                                    </div>
+                                </div>
+                                {{-- <div class="flex items-center justify-center w-full">
+                                    <label for="attachments" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
                                         <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                             <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
@@ -404,11 +418,16 @@
                                             <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
                                             <p class="text-xs text-gray-500"> PNG, JPG, JPEG</p>
                                         </div>
+                                        <div class="flex w-full h-full p-4 gap-x-5">
+                                            <img src="" alt="" class="h-full border aspect-square">
+                                            <img src="" alt="" class="h-full border aspect-square">
+                                            <img src="" alt="" class="h-full border aspect-square">
+                                            <img src="" alt="" class="h-full border aspect-square">
+                                            <img src="" alt="" class="h-full border aspect-square">
+                                        </div>
                                         <input id="attachments" multiple name="attachments[]" type="file" class="hidden" />
                                     </label>
-                                </div> 
-                                
-                                {{-- <textarea style="resize: none;" id='requestor_remarks' name='requestor_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-32" autocomplete="off">{{ old('requestor_remarks') }}</textarea> --}}
+                                </div>  --}}
                             </div>
 
                             <div class="w-full">
@@ -416,7 +435,7 @@
                                 <textarea style="resize: none;" id='requestor_remarks' name='requestor_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-32" autocomplete="off">{{ old('requestor_remarks') }}</textarea>
                             </div>
                             
-                        </div>
+                        </div> 
                         <div id="tab2" class="w-1/4 h-full mr-4 overflow-x-hidden overflow-y-auto">
                             <div class="sticky top-0 flex items-center justify-between pb-4 bg-white">
                                 <h1 class="text-xl font-bold text-neutral-800">Parts Info</h1>

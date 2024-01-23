@@ -39,9 +39,11 @@ Route::post('/login/authenticate', [LoginController::class, 'authenticate'])->na
 
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
     Route::get('/change-password', [LoginController::class, 'changePassword'])->name('change.password');
+});
+
+Route::middleware(['auth', 'firstlogin'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/update-password', [LoginController::class, 'updatePassword'])->name('update.password');
 
     // NON-CHARGEABLE

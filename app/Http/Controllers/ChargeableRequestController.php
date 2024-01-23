@@ -475,6 +475,7 @@ class ChargeableRequestController extends Controller
     }
 
     public function store(Request $request){
+        dd($request);
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required',
             'brand' => 'required',
