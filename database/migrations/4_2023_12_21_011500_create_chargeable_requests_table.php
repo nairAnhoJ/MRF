@@ -41,10 +41,10 @@ return new class extends Migration
             $table->date('date_needed');
             
             // $table->string('attachments');
-            $table->text('attachments');
+            $table->string('attachments_count')->default(0);
 
-            $table->text('service_coordinator_id');
-            $table->text('service_coordinator_name');
+            $table->string('service_coordinator_id');
+            $table->string('service_coordinator_name');
 
             $table->date('date_requested');
             $table->string('requestor');

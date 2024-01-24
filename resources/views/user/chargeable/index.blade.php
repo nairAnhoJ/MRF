@@ -6,7 +6,7 @@
 <div class="w-screen h-screen pt-14">
     <div class="w-full h-full p-4">
 
-        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2"></div>
+        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2 bg-neutral-100 border-neutral-400 hover:border-neutral-200"></div>
 
         {{-- SUCCESS ALERT --}}
             @if (session('success'))
@@ -90,6 +90,35 @@
                 </div>
             </div>
         {{-- FSRR MODAL// --}}
+    
+        {{-- ATTACHMENTS MODAL --}}
+            <div id="attachmentsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
+                <div class="w-5/6 h-full bg-white rounded-lg">
+                    <!-- Modal content -->
+                    <div class="relative h-full bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-4 border-b rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                Attachment Preview
+                            </h3>
+                            <button type="button" id="closeAttachmentsModal" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div id="attachmentsModalContent" class="py-4 px-10 h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex items-start justify-center">
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
+                            <button type="button" id="closeAttachmentsModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{-- ATTACHMENTS MODAL// --}}
     
         {{-- VALIDATE MODAL --}}
             <div id="validateModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
@@ -654,6 +683,24 @@
 
         jQuery(document).on("click", ".closeSerialNumbers", function() {
             jQuery('#serialNumbersModal').addClass('hidden');
+        });
+
+        jQuery(document).on("click", "#viewAttachments", function() {
+            $('#loading').removeClass('hidden');
+            $.ajax({
+                url:"{{ route('chargeable.viewSerialNumbers') }}",
+                method:"POST",
+                data: {
+                    id: id,
+                    _token: _token,
+                },
+                success: function (response) {
+                    $('#serialNumberContent').html(response);
+                    $('#serialNumbersModal').removeClass('hidden');
+                    $('.autoResize').click();
+                    $('#loading').addClass('hidden');
+                }
+            });
         });
     });
 </script>

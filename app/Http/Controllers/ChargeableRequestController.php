@@ -167,7 +167,7 @@ class ChargeableRequestController extends Controller
         }else{
             $file = $request->file('fsrrFile');
             $fsrr_fileExt = $file->getClientOriginalExtension();
-            $folder = 'temporary_files/'.Auth::user()->id;
+            $folder = 'temporary_files/chargeable/fsrr/'.Auth::user()->id;
             File::cleanDirectory(public_path($folder));
             $file->move(public_path($folder), $file->getClientOriginalName());
             
@@ -474,9 +474,30 @@ class ChargeableRequestController extends Controller
         echo $res;
     }
 
+    public function attachmentsPreview(Request $request){
+        $attachments = $request->file('attachments');
+        $folder = 'temporary_files/chargeable/attachment/'.Auth::user()->id;
+        File::cleanDirectory(public_path($folder));
+        $content = '';
+
+        foreach($attachments as $index => $attachment){
+            $attachment->move(public_path($folder), $attachment->getClientOriginalName());
+
+            $content .= '
+                <div class="flex items-center justify-center h-full border aspect-square">
+                    <img src="'.asset($folder.'/'.$attachment->getClientOriginalName()).'" alt="attachment'.($index+1).'" class="w-auto max-h-full">
+                </div>
+            ';
+        }
+
+        echo $content;
+    }
+
     public function store(Request $request){
-        dd($request);
         $validator = Validator::make($request->all(), [
+            'date_needed' => 'required|date|after:now',
+            'delivery_type' => 'required',
+            'service_coordinator' => 'required',
             'customer_name' => 'required',
             'brand' => 'required',
             'model' => 'required', 
@@ -493,6 +514,11 @@ class ChargeableRequestController extends Controller
         ]);
 
         $customMessages = [
+            'date_needed.required' => 'Please select a date.',
+            'date_needed.date' => 'Invalid date format. Please use the calendar to select a valid date.',
+            'date_needed.after' => 'The selected date is invalid. Please choose a date after today.',
+            'delivery_type.required' => 'Please select an option from the list.',
+            'service_coordinator.required' => 'Please select an option from the list.',
             'customer_name.required' => 'Please select an option from the list.',
             'brand.required' => 'Please select an option from the list.',
             'model.required' => 'Please select an option from the list.',
@@ -517,6 +543,10 @@ class ChargeableRequestController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $date_needed = $request->date_needed;
+        $delivery_type = $request->delivery_type;
+        $service_coordinator = $request->service_coordinator;
+
         $customer_name = $request->customer_name;
         $customer_address = $request->customer_address;
         $customer_area = $request->customer_area;
@@ -528,6 +558,7 @@ class ChargeableRequestController extends Controller
         $requestor_remarks = $request->requestor_remarks;
         $serial_number = $request->serial_number;
         $fsrrFile = $request->file('fsrrFile');
+        $attachments = $request->file('attachments');
         $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
         
         $technician = $request->technician;
@@ -543,13 +574,16 @@ class ChargeableRequestController extends Controller
 
         $request_id = ChargeableRequest::select('id')->max('id') + 1;
 
-        $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/attachments/chargeable', $fileName, 'public_uploads');
-
-        $fsrrPath = 'storage/attachments/chargeable/' . $fileName;
+        $fileName = date('Ymd') . '.' . $fsrr_fileExt;
+        $fsrrFile->storeAs('storage/chargeable/fsrr/'.$request_id.'/', $fileName, 'public_uploads');
+        $fsrrPath = 'storage/chargeable/fsrr/'.$request_id.'/'.$fileName;
 
         $new_request = new ChargeableRequest();
         $new_request->number = 'CR-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
+        $new_request->date_needed = $date_needed;
+        $new_request->delivery_type = $delivery_type;
+        $new_request->service_coordinator_id = $service_coordinator;
+        $new_request->service_coordinator_name = User::where('id', $service_coordinator)->first()->name;
         $new_request->site = Auth::user()->site;
         $new_request->area = Auth::user()->area;
         $new_request->customer_name = $customer_name;
@@ -563,6 +597,15 @@ class ChargeableRequestController extends Controller
 
         $new_request->fsrr_path = $fsrrPath;
 
+        if($attachments != null){
+            foreach($attachments as $index => $attachment){
+                $attachmentsExt = $attachment->getClientOriginalExtension();
+                $attachmentsName = ($index+1).'.'.$attachmentsExt;
+                $attachment->storeAs('storage/chargeable/attachments/'.$request_id.'/', $attachmentsName, 'public_uploads');
+            }
+            $new_request->attachments_count = count($attachments);
+        }
+
         $new_request->technician = $technician;
         $new_request->hm = $hm;
         $new_request->disc = $disc;
@@ -573,6 +616,9 @@ class ChargeableRequestController extends Controller
         $new_request->requestor = Auth::user()->name;
         $new_request->requestor_remarks = $requestor_remarks;
         $new_request->save();
+        
+        $folder = 'temporary_files/chargeable/attachment/'.Auth::user()->id;
+        File::cleanDirectory(public_path($folder));
 
         foreach ($selectedParts as $index => $selectedPart) {
             $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
@@ -915,6 +961,9 @@ class ChargeableRequestController extends Controller
                                     </div>
                                     <div class="flex items-center w-full mb-2">
                                         <p class="w-44">Status: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->status.'</p>
+                                    </div>
+                                    <div class="flex items-center w-full mb-2">
+                                        <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">View Attachments</button>
                                     </div>
                                     <hr class="my-6">
                                     <div class="flex items-start w-full pr-2 mb-2">

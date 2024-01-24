@@ -339,9 +339,9 @@ class NonChargeableRequestController extends Controller
         $request_id = NonChargeableRequest::select('id')->max('id') + 1;
 
         $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
+        $fsrrFile->storeAs('storage/non-chargeable/fsrr/', $fileName, 'public_uploads');
 
-        $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
+        $fsrrPath = 'storage/non-chargeable/fsrr/' . $fileName;
 
         $new_request = new NonChargeableRequest();
         $new_request->number = 'NR-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
@@ -971,7 +971,7 @@ class NonChargeableRequestController extends Controller
         }else{
             $file = $request->file('fsrrFile');
             $fsrr_fileExt = $file->getClientOriginalExtension();
-            $folder = 'temporary_files/'.Auth::user()->id;
+            $folder = 'temporary_files/non-chargeable/fsrr'.Auth::user()->id;
             File::cleanDirectory(public_path($folder));
             $file->move(public_path($folder), $file->getClientOriginalName());
             

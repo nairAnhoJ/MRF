@@ -337,21 +337,6 @@
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                {{-- <div class="w-full">
-                                    <label for="delivery_type" class="block text-sm font-medium text-gray-900">Delivery Type</label>
-                                    <select id="delivery_type" name='delivery_type' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Order Type</option>
-                                        <option value="REGULAR" {{ (old('delivery_type') == 'REGULAR') ? 'selected' : '' }}>Regular</option>
-                                        <option value="SAME DAY" {{ (old('delivery_type') == 'SAME DAY') ? 'selected' : '' }}>Same Day</option>
-                                        <option value="PICKUP" {{ (old('delivery_type') == 'PICKUP') ? 'selected' : '' }}>Pick Up</option>
-                                        <option value="AIR" {{ (old('delivery_type') == 'AIR') ? 'selected' : '' }}>Air</option>
-                                        <option value="SEA" {{ (old('delivery_type') == 'SEA') ? 'selected' : '' }}>Sea</option>
-                                        <option value="OTHERS" {{ (old('delivery_type') == 'OTHERS') ? 'selected' : '' }}>Others</option>
-                                    </select>
-                                    @error('delivery_type')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div> --}}
                             </div>
 
                             <div class="flex gap-x-4">
@@ -394,40 +379,14 @@
                             </div>
 
                             <div class="w-full">
-                                {{-- <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label> --}}
                                 <div class="w-full">
                                     <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label>
                                     <div class="flex gap-x-2">
                                         <input type="file" id='attachments' name="attachments[]" multiple value="{{ old('attachments') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png">
                                     </div>
-                                    <div class="flex items-end w-full h-40 p-4 gap-x-5">
-                                        <img src="" alt="" class="h-full border aspect-square">
-                                        <img src="" alt="" class="h-full border aspect-square">
-                                        <img src="" alt="" class="h-full border aspect-square">
-                                        <img src="" alt="" class="h-full border aspect-square">
-                                        <img src="" alt="" class="h-full border aspect-square">
-                                        <button class="font-bold text-red-500 hover:underline">CLEAR</button>
+                                    <div id="attachment_preview" class="flex items-end w-full h-40 p-4 gap-x-5">
                                     </div>
                                 </div>
-                                {{-- <div class="flex items-center justify-center w-full">
-                                    <label for="attachments" class="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                            <svg class="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                            </svg>
-                                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                            <p class="text-xs text-gray-500"> PNG, JPG, JPEG</p>
-                                        </div>
-                                        <div class="flex w-full h-full p-4 gap-x-5">
-                                            <img src="" alt="" class="h-full border aspect-square">
-                                            <img src="" alt="" class="h-full border aspect-square">
-                                            <img src="" alt="" class="h-full border aspect-square">
-                                            <img src="" alt="" class="h-full border aspect-square">
-                                            <img src="" alt="" class="h-full border aspect-square">
-                                        </div>
-                                        <input id="attachments" multiple name="attachments[]" type="file" class="hidden" />
-                                    </label>
-                                </div>  --}}
                             </div>
 
                             <div class="w-full">
@@ -539,7 +498,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> 
                 <!-- footer -->
                 <div class="flex items-center justify-between p-4 space-x-2 border-t border-gray-200 rounded-b">
                     <a href="{{ route('chargeable') }}" class="text-gray-500 loading text-center bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium py-2.5 hover:text-gray-900 focus:z-10 ml-2 w-24">CANCEL</a>
@@ -937,6 +896,55 @@
                         $('#partsModal').addClass('hidden');
                     }
                 })
+            });
+
+
+
+
+
+            jQuery(document).on("change", "#attachments", function() {
+                // $('#loading').removeClass('hidden');
+                var formData = new FormData();
+                const attachments = $("#attachments")[0].files;
+                for (let i = 0; i < attachments.length; i++) {
+                    formData.append("attachments[]", attachments[i]);
+                }
+                formData.append('_token', _token);
+
+                $.ajax({
+                    url: "{{ route('chargeable.add.attachmentsPreview') }}",
+                    method: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#attachment_preview').html(response);
+                    }
+                });
+
+
+
+
+
+                // var index = selectedParts.indexOf(id);
+                // selectedParts.splice(index, 1);
+                
+                // $.ajax({
+                //     url:"{{ route('chargeable.add.updateSelected') }}",
+                //     method:"POST",
+                //     data:{
+                //         tab: tab,
+                //         selectedParts: JSON.stringify(selectedParts),
+                //         _token: _token
+                //     },
+                //     success:function(result){
+                //         $('#selectedPartsBody').html(result);
+                //         $('#selectedParts').val(selectedParts);
+
+                //         $('#loading').addClass('hidden');
+                //         $('#partsModal').addClass('hidden');
+                //     }
+                // })
             });
         });
     </script>

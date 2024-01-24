@@ -91,6 +91,7 @@ Route::middleware(['auth', 'firstlogin'])->group(function () {
         Route::post('/chargeable/add/get-models', [ChargeableRequestController::class, 'getModels'])->name('chargeable.add.getModels');//
         Route::post('/chargeable/add/get-parts', [ChargeableRequestController::class, 'getParts'])->name('chargeable.add.getParts');//
         Route::post('/chargeable/add/update-selected-parts', [ChargeableRequestController::class, 'updateSelected'])->name('chargeable.add.updateSelected');//
+        Route::post('/chargeable/add/attachments-preview', [ChargeableRequestController::class, 'attachmentsPreview'])->name('chargeable.add.attachmentsPreview');//
         Route::post('/chargeable/store', [ChargeableRequestController::class, 'store'])->name('chargeable.store');//
         
         Route::get('/chargeable/edit/{request_number}', [ChargeableRequestController::class, 'edit'])->name('chargeable.edit');
