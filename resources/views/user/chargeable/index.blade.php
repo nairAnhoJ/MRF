@@ -6,7 +6,9 @@
 <div class="w-screen h-screen pt-14">
     <div class="w-full h-full p-4">
 
-        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2 bg-neutral-100 border-neutral-400 hover:border-neutral-200"></div>
+        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2 bg-neutral-100 border-neutral-400 hover:border-neutral-200 duration-700 ease-in-out transition-all"></div>
+
+        <div id="transparentScreen" class="fixed top-0 left-0 hidden w-screen h-screen z-[500]"></div>
 
         {{-- SUCCESS ALERT --}}
             @if (session('success'))
@@ -92,16 +94,16 @@
         {{-- FSRR MODAL// --}}
     
         {{-- ATTACHMENTS MODAL --}}
-            <div id="attachmentsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-10">
-                <div class="w-5/6 h-full bg-white rounded-lg">
+            <div id="attachmentsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-36">
+                <div class="w-4/6 h-full bg-white rounded-lg">
                     <!-- Modal content -->
-                    <div class="relative h-full bg-white rounded-lg shadow">
+                    <div class="relative w-full h-full bg-white rounded-lg shadow">
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
                             <h3 class="text-xl font-semibold text-gray-900">
                                 Attachment Preview
                             </h3>
-                            <button type="button" id="closeAttachmentsModal" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900">
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 closeAttachmentsModal">
                                 <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                                 </svg>
@@ -109,11 +111,41 @@
                             </button>
                         </div>
                         <!-- Modal body -->
-                        <div id="attachmentsModalContent" class="py-4 px-10 h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex items-start justify-center">
+                        <div class="py-4 px-10 h-[calc(100%-140px)] w-full overflow-hidden flex items-start justify-center">
+                            <div class="relative w-full h-full overflow=hidden">
+                                <!-- Carousel wrapper -->
+                                <div id="attachmentsModalContent" class="box-border relative w-full h-full overflow-hidden rounded-lg">
+                                </div>
+                                <!-- Slider indicators -->
+                                {{-- <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2 rtl:space-x-reverse">
+                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
+                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 4" data-carousel-slide-to="3"></button>
+                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 5" data-carousel-slide-to="4"></button>
+                                </div> --}}
+                                <!-- Slider controls -->
+                                <button disabled type="button" id="previousAttachment" class="absolute top-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer disabled:pointer-events-none start-0 group focus:outline-none">
+                                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                                        <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                        </svg>
+                                        <span class="sr-only">Previous</span>
+                                    </span>
+                                </button>
+                                <button type="button" id="nextAttachment" class="absolute top-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer disabled:pointer-events-none end-0 group focus:outline-none">
+                                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                                        <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                        </svg>
+                                        <span class="sr-only">Next</span>
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                         <!-- Modal footer -->
-                        <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b">
-                            <button type="button" id="closeAttachmentsModal" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10">CLOSE</button>
+                        <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b -trans">
+                            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10 closeAttachmentsModal">CLOSE</button>
                         </div>
                     </div>
                 </div>
@@ -500,6 +532,7 @@
 <script>
     $(document).ready(function () {
         var id;
+        var attachmentCount;
         var _token = $('input[name="_token"]').val();
         var role = "{{ Auth::user()->role }}";
         
@@ -688,19 +721,70 @@
         jQuery(document).on("click", "#viewAttachments", function() {
             $('#loading').removeClass('hidden');
             $.ajax({
-                url:"{{ route('chargeable.viewSerialNumbers') }}",
+                url:"{{ route('chargeable.viewAttachments') }}",
                 method:"POST",
                 data: {
                     id: id,
                     _token: _token,
                 },
                 success: function (response) {
-                    $('#serialNumberContent').html(response);
-                    $('#serialNumbersModal').removeClass('hidden');
-                    $('.autoResize').click();
+                    $('#attachmentsModalContent').html(response);
+                    $('#attachmentsModal').removeClass('hidden');
                     $('#loading').addClass('hidden');
                 }
             });
+            console.log(attachmentCount);
+        });
+
+        jQuery(document).on("click", ".closeAttachmentsModal", function() {
+            jQuery('#attachmentsModal').addClass('hidden');
+        });
+
+        jQuery(document).on("click", "#previousAttachment", function() {
+            $('#transparentScreen').removeClass('hidden');
+            var childWidth = jQuery('#attachmentCarousel').width();
+            var left = jQuery('#attachmentCarousel').position().left;
+            
+            console.log(attachmentCount);
+
+            if(left != 0){
+                var translationAmount = (left + (childWidth / attachmentCount));
+                jQuery('#attachmentCarousel').css('transform', 'translateX(' + translationAmount + 'px)');
+            }
+            setTimeout(function() {
+                $('#transparentScreen').addClass('hidden');
+                $('#nextAttachment').attr('disabled', false);
+                var left = jQuery('#attachmentCarousel').position().left;
+                if(left == 0){
+                    // $('#previousAttachment').attr('disabled', true);
+                }
+            }, 700);
+        });
+
+        jQuery(document).on("click", "#nextAttachment", function() {
+            $('#transparentScreen').removeClass('hidden');
+            var childWidth = jQuery('#attachmentCarousel').width();
+            var classValue = jQuery('#attachmentCarousel').attr('class');
+            var percentageMatch = /w-\[(\d+)%\]/.exec(classValue);
+            attachmentCount = (percentageMatch ? parseInt(percentageMatch[1]) : null) / 100;
+            var left = jQuery('#attachmentCarousel').position().left;
+            var right = left + (childWidth / attachmentCount);
+            
+            console.log(right);
+
+            if(right != 0){
+                var translationAmount = (left + (childWidth / attachmentCount));
+                jQuery('#attachmentCarousel').css('transform', 'translateX(-' + translationAmount + 'px)');
+            }
+            setTimeout(function() {
+                $('#transparentScreen').addClass('hidden');
+                $('#previousAttachment').attr('disabled', false);
+                var left = jQuery('#attachmentCarousel').position().left;
+                var right = left + (childWidth / attachmentCount);
+                if(right == 0){
+                    // $('#nextAttachment').attr('disabled', true);
+                }
+            }, 700);
         });
     });
 </script>

@@ -179,6 +179,33 @@ class ChargeableRequestController extends Controller
         }
     }
 
+    public function viewAttachments(Request $request){
+        $id = $request->id;
+        $chargeable_request = ChargeableRequest::where('id', $id)->first();
+        $attachments = explode(",", $chargeable_request->attachments);
+        $pics = '';
+
+        $width = ((1/count($attachments))*100).'%';
+
+        foreach($attachments as $index => $attachment){
+            $pics .= '
+                <div style="width: '.$width.';" class="w-['.$width.'] flex items-center justify-center h-full">
+                    <img src="'.asset('storage/chargeable/attachments/'.$chargeable_request->id.'/'.$attachment).'" class="block h-full rounded-lg" alt="attachment'.($index+1).'">
+                </div>
+            ';
+        }
+
+        $width = (count($attachments)*100).'%';
+
+        $result = '
+            <div style="width: '.$width.';" id="attachmentCarousel" class="w-['.$width.'] flex h-full duration-700 ease-in-out transition-all">
+                '.$pics.'
+            </div>
+        ';
+
+        echo $result;
+    }
+
     public function viewHistory(Request $request){
         $id = $request->id;
         $rental_request = ChargeableRequest::with('siteDetails')->where('id', $id)->first();
@@ -597,13 +624,20 @@ class ChargeableRequestController extends Controller
 
         $new_request->fsrr_path = $fsrrPath;
 
+        $attachmentsArray = '';
+
         if($attachments != null){
             foreach($attachments as $index => $attachment){
                 $attachmentsExt = $attachment->getClientOriginalExtension();
                 $attachmentsName = ($index+1).'.'.$attachmentsExt;
                 $attachment->storeAs('storage/chargeable/attachments/'.$request_id.'/', $attachmentsName, 'public_uploads');
+                if($index == 0){
+                    $attachmentsArray .= $attachmentsName;
+                }else{
+                    $attachmentsArray .= ','.$attachmentsName;
+                }
             }
-            $new_request->attachments_count = count($attachments);
+            $new_request->attachments = $attachmentsArray;
         }
 
         $new_request->technician = $technician;
@@ -963,7 +997,7 @@ class ChargeableRequestController extends Controller
                                         <p class="w-44">Status: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->status.'</p>
                                     </div>
                                     <div class="flex items-center w-full mb-2">
-                                        <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">View Attachments</button>
+                                        <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">View Attachment/s</button>
                                     </div>
                                     <hr class="my-6">
                                     <div class="flex items-start w-full pr-2 mb-2">

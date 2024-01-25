@@ -41,7 +41,7 @@ return new class extends Migration
             $table->date('date_needed');
             
             // $table->string('attachments');
-            $table->string('attachments_count')->default(0);
+            $table->string('attachments')->nullable();
 
             $table->string('service_coordinator_id');
             $table->string('service_coordinator_name');
