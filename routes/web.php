@@ -102,6 +102,7 @@ Route::middleware(['auth', 'firstlogin'])->group(function () {
         Route::post('/chargeable/view-history-parts', [ChargeableRequestController::class, 'viewHistoryParts'])->name('chargeable.viewHistoryParts');
         Route::post('/chargeable/view-fsrr', [ChargeableRequestController::class, 'viewFSRR'])->name('chargeable.viewFSRR');
         Route::post('/chargeable/view-attachments', [ChargeableRequestController::class, 'viewAttachments'])->name('chargeable.viewAttachments');
+        Route::post('/chargeable/view-sq-attachments', [ChargeableRequestController::class, 'viewSQAttachments'])->name('chargeable.viewSQAttachments');
         
         Route::post('/chargeable/validate-request', [ChargeableRequestController::class, 'validateRequest'])->name('chargeable.validateRequest');
         Route::post('/chargeable/verify-request', [ChargeableRequestController::class, 'verifyRequest'])->name('chargeable.verifyRequest');

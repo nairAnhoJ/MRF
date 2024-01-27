@@ -66,6 +66,7 @@ return new class extends Migration
 
             $table->string('is_sq_number_encoded')->default(0);
             $table->string('sq_number')->nullable();
+            $table->string('sq_attachment')->nullable();
             $table->string('sq_encoder')->nullable();
             $table->string('datetime_sq_encoded')->nullable();
             $table->binary('sq_remarks')->nullable();
@@ -80,7 +81,6 @@ return new class extends Migration
             $table->string('mri_encoder')->nullable();
             $table->string('datetime_mri_encoded')->nullable();
             $table->binary('mri_remarks')->nullable();
-
 
             $table->string('is_invoice_encoded')->default(0);
             $table->string('ref_number')->nullable();
@@ -101,6 +101,7 @@ return new class extends Migration
             $table->string('returned_by')->nullable();
             $table->string('datetime_returned')->nullable();
             $table->binary('returned_remarks')->nullable();
+            $table->string('returned_count')->default(0);
 
             $table->boolean('is_cancelled')->default(0);
             $table->string('cancelled_by')->nullable();

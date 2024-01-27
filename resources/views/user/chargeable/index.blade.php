@@ -6,7 +6,7 @@
 <div class="w-screen h-screen pt-14">
     <div class="w-full h-full p-4">
 
-        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2 bg-neutral-100 border-neutral-400 hover:border-neutral-200 duration-700 ease-in-out transition-all"></div>
+        <div class="hidden overflow-x-hidden overflow-y-auto h-[calc(100%-72px)] pr-2 bg-neutral-100 border-neutral-400 hover:border-neutral-200 duration-700 ease-in-out transition-all min-w-full"></div>
 
         <div id="transparentScreen" class="fixed top-0 left-0 hidden w-screen h-screen z-[500]"></div>
 
@@ -116,15 +116,6 @@
                                 <!-- Carousel wrapper -->
                                 <div id="attachmentsModalContent" class="box-border relative w-full h-full overflow-hidden rounded-lg">
                                 </div>
-                                <!-- Slider indicators -->
-                                {{-- <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2 rtl:space-x-reverse">
-                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
-                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 4" data-carousel-slide-to="3"></button>
-                                    <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 5" data-carousel-slide-to="4"></button>
-                                </div> --}}
-                                <!-- Slider controls -->
                                 <button disabled type="button" id="previousAttachment" class="absolute top-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer disabled:pointer-events-none start-0 group focus:outline-none">
                                     <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
                                         <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
@@ -141,6 +132,7 @@
                                         <span class="sr-only">Next</span>
                                     </span>
                                 </button>
+                                <h1 id="attachmentPage" data-page="1" class="absolute flex items-center justify-center text-lg italic font-bold text-white -translate-x-1/2 rounded-full w-14 aspect-square bottom-2 left-1/2 bg-neutral-900/80">1 / 3</h1>
                             </div>
                         </div>
                         <!-- Modal footer -->
@@ -151,6 +143,35 @@
                 </div>
             </div>
         {{-- ATTACHMENTS MODAL// --}}
+    
+        {{-- SQ ATTACHMENTS MODAL --}}
+            <div id="sqAttachmentsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-36">
+                <div class="w-4/6 h-full bg-white rounded-lg">
+                    <!-- Modal content -->
+                    <div class="relative w-full h-full bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-4 border-b rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                SQ Attachment Preview
+                            </h3>
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 closeSQAttachmentsModal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div id="sqAttachmentsModalContent" class="py-4 px-10 h-[calc(100%-140px)] overflow-x-hidden overflow-y-auto flex items-start justify-center">
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b -trans">
+                            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10 closeSQAttachmentsModal">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{-- SQ ATTACHMENTS MODAL// --}}
     
         {{-- VALIDATE MODAL --}}
             <div id="validateModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
@@ -226,7 +247,7 @@
             <div id="approveModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
                     <!-- Modal content -->
-                    <form action="{{ route('chargeable.approveRequest') }}" method="POST" class="relative bg-white rounded-lg shadow">
+                    <form action="{{ route('chargeable.approveRequest') }}" method="POST" enctype="multipart/form-data" class="relative bg-white rounded-lg shadow">
                         @csrf
                         <!-- Modal header -->
                         <div class="flex items-start justify-between p-4 border-b rounded-t">
@@ -256,6 +277,17 @@
                                     @error('encode_input')
                                         <span class="text-xs text-red-500">The SQ Number you entered is invalid.</span>
                                     @enderror
+                                </div>
+                                <div class="w-full mb-2">
+                                    <div class="w-full">
+                                        <label for="sq_attachment" class="block text-sm font-medium text-gray-900">SQ Attachments</label>
+                                        <div class="flex gap-x-2">
+                                            <input type="file" id='sq_attachment' name="sq_attachment" value="{{ old('sq_attachment') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png">
+                                        </div>
+                                        @error('sq_attachment')
+                                            <span class="text-xs text-red-500">The SQ Attachment is required.</span>
+                                        @enderror
+                                    </div>
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
@@ -729,11 +761,20 @@
                 },
                 success: function (response) {
                     $('#attachmentsModalContent').html(response);
+                    $('#previousAttachment').attr('disabled', true);
+                    $('#nextAttachment').attr('disabled', false);
+                    
+                    var classValue = jQuery('#attachmentCarousel').attr('class');
+                    var percentageMatch = /w-\[(\d+)%\]/.exec(classValue);
+                    attachmentCount = (percentageMatch ? parseInt(percentageMatch[1]) : null) / 100;
+
+                    $('#attachmentPage').html('1 / ' + attachmentCount);
+                    $('#attachmentPage').attr('data-page', '1');
+                    
                     $('#attachmentsModal').removeClass('hidden');
                     $('#loading').addClass('hidden');
                 }
             });
-            console.log(attachmentCount);
         });
 
         jQuery(document).on("click", ".closeAttachmentsModal", function() {
@@ -743,22 +784,29 @@
         jQuery(document).on("click", "#previousAttachment", function() {
             $('#transparentScreen').removeClass('hidden');
             var childWidth = jQuery('#attachmentCarousel').width();
+            var classValue = jQuery('#attachmentCarousel').attr('class');
+            var percentageMatch = /w-\[(\d+)%\]/.exec(classValue);
+            attachmentCount = (percentageMatch ? parseInt(percentageMatch[1]) : null) / 100;
             var left = jQuery('#attachmentCarousel').position().left;
-            
-            console.log(attachmentCount);
+            var perAttachment = childWidth / attachmentCount;
 
-            if(left != 0){
-                var translationAmount = (left + (childWidth / attachmentCount));
+            if(left < 0){
+                var translationAmount = (parseInt(left.toFixed(0)) + parseInt(perAttachment.toFixed(0)));
                 jQuery('#attachmentCarousel').css('transform', 'translateX(' + translationAmount + 'px)');
+                var currentPage = $('#attachmentPage').attr('data-page');
+                console.log(currentPage);
+                $('#attachmentPage').html((currentPage - 1) + ' / ' + attachmentCount);
+                $('#attachmentPage').attr('data-page', currentPage - 1);
             }
             setTimeout(function() {
                 $('#transparentScreen').addClass('hidden');
                 $('#nextAttachment').attr('disabled', false);
+                
                 var left = jQuery('#attachmentCarousel').position().left;
                 if(left == 0){
-                    // $('#previousAttachment').attr('disabled', true);
+                    $('#previousAttachment').attr('disabled', true);
                 }
-            }, 700);
+            }, 300);
         });
 
         jQuery(document).on("click", "#nextAttachment", function() {
@@ -768,23 +816,50 @@
             var percentageMatch = /w-\[(\d+)%\]/.exec(classValue);
             attachmentCount = (percentageMatch ? parseInt(percentageMatch[1]) : null) / 100;
             var left = jQuery('#attachmentCarousel').position().left;
-            var right = left + (childWidth / attachmentCount);
-            
-            console.log(right);
+            var perAttachment = childWidth / attachmentCount;
+            var right = (childWidth + left);
 
-            if(right != 0){
-                var translationAmount = (left + (childWidth / attachmentCount));
-                jQuery('#attachmentCarousel').css('transform', 'translateX(-' + translationAmount + 'px)');
+            if(right.toFixed(0) > perAttachment.toFixed(0)){
+                var translationAmount = (left.toFixed(0) - perAttachment.toFixed(0));
+                jQuery('#attachmentCarousel').css('transform', 'translateX(' + translationAmount + 'px)');
+                var currentPage = $('#attachmentPage').attr('data-page');
+                console.log(currentPage);
+                $('#attachmentPage').html((parseInt(currentPage) + 1) + ' / ' + attachmentCount);
+                $('#attachmentPage').attr('data-page', parseInt(currentPage) + 1);
             }
             setTimeout(function() {
+                var left = jQuery('#attachmentCarousel').position().left;
+                var perAttachment = childWidth / attachmentCount;
+                var right = (childWidth + left);
+                if(right.toFixed(0) == perAttachment.toFixed(0)){
+                    $('#nextAttachment').attr('disabled', true);
+                }
+
                 $('#transparentScreen').addClass('hidden');
                 $('#previousAttachment').attr('disabled', false);
-                var left = jQuery('#attachmentCarousel').position().left;
-                var right = left + (childWidth / attachmentCount);
-                if(right == 0){
-                    // $('#nextAttachment').attr('disabled', true);
+
+            }, 300);
+        });
+        
+        jQuery(document).on("click", "#viewSQAttachment", function() {
+            $('#loading').removeClass('hidden');
+            $.ajax({
+                url:"{{ route('chargeable.viewSQAttachments') }}",
+                method:"POST",
+                data: {
+                    id: id,
+                    _token: _token,
+                },
+                success: function (response) {
+                    $('#sqAttachmentsModalContent').html(response);
+                    $('#sqAttachmentsModal').removeClass('hidden');
+                    $('#loading').addClass('hidden');
                 }
-            }, 700);
+            });
+        });
+        
+        jQuery(document).on("click", ".closeSQAttachmentsModal", function() {
+            $('#sqAttachmentsModal').addClass('hidden');
         });
     });
 </script>

@@ -124,15 +124,6 @@ class ChargeableRequestController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
     
 
 
@@ -198,12 +189,20 @@ class ChargeableRequestController extends Controller
         $width = (count($attachments)*100).'%';
 
         $result = '
-            <div style="width: '.$width.';" id="attachmentCarousel" class="w-['.$width.'] flex h-full duration-700 ease-in-out transition-all">
+            <div style="width: '.$width.';" id="attachmentCarousel" class="w-['.$width.'] flex h-full duration-500 ease-in-out transition-all">
                 '.$pics.'
             </div>
         ';
 
         echo $result;
+    }
+
+    public function viewSQAttachments(Request $request){
+        $id = $request->id;
+
+        $chargeable_request = ChargeableRequest::where('id', $id)->first();
+        
+        echo '<img src="'.url($chargeable_request->sq_attachment).'" class="w-full h-auto">';
     }
 
     public function viewHistory(Request $request){
@@ -700,7 +699,7 @@ class ChargeableRequestController extends Controller
             }else if($rental_request->is_validated == 1 && $rental_request->is_verified == 0){
                 $status = 'Validated (For Parts Verification)';
             }else if($rental_request->is_verified == 1 && $rental_request->is_service_approved == 0){
-                $status = 'Verified (For Encoding of MRI Number)';
+                $status = 'Verified (For Service Approval)';
             }else if($rental_request->is_service_approved == 1 && $rental_request->is_sq_number_encoded == 0){
                 $status = 'Service Approved (For Encoding of SQ Number)';
             }else if($rental_request->is_sq_number_encoded == 1 && $rental_request->is_adviser_approved == 0){
@@ -721,7 +720,7 @@ class ChargeableRequestController extends Controller
             if($rental_request->is_sq_number_encoded == 1){
                 $encoded .= '
                     <div class="flex items-center w-full mb-2">
-                        <p class="w-44">SQ Number: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->sq_number.'</p>
+                        <p class="w-44">SQ Number: </p><p id="viewSQAttachment" class="ml-1 cursor-pointer text-blue-600 font-bold w-[calc(100%-176px)] text-lg hover:underline hover:text-blue-700">'.$rental_request->sq_number.'</p>
                     </div>
                 ';
             }
@@ -929,6 +928,17 @@ class ChargeableRequestController extends Controller
             }
         // Parts
 
+        // Attachment
+            $attachmentButton = '';
+            if($rental_request->attachments != null){
+                $attachmentButton = '
+                    <div class="flex items-center w-full mb-2">
+                        <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">View Attachment/s</button>
+                    </div>
+                ';
+            }
+        // Attachment
+
         $viewDetails = '
             <div class="relative h-full bg-white rounded-lg shadow">
                 <!-- Modal header -->
@@ -945,7 +955,7 @@ class ChargeableRequestController extends Controller
                             <div class="w-1/2 h-full pr-2 text-left border-r">
                                 <div class="flex items-center justify-between">
                                     <h1 class="mb-10 text-2xl font-bold text-neutral-800">Request Details</h1>
-                                    <h1 class="mb-10 text-lg font-bold text-neutral-800">Date</h1>
+                                    <h1 class="mb-10 text-lg font-bold text-neutral-800">Date: '.date('F j, Y H:i A', strtotime($rental_request->updated_at)).'</h1>
                                 </div>
                                 <div class="w-full h-[calc(100%-72px)] overflow-x-hidden overflow-y-auto">
                                     <div class="flex w-full mb-5">
@@ -996,9 +1006,7 @@ class ChargeableRequestController extends Controller
                                     <div class="flex items-center w-full mb-2">
                                         <p class="w-44">Status: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->status.'</p>
                                     </div>
-                                    <div class="flex items-center w-full mb-2">
-                                        <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">View Attachment/s</button>
-                                    </div>
+                                    '.$attachmentButton.'
                                     <hr class="my-6">
                                     <div class="flex items-start w-full pr-2 mb-2">
                                         <p class="w-44">Requestor Remarks: </p>
@@ -1103,10 +1111,20 @@ class ChargeableRequestController extends Controller
 
             case '10':
                 $request->validate([
-                    'encode_input' => 'required'
+                    'encode_input' => 'required',
+                    'sq_attachment' => 'required',
                 ]);
+
+                $sq_attachment = $request->file('sq_attachment');
+                $sq_attachment_ext = $sq_attachment->getClientOriginalExtension();
+
+                $fileName = date('Ymd') . '.' . $sq_attachment_ext;
+                $sq_attachment->storeAs('storage/chargeable/sq_attachment/'.$request->id.'/', $fileName, 'public_uploads');
+                $sq_attachment_path = 'storage/chargeable/sq_attachment/'.$request->id.'/'.$fileName;
+
                 $thisRequest->is_sq_number_encoded = 1;
                 $thisRequest->sq_number = $request->encode_input;
+                $thisRequest->sq_attachment = $sq_attachment_path;
                 $thisRequest->sq_encoder = Auth()->user()->name;
                 $thisRequest->datetime_sq_encoded = date('Y-m-d h:i:s');
                 $thisRequest->sq_remarks = $request->remarks;
@@ -1367,12 +1385,7 @@ class ChargeableRequestController extends Controller
 
         $thisRequest->is_validated = 0;
         $thisRequest->is_verified = 0;
-        $thisRequest->is_service_approved = 0;
-        $thisRequest->is_sq_number_encoded = 0;
-        $thisRequest->is_adviser_approved = 0;
-        $thisRequest->is_mri_number_encoded = 0;
-        $thisRequest->is_invoice_encoded = 0;
-        $thisRequest->is_confirmed = 0;
+        $thisRequest->returned_count++;
 
         $thisRequest->is_returned = 1;
 
