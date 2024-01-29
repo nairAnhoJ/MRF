@@ -59,10 +59,10 @@ return new class extends Migration
             $table->string('datetime_verified')->nullable();
             $table->binary('verifier_remarks')->nullable();
 
-            $table->boolean('is_service_approved')->default(0);
-            $table->string('service_approver')->nullable();
-            $table->string('datetime_service_approved')->nullable();
-            $table->binary('service_remarks')->nullable();
+            $table->boolean('is_service_head_approved1')->default(0);
+            $table->string('service_head_approver1')->nullable();
+            $table->string('datetime_service_head_approved1')->nullable();
+            $table->binary('service_head_remarks1')->nullable();
 
             $table->string('is_sq_number_encoded')->default(0);
             $table->string('sq_number')->nullable();
@@ -75,6 +75,16 @@ return new class extends Migration
             $table->string('adviser_approver')->nullable();
             $table->string('datetime_adviser_approved')->nullable();
             $table->binary('adviser_remarks')->nullable();
+
+            $table->boolean('is_service_coordinator_approved')->default(0);
+            $table->string('service_coordinator_approver')->nullable();
+            $table->string('datetime_service_coordinator_approved')->nullable();
+            $table->binary('service_coordinator_remarks')->nullable();
+
+            $table->boolean('is_service_head_approved2')->default(0);
+            $table->string('service_head_approver2')->nullable();
+            $table->string('datetime_service_head_approved2')->nullable();
+            $table->binary('service_head_remarks2')->nullable();
 
             $table->string('is_mri_number_encoded')->default(0);
             $table->string('mri_number')->nullable();

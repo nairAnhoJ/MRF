@@ -273,7 +273,7 @@
                             @if (Auth::user()->role == 10)
                                 <div class="w-full mb-2">
                                     <label for="encode_input" class="block text-sm font-medium text-gray-900">SQ Number</label>
-                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 sq-number" autocomplete="off">
                                     @error('encode_input')
                                         <span class="text-xs text-red-500">The SQ Number you entered is invalid.</span>
                                     @enderror
@@ -291,7 +291,7 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60 sq-remarks" autocomplete="off"></textarea>
                                 </div>
                             @elseif (Auth::user()->role == 6)
                                 <div class="w-full mb-2">
@@ -535,8 +535,8 @@
                                                 Service Approved (For Encoding of SQ Number)
                                             @elseif ($result->is_sq_number_encoded == 1 && $result->is_adviser_approved == 0)
                                                 SQ Number Encoded (For Adviser Approval)
-                                            @elseif ($result->is_adviser_approved == 1 && $result->is_mri_number_encoded == 0)
-                                                Adviser-Approved (For Encoding of MRI Number)
+                                            @elseif ($result->is_adviser_approved == 1 && $result->is_service_coordinator_approved == 0)
+                                                Adviser-Approved (For Service Coordinator Approval)
                                             @elseif ($result->is_mri_number_encoded == 1 && $result->is_invoice_encoded == 0)
                                                 MRI Number Encoded (For Encoding of Invoicing)
                                             @elseif ($result->is_invoice_encoded == 1 && $result->is_confirmed == 0)
@@ -672,8 +672,30 @@
         });
 
         jQuery(document).on("click", ".approveButton ", function() {
-            jQuery('#approveModal').removeClass('hidden');
+            $('#loading').removeClass('hidden');
             jQuery('#approveID').val(id);
+
+            if(role == 10){
+                $.ajax({
+                    url:"{{ route('chargeable.getSQ') }}",
+                    method:"POST",
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('.sq-number').val(response.sq_number);
+                        $('.sq-remarks').html(response.sq_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }else{
+                jQuery('#approveModal').removeClass('hidden');
+                $('#loading').addClass('hidden');
+            }
+
         });
         
         jQuery(document).on("click", ".approveCloseModal", function() {

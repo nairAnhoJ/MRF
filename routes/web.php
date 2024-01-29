@@ -40,11 +40,11 @@ Route::post('/login/authenticate', [LoginController::class, 'authenticate'])->na
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/change-password', [LoginController::class, 'changePassword'])->name('change.password');
+    Route::post('/update-password', [LoginController::class, 'updatePassword'])->name('update.password');
 });
 
 Route::middleware(['auth', 'firstlogin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::post('/update-password', [LoginController::class, 'updatePassword'])->name('update.password');
 
     // NON-CHARGEABLE
         Route::get('/non-chargeable', [NonChargeableRequestController::class, 'index'])->name('nchargeable');
@@ -107,6 +107,7 @@ Route::middleware(['auth', 'firstlogin'])->group(function () {
         Route::post('/chargeable/validate-request', [ChargeableRequestController::class, 'validateRequest'])->name('chargeable.validateRequest');
         Route::post('/chargeable/verify-request', [ChargeableRequestController::class, 'verifyRequest'])->name('chargeable.verifyRequest');
         Route::post('/chargeable/approve-request', [ChargeableRequestController::class, 'approveRequest'])->name('chargeable.approveRequest');
+        Route::post('/chargeable/get-sq', [ChargeableRequestController::class, 'getSQ'])->name('chargeable.getSQ');
 
         Route::post('/chargeable/return-parts', [ChargeableRequestController::class, 'returnParts'])->name('chargeable.returnParts');
         Route::post('/chargeable/return-request', [ChargeableRequestController::class, 'returnRequest'])->name('chargeable.returnRequest');

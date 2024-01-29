@@ -103,6 +103,14 @@ class ChargeableRequestController extends Controller
                     ->paginate(25);
                 break;
     
+            case '13':
+                $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
+                    ->where('is_adviser_approved', 1)
+                    ->where('service_coordinator_id', Auth::user()->id)
+                    ->orderBy('id', 'desc')
+                    ->paginate(25);
+                break;
+    
             default:
                 return redirect()->route('dashboard');
                 
@@ -673,9 +681,22 @@ class ChargeableRequestController extends Controller
 
 
 
+    public function getSQ(Request $request){
+        $id = $request->id;
+        $chargeable_request = ChargeableRequest::where('id', $id)->first();
+
+        $result = array(
+            'sq_number' => $chargeable_request->sq_number,
+            // 'sq_attachment' => $chargeable_request->sq_attachment,
+            'sq_remarks' => $chargeable_request->sq_remarks,
+        );
+
+        echo json_encode($result);
+    }
 
 
 
+    
 
 
     
@@ -898,7 +919,12 @@ class ChargeableRequestController extends Controller
                     ';
                 }elseif (Auth::user()->role == 9 && $rental_request->is_invoice_encoded == 1 && $rental_request->is_confirmed == 0){
                     $controls2 = '
-                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">CONFIRM</button>
+                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">APPROVE</button>
+                        <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
+                    ';
+                }elseif (Auth::user()->role == 13 && $rental_request->is_adviser_approved == 1 && $rental_request->is_service_coordinator_approved == 0){
+                    $controls2 = '
+                        <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">APPROVE</button>
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }
@@ -1100,11 +1126,19 @@ class ChargeableRequestController extends Controller
 
         switch (Auth::user()->role) {
             case '4':
-                $thisRequest->is_service_approved = 1;
-                $thisRequest->service_approver = Auth()->user()->name;
-                $thisRequest->datetime_service_approved = date('Y-m-d h:i:s');
-                $thisRequest->service_remarks = $request->remarks;
-                $thisRequest->save();
+                if($thisRequest->is_service_head_approved1 == 0){
+                    $thisRequest->is_service_head_approved1 = 1;
+                    $thisRequest->service_head_approver1 = Auth()->user()->name;
+                    $thisRequest->datetime_service_head_approved1 = date('Y-m-d h:i:s');
+                    $thisRequest->service_head_remarks1 = $request->remarks;
+                    $thisRequest->save();
+                }else{
+                    $thisRequest->is_service_head_approved2 = 1;
+                    $thisRequest->service_head_approver2 = Auth()->user()->name;
+                    $thisRequest->datetime_service_head_approved2 = date('Y-m-d h:i:s');
+                    $thisRequest->service_head_remarks2 = $request->remarks;
+                    $thisRequest->save();
+                }
                 return redirect()->route('chargeable')->with('success', 'Request Has Been Approved Successfully!');
 
                 break;
@@ -1143,6 +1177,15 @@ class ChargeableRequestController extends Controller
 
                 break;
 
+            case '13':
+                $thisRequest->is_service_coordinator_approved = 1;
+                $thisRequest->service_coordinator_approver = Auth()->user()->name;
+                $thisRequest->datetime_service_coordinator_approved = date('Y-m-d h:i:s');
+                $thisRequest->service_coordinator_remarks = $request->remarks;
+                $thisRequest->save();
+                return redirect()->route('chargeable')->with('success', 'Request Has Been Approved Successfully!');
+
+                break;
             case '6':
                 $request->validate([
                     'encode_input' => 'required'
@@ -1183,7 +1226,7 @@ class ChargeableRequestController extends Controller
                 $thisRequest->datetime_confirmed = date('Y-m-d h:i:s');
                 $thisRequest->signatory_remarks = $request->remarks;
                 $thisRequest->save();
-                return redirect()->route('chargeable')->with('success', 'Request Has Been Confirmed Successfully!');
+                return redirect()->route('chargeable')->with('success', 'Request Has Been Approved Successfully!');
 
                 break;
             default:
@@ -1383,22 +1426,6 @@ class ChargeableRequestController extends Controller
         $return_remarks = $request->return_remarks;
         $thisRequest = ChargeableRequest::where('id', $id)->first();
 
-        $thisRequest->is_validated = 0;
-        $thisRequest->is_verified = 0;
-        $thisRequest->returned_count++;
-
-        $thisRequest->is_returned = 1;
-
-        if(Auth::user()->role == 3){
-            $thisRequest->is_returned_by_parts = 1;
-        }
-
-        $thisRequest->returned_by = Auth()->user()->name;
-        $thisRequest->datetime_returned = date('Y-m-d h:i:s');
-        $thisRequest->returned_remarks = $return_remarks;
-
-        $thisRequest->save();
-
         if(Auth::user()->role == 3){
             foreach($request->selectedParts as $partID => $value){
                 $selectPartVar = 'selectedPartsRemarks'.$value;
@@ -1406,8 +1433,31 @@ class ChargeableRequestController extends Controller
                 $thisPart->with_error = 1;
                 $thisPart->remarks = $request->$selectPartVar;
                 $thisPart->save();
-            }
+            }   
+            
+            $thisRequest->is_validated = 0;
+            $thisRequest->is_verified = 0;
+            $thisRequest->returned_count++;
+            $thisRequest->is_returned = 1;
+
+            $thisRequest->is_returned_by_parts = 1;
+        }elseif(Auth::user()->role == 11){
+            $thisRequest->is_sq_number_encoded = 0;
+            $thisRequest->returned_count++;
+            $thisRequest->is_returned = 1;
+        }else{
+            $thisRequest->is_validated = 0;
+            $thisRequest->is_verified = 0;
+            $thisRequest->returned_count++;
+            $thisRequest->is_returned = 1;
         }
+        
+
+        $thisRequest->returned_by = Auth()->user()->name;
+        $thisRequest->datetime_returned = date('Y-m-d h:i:s');
+        $thisRequest->returned_remarks = $return_remarks;
+
+        $thisRequest->save();
         
         return redirect()->route('chargeable')->with('success', 'Request Has Been returned Successfully!');
     }
