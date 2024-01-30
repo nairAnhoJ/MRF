@@ -339,12 +339,34 @@
                                     <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
                                 </div>
                             
-                            @elseif (Auth::user()->role == 9)
+                            @elseif (Auth::user()->role == 13)
+                                <div class="w-full mb-2">
+                                    <div class="w-full">
+                                        <label for="matrix" class="block text-sm font-medium text-gray-900">Contract/PMS Matrix</label>
+                                        <div class="flex gap-x-2">
+                                            <input type="file" id='matrix' name="matrix" value="{{ old('matrix') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png">
+                                        </div>
+                                        @error('matrix')
+                                            <span class="text-xs text-red-500">The Contract/PMS Matrix is required.</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="w-full mb-2">
+                                    <div class="w-full">
+                                        <label for="po_attachment" class="block text-sm font-medium text-gray-900">PO Attachments</label>
+                                        <div class="flex gap-x-2">
+                                            <input type="file" id='po_attachment' name="po_attachment" value="{{ old('po_attachment') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png">
+                                        </div>
+                                        @error('po_attachment')
+                                            <span class="text-xs text-red-500">The PO Attachment is required.</span>
+                                        @enderror
+                                    </div>
+                                </div>
                                 <div class="w-full mb-2">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
                                     <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
                                 </div>
-                                <p class="italic">Are you sure you want to confirm this request?</p>
+                                <p class="italic">Are you sure you want to approve this request?</p>
                             @else
                                 <div class="w-full mb-2">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
@@ -529,14 +551,18 @@
                                                 @endif
                                             @elseif ($result->is_validated == 1 && $result->is_verified == 0)
                                                 Validated (For Parts Verification)
-                                            @elseif ($result->is_verified == 1 && $result->is_service_approved == 0)
-                                                Verified (For Service Approval)
-                                            @elseif ($result->is_service_approved == 1 && $result->is_sq_number_encoded == 0)
-                                                Service Approved (For Encoding of SQ Number)
+                                            @elseif ($result->is_verified == 1 && $result->is_service_head_approved1 == 0)
+                                                Verified (For Service Head Approval)
+                                            @elseif ($result->is_service_head_approved1 == 1 && $result->is_sq_number_encoded == 0)
+                                                Service Head Approved (For Encoding of SQ Number)
                                             @elseif ($result->is_sq_number_encoded == 1 && $result->is_adviser_approved == 0)
                                                 SQ Number Encoded (For Adviser Approval)
                                             @elseif ($result->is_adviser_approved == 1 && $result->is_service_coordinator_approved == 0)
                                                 Adviser-Approved (For Service Coordinator Approval)
+                                            @elseif ($result->is_service_coordinator_approved == 1 && $result->is_service_head_approved2 == 0)
+                                                Service Coordinator Approved (For Service Head Approval)
+                                            @elseif ($result->is_service_head_approved2 == 1 && $result->is_mri_number_encoded == 0)
+                                                Service Head Approved (For Encoding of MRI Number)
                                             @elseif ($result->is_mri_number_encoded == 1 && $result->is_invoice_encoded == 0)
                                                 MRI Number Encoded (For Encoding of Invoicing)
                                             @elseif ($result->is_invoice_encoded == 1 && $result->is_confirmed == 0)

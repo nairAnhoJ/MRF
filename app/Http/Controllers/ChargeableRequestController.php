@@ -70,7 +70,7 @@ class ChargeableRequestController extends Controller
 
             case '10':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
-                    ->where('is_service_approved', 1)
+                    ->where('is_service_head_approved1', 1)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -189,7 +189,7 @@ class ChargeableRequestController extends Controller
         foreach($attachments as $index => $attachment){
             $pics .= '
                 <div style="width: '.$width.';" class="w-['.$width.'] flex items-center justify-center h-full">
-                    <img src="'.asset('storage/chargeable/attachments/'.$chargeable_request->id.'/'.$attachment).'" class="block h-full rounded-lg" alt="attachment'.($index+1).'">
+                    <img src="'.asset('storage/chargeable/'.$chargeable_request->id.'/request_attachments/'.$attachment).'" class="block h-full rounded-lg" alt="attachment'.($index+1).'">
                 </div>
             ';
         }
@@ -609,8 +609,8 @@ class ChargeableRequestController extends Controller
         $request_id = ChargeableRequest::select('id')->max('id') + 1;
 
         $fileName = date('Ymd') . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/chargeable/fsrr/'.$request_id.'/', $fileName, 'public_uploads');
-        $fsrrPath = 'storage/chargeable/fsrr/'.$request_id.'/'.$fileName;
+        $fsrrFile->storeAs('storage/chargeable/'.$request_id.'/fsrr/', $fileName, 'public_uploads');
+        $fsrrPath = 'storage/chargeable/'.$request_id.'/fsrr/'.$fileName;
 
         $new_request = new ChargeableRequest();
         $new_request->number = 'CR-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
@@ -637,7 +637,7 @@ class ChargeableRequestController extends Controller
             foreach($attachments as $index => $attachment){
                 $attachmentsExt = $attachment->getClientOriginalExtension();
                 $attachmentsName = ($index+1).'.'.$attachmentsExt;
-                $attachment->storeAs('storage/chargeable/attachments/'.$request_id.'/', $attachmentsName, 'public_uploads');
+                $attachment->storeAs('storage/chargeable/'.$request_id.'/request_attachments/', $attachmentsName, 'public_uploads');
                 if($index == 0){
                     $attachmentsArray .= $attachmentsName;
                 }else{
@@ -800,7 +800,6 @@ class ChargeableRequestController extends Controller
                         <textarea style="resize:none;" class="w-full h-12 overflow-y-hidden border rounded-lg outline-none autoResize" readonly>'.$rental_request->returned_remarks.'</textarea>
                         </div>
                     ';
-
                 }
             }
             if (($rental_request->is_verified == 1 || $rental_request->is_returned == 1) && $rental_request->datetime_verified != null){
@@ -811,14 +810,13 @@ class ChargeableRequestController extends Controller
                     </div>
                 ';
             }
-            if (($rental_request->is_service_approved == 1 || $rental_request->is_returned == 1) && $rental_request->datetime_service_approved != null){
+            if (($rental_request->is_service_head_approved1 == 1 || $rental_request->is_returned == 1) && $rental_request->datetime_service_head_approved1 != null){
                 $remarks .= '
                     <div class="flex items-start w-full pr-2 mb-2">
-                        <p class="w-44">Service Remarks: </p>
-                        <textarea style="resize:none;" class="w-full h-12 overflow-y-hidden border rounded-lg outline-none autoResize" readonly>'.$rental_request->service_remarks.'</textarea>
+                        <p class="w-44">Service Head Remarks: </p>
+                        <textarea style="resize:none;" class="w-full h-12 overflow-y-hidden border rounded-lg outline-none autoResize" readonly>'.$rental_request->service_head_remarks1.'</textarea>
                     </div>
                 ';
-
             }
             if (($rental_request->is_sq_number_encoded == 1 || $rental_request->is_returned == 1) && $rental_request->datetime_sq_encoded != null){
                 $remarks .= '
@@ -834,6 +832,22 @@ class ChargeableRequestController extends Controller
                     <div class="flex items-start w-full pr-2 mb-2">
                         <p class="w-44">Adviser Remarks: </p>
                         <textarea style="resize:none;" class="w-full h-12 overflow-y-hidden border rounded-lg outline-none autoResize" readonly>'.$rental_request->adviser_remarks.'</textarea>
+                    </div>
+                ';
+            }
+            if (($rental_request->is_service_coordinator_approved == 1 || $rental_request->is_returned == 1) && $rental_request->datetime_service_coordinator_approved != null){
+                $remarks .= '
+                    <div class="flex items-start w-full pr-2 mb-2">
+                        <p class="w-44">Service Coordinator Remarks: </p>
+                        <textarea style="resize:none;" class="w-full h-12 overflow-y-hidden border rounded-lg outline-none autoResize" readonly>'.$rental_request->service_coordinator_remarks.'</textarea>
+                    </div>
+                ';
+            }
+            if (($rental_request->is_service_head_approved2 == 1 || $rental_request->is_returned == 1) && $rental_request->datetime_service_head_approved2 != null){
+                $remarks .= '
+                    <div class="flex items-start w-full pr-2 mb-2">
+                        <p class="w-44">Service Head Remarks: </p>
+                        <textarea style="resize:none;" class="w-full h-12 overflow-y-hidden border rounded-lg outline-none autoResize" readonly>'.$rental_request->service_head_remarks2.'</textarea>
                     </div>
                 ';
             }
@@ -890,13 +904,13 @@ class ChargeableRequestController extends Controller
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }
-                elseif (Auth::user()->role == 4 && $rental_request->is_verified == 1 && $rental_request->is_service_approved == 0){
+                elseif (Auth::user()->role == 4 && (($rental_request->is_verified == 1 && $rental_request->is_service_head_approved1 == 0) || ($rental_request->is_service_coordinator_approved == 1 && $rental_request->is_service_head_approved2 == 0))){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold  px-4 whitespace-nowrap py-2.5 hover:text-white focus:z-10">APPROVE</button>
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }
-                elseif (Auth::user()->role == 10 && $rental_request->is_service_approved == 1 && $rental_request->is_sq_number_encoded == 0){
+                elseif (Auth::user()->role == 10 && $rental_request->is_service_head_approved1 == 1 && $rental_request->is_sq_number_encoded == 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold  px-4 whitespace-nowrap py-2.5 hover:text-white focus:z-10">ENCODE SQ NUMBER</button>
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
@@ -1153,8 +1167,8 @@ class ChargeableRequestController extends Controller
                 $sq_attachment_ext = $sq_attachment->getClientOriginalExtension();
 
                 $fileName = date('Ymd') . '.' . $sq_attachment_ext;
-                $sq_attachment->storeAs('storage/chargeable/sq_attachment/'.$request->id.'/', $fileName, 'public_uploads');
-                $sq_attachment_path = 'storage/chargeable/sq_attachment/'.$request->id.'/'.$fileName;
+                $sq_attachment->storeAs('storage/chargeable/'.$request->id.'/sq_attachment/', $fileName, 'public_uploads');
+                $sq_attachment_path = 'storage/chargeable/'.$request->id.'/sq_attachment/'.$fileName;
 
                 $thisRequest->is_sq_number_encoded = 1;
                 $thisRequest->sq_number = $request->encode_input;
@@ -1178,7 +1192,29 @@ class ChargeableRequestController extends Controller
                 break;
 
             case '13':
+                $request->validate([
+                    'matrix' => 'required',
+                    'po_attachment' => 'required',
+                ]);
+
+                $matrix = $request->file('matrix');
+                $matrix_ext = $matrix->getClientOriginalExtension();
+
+                $fileName = date('Ymd') . '.' . $matrix_ext;
+                $matrix->storeAs('storage/chargeable/'.$request->id.'/matrix_attachment/', $fileName, 'public_uploads');
+                $matrix_attachment_path = 'storage/chargeable/'.$request->id.'/matrix_attachment/'.$fileName;
+                
+
+                $po_attachment = $request->file('po_attachment');
+                $po_attachment_ext = $po_attachment->getClientOriginalExtension();
+
+                $fileName = date('Ymd') . '.' . $po_attachment_ext;
+                $po_attachment->storeAs('storage/chargeable/'.$request->id.'/po_attachment/', $fileName, 'public_uploads');
+                $po_attachment_path = 'storage/chargeable/'.$request->id.'/po_attachment/'.$fileName;
+
                 $thisRequest->is_service_coordinator_approved = 1;
+                $thisRequest->matrix_attachment = $matrix_attachment_path;
+                $thisRequest->po_attachment = $po_attachment_path;
                 $thisRequest->service_coordinator_approver = Auth()->user()->name;
                 $thisRequest->datetime_service_coordinator_approved = date('Y-m-d h:i:s');
                 $thisRequest->service_coordinator_remarks = $request->remarks;
@@ -1345,11 +1381,14 @@ class ChargeableRequestController extends Controller
         $nc_request->fsrr_number = $fsrr_number;
 
         if($fsrrFile != null){
+            $folder = 'storage/chargeable/'.$nc_request->id.'/fsrr/';
+            File::cleanDirectory(public_path($folder));
+
             $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
 
-            $fileName = date('Ymd') . '_' . $nc_request->id . '.' . $fsrr_fileExt;
-            $fsrrFile->storeAs('storage/attachments/chargeable', $fileName, 'public_uploads');
-            $fsrrPath = 'storage/attachments/chargeable/' . $fileName;
+            $fileName = date('Ymd') . '.' . $fsrr_fileExt;
+            $fsrrFile->storeAs('storage/chargeable/'.$nc_request->id.'/fsrr/', $fileName, 'public_uploads');
+            $fsrrPath = 'storage/chargeable/'.$nc_request->id.'/fsrr/'.$fileName;
 
             $nc_request->fsrr_path = $fsrrPath;
         }

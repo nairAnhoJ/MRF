@@ -77,6 +77,8 @@ return new class extends Migration
             $table->binary('adviser_remarks')->nullable();
 
             $table->boolean('is_service_coordinator_approved')->default(0);
+            $table->string('matrix_attachment')->nullable();
+            $table->string('po_attachment')->nullable();
             $table->string('service_coordinator_approver')->nullable();
             $table->string('datetime_service_coordinator_approved')->nullable();
             $table->binary('service_coordinator_remarks')->nullable();
@@ -93,7 +95,6 @@ return new class extends Migration
             $table->binary('mri_remarks')->nullable();
 
             $table->string('is_invoice_encoded')->default(0);
-            $table->string('ref_number')->nullable();
             $table->string('dr_number')->nullable();
             $table->string('si_number')->nullable();
             $table->string('bs_number')->nullable();
