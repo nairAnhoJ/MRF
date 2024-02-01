@@ -89,9 +89,18 @@ class ChargeableRequestController extends Controller
                     ->paginate(25);
                 break;
 
+            case '7':
+                $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
+                    ->where('is_mri_number_encoded', 1)
+                    ->where('is_importation', 1)
+                    ->orderBy('id', 'desc')
+                    ->paginate(25);
+                break;
+
             case '12':
                 $results = ChargeableRequest::whereRaw("CONCAT_WS(' ', number, customer_name, customer_address, customer_area, hm, brand, model, serial_number, fsrr_number, technician, working_environment, status, disc) LIKE ?", ['%' . $search . '%'])
                     ->where('is_mri_number_encoded', 1)
+                    ->where('is_importation', 0)
                     ->orderBy('id', 'desc')
                     ->paginate(25);
                 break;
@@ -211,6 +220,28 @@ class ChargeableRequestController extends Controller
         $chargeable_request = ChargeableRequest::where('id', $id)->first();
         
         echo '<img src="'.url($chargeable_request->sq_attachment).'" class="w-full h-auto">';
+    }
+
+    public function viewSCAttachments(Request $request){
+        $id = $request->id;
+        $chargeable_request = ChargeableRequest::where('id', $id)->first();
+        
+        $pics = '
+            <div style="width: 50%;" class="w-[50%] flex items-center justify-center h-full">
+                <img src="'.url($chargeable_request->matrix_attachment).'" class="block h-full rounded-lg" alt="matrix-attachment">
+            </div>
+            <div style="width: 50%;" class="w-[50%] flex items-center justify-center h-full">
+                <img src="'.url($chargeable_request->po_attachment).'" class="block h-full rounded-lg" alt="matrix-attachment">
+            </div>
+        ';
+
+        $result = '
+            <div style="width: 200%;" id="scAttachmentCarousel" class="w-[200%] flex h-full duration-500 ease-in-out transition-all">
+                '.$pics.'
+            </div>
+        ';
+
+        echo $result;
     }
 
     public function viewHistory(Request $request){
@@ -526,6 +557,8 @@ class ChargeableRequestController extends Controller
 
         echo $content;
     }
+
+
 
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
@@ -921,7 +954,7 @@ class ChargeableRequestController extends Controller
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">APPROVE</button>
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
-                }elseif (Auth::user()->role == 6 && $rental_request->is_adviser_approved == 1 && $rental_request->is_mri_number_encoded == 0){
+                }elseif (Auth::user()->role == 6 && $rental_request->is_service_head_approved2 == 1 && $rental_request->is_mri_number_encoded == 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE MRI Number</button>
                         <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
@@ -971,10 +1004,13 @@ class ChargeableRequestController extends Controller
         // Attachment
             $attachmentButton = '';
             if($rental_request->attachments != null){
-                $attachmentButton = '
-                    <div class="flex items-center w-full mb-2">
-                        <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">View Attachment/s</button>
-                    </div>
+                $attachmentButton .= '
+                    <button id="viewAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">Request Attachment/s</button>
+                ';
+            }
+            if($rental_request->is_service_coordinator_approved == 1){
+                $attachmentButton .= '
+                    <button id="viewSCAttachments" class="px-4 py-1 border rounded bg-neutral-100 border-neutral-400 hover:border-neutral-200">Matrix/PO Attachment/s</button>
                 ';
             }
         // Attachment
@@ -1046,7 +1082,12 @@ class ChargeableRequestController extends Controller
                                     <div class="flex items-center w-full mb-2">
                                         <p class="w-44">Status: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->status.'</p>
                                     </div>
-                                    '.$attachmentButton.'
+                                    <div class="flex items-center w-full mb-2">
+                                        <p class="w-44">Return Count: </p><p class="ml-1 font-bold text-red-500 w-[calc(100%-176px)] text-lg">'.$rental_request->returned_count.'</p>
+                                    </div>
+                                    <div class="flex items-center w-full mb-2 gap-x-2">
+                                        '.$attachmentButton.'
+                                    </div>
                                     <hr class="my-6">
                                     <div class="flex items-start w-full pr-2 mb-2">
                                         <p class="w-44">Requestor Remarks: </p>
@@ -1101,13 +1142,7 @@ class ChargeableRequestController extends Controller
         $thisRequest->is_validated = 1;
         $thisRequest->validator = Auth()->user()->name;
         $thisRequest->datetime_validated = date('Y-m-d h:i:s');
-        $thisRequest->is_returned = 0;
-        $thisRequest->is_returned_by_parts = 0;
         $thisRequest->save();
-
-        ChargeableRequestParts::where('request_id', $id)->update([
-            'with_error' => 0
-        ]);
         
         return redirect()->route('chargeable')->with('success', 'Request Has Been Validated Successfully!');
     }
@@ -1123,20 +1158,13 @@ class ChargeableRequestController extends Controller
         $thisRequest->datetime_verified = date('Y-m-d h:i:s');
         $thisRequest->verifier_remarks = $remarks;
 
-        $thisRequest->is_returned = 0;
-
         $thisRequest->save();
-
-        ChargeableRequestParts::where('request_id', $id)->update([
-            'with_error' => 0
-        ]);
         
         return redirect()->route('chargeable')->with('success', 'Request Has Been Validated Successfully!');
     }
 
     public function approveRequest(Request $request){
         $thisRequest = ChargeableRequest::where('id', $request->id)->first();
-        $thisRequest->is_returned = 0;
 
         switch (Auth::user()->role) {
             case '4':
@@ -1194,7 +1222,7 @@ class ChargeableRequestController extends Controller
             case '13':
                 $request->validate([
                     'matrix' => 'required',
-                    'po_attachment' => 'required',
+                    'po_attachment' => 'required', 
                 ]);
 
                 $matrix = $request->file('matrix');
@@ -1227,6 +1255,12 @@ class ChargeableRequestController extends Controller
                     'encode_input' => 'required'
                 ]);
                 $thisRequest->is_mri_number_encoded = 1;
+                if($request->importation == 'YES'){
+                    $thisRequest->is_importation = 1;
+                }else{
+                    $thisRequest->is_importation = 0;
+                    $thisRequest->is_edoc_number_encoded = 1;
+                }
                 $thisRequest->mri_number = $request->encode_input;
                 $thisRequest->mri_encoder = Auth()->user()->name;
                 $thisRequest->datetime_mri_encoded = date('Y-m-d h:i:s');

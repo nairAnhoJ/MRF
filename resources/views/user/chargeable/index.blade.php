@@ -173,6 +173,57 @@
             </div>
         {{-- SQ ATTACHMENTS MODAL// --}}
     
+        {{-- MATRIX/PO ATTACHMENTS MODAL --}}
+            <div id="scAttachmentsModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[109] !bg-opacity-50 overflow-hidden flex items-center justify-center p-36">
+                <div class="w-4/6 h-full bg-white rounded-lg">
+                    <!-- Modal content -->
+                    <div class="relative w-full h-full bg-white rounded-lg shadow">
+                        <!-- Modal header -->
+                        <div class="flex items-start justify-between p-4 border-b rounded-t">
+                            <h3 class="text-xl font-semibold text-gray-900">
+                                Matrix/PO Attachments
+                            </h3>
+                            <button type="button" class="inline-flex items-center justify-center w-8 h-8 ml-auto text-sm text-gray-400 bg-transparent rounded-lg hover:bg-gray-200 hover:text-gray-900 closeSCAttachmentsModal">
+                                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                </svg>
+                                <span class="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <!-- Modal body -->
+                        <div class="py-4 px-10 h-[calc(100%-140px)] w-full overflow-hidden flex items-start justify-center">
+                            <div class="relative w-full h-full overflow=hidden">
+                                <!-- Carousel wrapper -->
+                                <div id="scAttachmentsModalContent" class="box-border relative w-full h-full overflow-hidden rounded-lg">
+                                </div>
+                                <button disabled type="button" id="previousSCAttachment" class="absolute top-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer disabled:pointer-events-none start-0 group focus:outline-none rounded-s-lg hover:bg-neutral-500/20">
+                                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                                        <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+                                        </svg>
+                                        <span class="sr-only">Previous</span>
+                                    </span>
+                                </button>
+                                <button type="button" id="nextSCAttachment" class="absolute top-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer disabled:pointer-events-none end-0 group focus:outline-none hover:bg-neutral-500/20 rounded-e-lg">
+                                    <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-black/30 group-hover:bg-black/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+                                        <svg class="w-4 h-4 text-white rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                                        </svg>
+                                        <span class="sr-only">Next</span>
+                                    </span>
+                                </button>
+                                <h1 id="scAttachmentPage" class="absolute flex items-center justify-center text-lg italic font-bold text-white -translate-x-1/2 rounded-full w-14 aspect-square bottom-2 left-1/2 bg-neutral-900/80"></h1>
+                            </div>
+                        </div>
+                        <!-- Modal footer -->
+                        <div class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b -trans">
+                            <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium w-24 py-2.5 hover:text-gray-900 focus:z-10 closeSCAttachmentsModal">CLOSE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{-- MATRIX/PO ATTACHMENTS MODAL// --}}
+    
         {{-- VALIDATE MODAL --}}
             <div id="validateModal" class="hidden absolute top-0 left-0 w-screen h-screen bg-gray-900 z-[99] !bg-opacity-50 overflow-hidden flex items-center justify-center p-5">
                 <div class="w-1/3 bg-white rounded-lg">
@@ -300,6 +351,19 @@
                                     @error('encode_input')
                                         <span class="text-xs text-red-500">The MRI Number you entered is invalid.</span>
                                     @enderror
+                                </div>
+                                <div class="w-full mb-2">
+                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">Importation?</label>
+                                    <div class="flex items-center gap-x-4">
+                                        <div class="flex items-center">
+                                            <input id="importation-yes" type="radio" value="YES" name="importation" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                            <label for="importation-yes" class="text-sm font-medium text-gray-900 ms-2">Yes</label>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <input checked id="importation-no" type="radio" value="NO" name="importation" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 focus:ring-2">
+                                            <label for="importation-no" class="text-sm font-medium text-gray-900 ms-2">No</label>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
@@ -536,7 +600,7 @@
                                     <td class="
                                         @if ($result->is_confirmed == 1)
                                             text-emerald-600
-                                        @elseif ($result->is_returned == 1 || $result->is_cancelled == 1)
+                                        @elseif (($result->is_returned == 1 || $result->is_cancelled == 1) && $result->is_validated == 0)
                                             text-red-600
                                         @endif
                                     ">
@@ -908,6 +972,73 @@
         
         jQuery(document).on("click", ".closeSQAttachmentsModal", function() {
             $('#sqAttachmentsModal').addClass('hidden');
+        });
+
+
+
+
+
+        
+
+        jQuery(document).on("click", "#viewSCAttachments", function() {
+            $('#loading').removeClass('hidden');
+            $.ajax({
+                url:"{{ route('chargeable.viewSCAttachments') }}",
+                method:"POST",
+                data: {
+                    id: id,
+                    _token: _token,
+                },
+                success: function (response) {
+                    console.log(response);
+                    $('#scAttachmentsModalContent').html(response);
+                    $('#previousSCAttachment').attr('disabled', true);
+                    $('#nextSCAttachment').attr('disabled', false);
+
+                    $('#scAttachmentPage').html('1 / 2');
+                    
+                    $('#scAttachmentsModal').removeClass('hidden');
+                    $('#loading').addClass('hidden');
+                }
+            });
+        });
+
+        jQuery(document).on("click", ".closeSCAttachmentsModal", function() {
+            jQuery('#scAttachmentsModal').addClass('hidden');
+        });
+
+        jQuery(document).on("click", "#previousSCAttachment", function() {
+            $('#transparentScreen').removeClass('hidden');
+            var childWidth = jQuery('#scAttachmentCarousel').width();
+            var left = jQuery('#scAttachmentCarousel').position().left;
+
+            if(left != 0){
+                jQuery('#scAttachmentCarousel').css('transform', 'translateX(0px)');
+                $('#previousSCAttachment').attr('disabled', true);
+                $('#scAttachmentPage').html('1 / 2');
+            }
+
+            setTimeout(function() {
+                $('#nextSCAttachment').attr('disabled', false);
+                $('#transparentScreen').addClass('hidden');
+            }, 300);
+        });
+
+        jQuery(document).on("click", "#nextSCAttachment", function() {
+            $('#transparentScreen').removeClass('hidden');
+            var childWidth = jQuery('#scAttachmentCarousel').width();
+            var left = jQuery('#scAttachmentCarousel').position().left;
+            
+            if(left == 0){
+                jQuery('#scAttachmentCarousel').css('transform', 'translateX(-50%)');
+                $('#nextSCAttachment').attr('disabled', true);
+                $('#scAttachmentPage').html('2 / 2');
+            }
+
+            setTimeout(function() {
+                $('#previousSCAttachment').attr('disabled', false);
+                $('#transparentScreen').addClass('hidden');
+            }, 300);
         });
     });
 </script>

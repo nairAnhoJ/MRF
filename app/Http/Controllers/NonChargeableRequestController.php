@@ -337,11 +337,11 @@ class NonChargeableRequestController extends Controller
         $selectedPartsPrice = array_map('floatval', explode(",", $request->selectedPartsPrice));
 
         $request_id = NonChargeableRequest::select('id')->max('id') + 1;
+        
 
-        $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-        $fsrrFile->storeAs('storage/non-chargeable/fsrr/', $fileName, 'public_uploads');
-
-        $fsrrPath = 'storage/non-chargeable/fsrr/' . $fileName;
+        $fileName = date('Ymd') . '.' . $fsrr_fileExt;
+        $fsrrFile->storeAs('storage/non-chargeable/'.$request_id.'/fsrr/', $fileName, 'public_uploads');
+        $fsrrPath = 'storage/non-chargeable/'.$request_id.'/fsrr/'.$fileName;
 
         $new_request = new NonChargeableRequest();
         $new_request->number = 'NR-' . date('y') . substr($customer_name, 0, 1) . date('md') . '-' . $request_id;
@@ -484,10 +484,14 @@ class NonChargeableRequestController extends Controller
         $nc_request->serial_number = $serial_number;
         $nc_request->fsrr_number = $fsrr_number;
         if($fsrrFile != null){
+            $folder = 'storage/non-chargeable/'.$nc_request->id.'/fsrr/';
+            File::cleanDirectory(public_path($folder));
+            
             $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
-            $fileName = date('Ymd') . '_' . $request_id . '.' . $fsrr_fileExt;
-            $fsrrFile->storeAs('storage/attachments/non-chargeable', $fileName, 'public_uploads');
-            $fsrrPath = 'storage/attachments/non-chargeable/' . $fileName;
+
+            $fileName = date('Ymd') . '.' . $fsrr_fileExt;
+            $fsrrFile->storeAs('storage/non-chargeable/'.$request_id.'/fsrr/', $fileName, 'public_uploads');
+            $fsrrPath = 'storage/non-chargeable/'.$request_id.'/fsrr/'.$fileName;
 
             $nc_request->fsrr_path = $fsrrPath;
         }
