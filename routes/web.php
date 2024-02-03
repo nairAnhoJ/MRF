@@ -104,6 +104,9 @@ Route::middleware(['auth', 'firstlogin'])->group(function () {
         Route::post('/chargeable/view-attachments', [ChargeableRequestController::class, 'viewAttachments'])->name('chargeable.viewAttachments');
         Route::post('/chargeable/view-sq-attachments', [ChargeableRequestController::class, 'viewSQAttachments'])->name('chargeable.viewSQAttachments');
         Route::post('/chargeable/view-sc-attachments', [ChargeableRequestController::class, 'viewSCAttachments'])->name('chargeable.viewSCAttachments');
+        Route::post('/chargeable/mri-number', [ChargeableRequestController::class, 'mriNumber'])->name('chargeable.mriNumber');
+        Route::post('/chargeable/edoc-parts', [ChargeableRequestController::class, 'edocParts'])->name('chargeable.edocParts');
+        Route::post('/chargeable/dr-number', [ChargeableRequestController::class, 'drNumber'])->name('chargeable.drNumber');
         
         Route::post('/chargeable/validate-request', [ChargeableRequestController::class, 'validateRequest'])->name('chargeable.validateRequest');
         Route::post('/chargeable/verify-request', [ChargeableRequestController::class, 'verifyRequest'])->name('chargeable.verifyRequest');

@@ -347,7 +347,7 @@
                             @elseif (Auth::user()->role == 6)
                                 <div class="w-full mb-2">
                                     <label for="encode_input" class="block text-sm font-medium text-gray-900">MRI Number</label>
-                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mri-number" autocomplete="off">
                                     @error('encode_input')
                                         <span class="text-xs text-red-500">The MRI Number you entered is invalid.</span>
                                     @enderror
@@ -367,16 +367,27 @@
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60 mri-remarks" autocomplete="off"></textarea>
                                 </div>
-                            @elseif (Auth::user()->role == 12)
+                            @elseif (Auth::user()->role == 7)
+                                <div id="edoc_parts"></div>
                                 <div class="w-full mb-2">
-                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">Reference Number</label>
-                                    <input type="text" id="encode_input" name='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <label for="encode_input" class="block text-sm font-medium text-gray-900">eDoc Number</label>
+                                    <input type="text" id="encode_input" name='encode_input' id='encode_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
                                     @error('encode_input')
-                                        <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
+                                        <span class="text-xs text-red-500">The eDoc Number you entered is invalid.</span>
                                     @enderror
                                 </div>
+                                <div class="w-full mb-2">
+                                    <label for="serial_numbers" class="block text-sm font-medium text-gray-900">Serial Numbers</label>
+                                    <textarea style="resize: none;" name='serial_numbers' id='serial_numbers' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                </div>
+                                <div class="w-full">
+                                    <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
+                                    <textarea style="resize: none;" name='remarks' id='edoc_remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                </div>
+                            @elseif (Auth::user()->role == 12)
+                                <div id="edoc_numbers"></div>
                                 <div class="w-full mb-2">
                                     <label for="dr_input" class="block text-sm font-medium text-gray-900">DR Number</label>
                                     <input type="text" id="dr_input" name='dr_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
@@ -386,21 +397,21 @@
                                 </div>
                                 <div class="w-full mb-2">
                                     <label for="si_input" class="block text-sm font-medium text-gray-900">SI Number</label>
-                                    <input type="text" id="si_input" name='si_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="si_input" name='si_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 si-number" autocomplete="off">
                                     @error('si_input')
                                         <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
                                     @enderror
                                 </div>
                                 <div class="w-full mb-2">
                                     <label for="bs_input" class="block text-sm font-medium text-gray-900">BS Number</label>
-                                    <input type="text" id="bs_input" name='bs_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off">
+                                    <input type="text" id="bs_input" name='bs_input' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bs-number" autocomplete="off">
                                     @error('bs_input')
                                         <span class="text-xs text-red-500">The DR Number you entered is invalid.</span>
                                     @enderror
                                 </div>
                                 <div class="w-full">
                                     <label for="remarks" class="block text-sm font-medium text-gray-900">Remarks</label>
-                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60" autocomplete="off"></textarea>
+                                    <textarea style="resize: none;" name='remarks' id='remarks' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 h-60 invoice-remarks" autocomplete="off"></textarea>
                                 </div>
                             
                             @elseif (Auth::user()->role == 13)
@@ -627,10 +638,14 @@
                                                 Service Coordinator Approved (For Service Head Approval)
                                             @elseif ($result->is_service_head_approved2 == 1 && $result->is_mri_number_encoded == 0)
                                                 Service Head Approved (For Encoding of MRI Number)
-                                            @elseif ($result->is_mri_number_encoded == 1 && $result->is_invoice_encoded == 0)
-                                                MRI Number Encoded (For Encoding of Invoicing)
-                                            @elseif ($result->is_invoice_encoded == 1 && $result->is_confirmed == 0)
-                                                Invoicing Encoded (For Signatories Confirmation)
+                                            @elseif ($result->is_mri_number_encoded == 1 && $result->is_edoc_number_encoded == 0)
+                                                MRI Number Encoded (For Encoding of eDoc Number)
+                                            @elseif ($result->is_edoc_number_encoded == 1)
+                                                @if ($result->is_importation == 0)
+                                                    MRI Number Encoded (For Encoding of Invoicing)
+                                                @else
+                                                    eDoc Number Encoded (For Encoding of Invoicing)
+                                                @endif
                                             @elseif ($result->is_confirmed == 1)
                                                 Completed
                                             @endif
@@ -777,6 +792,60 @@
                     success: function (response) {
                         $('.sq-number').val(response.sq_number);
                         $('.sq-remarks').html(response.sq_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }else if(role == 6){
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('chargeable.mriNumber') }}",
+                    method:"POST",
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('.mri-number').val(response.mri_number);
+                        $('.mri-remarks').html(response.mri_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }else if(role == 7){
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('chargeable.edocParts') }}",
+                    method:"POST",
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('#edoc_parts').html(response.content);
+                        $('#serial_numbers').html(response.serial_numbers);
+                        $('#edoc_remarks').html(response.edoc_remarks);
+                        jQuery('#approveModal').removeClass('hidden');
+                        $('#loading').addClass('hidden');
+                    }
+                });
+            }else if(role == 12){
+                $('#loading').removeClass('hidden');
+                $.ajax({
+                    url:"{{ route('chargeable.drNumber') }}",
+                    method:"POST",
+                    dataType: 'json',
+                    data: {
+                        id: id,
+                        _token: _token,
+                    },
+                    success: function (response) {
+                        $('#edoc_numbers').html(response.content);
+                        $('.si-number').val(response.si_number);
+                        $('.bs-number').val(response.bs_number);
+                        $('.invoice-remarks').html(response.invoice_remarks);
                         jQuery('#approveModal').removeClass('hidden');
                         $('#loading').addClass('hidden');
                     }
