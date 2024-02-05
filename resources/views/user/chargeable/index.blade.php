@@ -305,8 +305,6 @@
                             <h3 class="text-xl font-semibold text-gray-900">
                                 @if (Auth::user()->role == 10 || Auth::user()->role == 6 || Auth::user()->role == 12)
                                     Encode
-                                @elseif(Auth::user()->role == 9)
-                                    Confirm
                                 @else
                                     Approve
                                 @endif
@@ -640,12 +638,14 @@
                                                 Service Head Approved (For Encoding of MRI Number)
                                             @elseif ($result->is_mri_number_encoded == 1 && $result->is_edoc_number_encoded == 0)
                                                 MRI Number Encoded (For Encoding of eDoc Number)
-                                            @elseif ($result->is_edoc_number_encoded == 1)
+                                            @elseif ($result->is_edoc_number_encoded == 1 && $result->is_invoice_encoded == 0)
                                                 @if ($result->is_importation == 0)
                                                     MRI Number Encoded (For Encoding of Invoicing)
                                                 @else
                                                     eDoc Number Encoded (For Encoding of Invoicing)
                                                 @endif
+                                            @elseif ($result->is_invoice_encoded == 1 && $result->is_confirmed == 0)
+                                                Invoice Encoded (For Approval of Signatory)
                                             @elseif ($result->is_confirmed == 1)
                                                 Completed
                                             @endif

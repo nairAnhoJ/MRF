@@ -773,16 +773,18 @@ class ChargeableRequestController extends Controller
             ->distinct()
             ->get();
         $edocArray = explode(',', $request->edoc_number);
+        $c = 0;
 
         $res = '<p class="mb-2 text-xs italic">*please select the eDoc Number</p>';
         
         foreach ($edocArray as $index => $eachEdoc){
             $thisEdocPart = ChargeableRequestParts::where('edoc_number', $eachEdoc)->first();
             if($thisEdocPart->dr_number == '0'){
+                $c++;
                 $res .= '
                     <div class="mb-4">
                         <div class="flex items-center mb-1">
-                            <input '.( ($index == 0) ? 'checked' : '' ).' id="part'.$index.'" name="selectedEdocNumber" type="radio" value="'.$thisEdocPart->edoc_number.'" class="text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
+                            <input '.(($c == 1) ? "checked" : "").' id="part'.$index.'" name="selectedEdocNumber" type="radio" value="'.$thisEdocPart->edoc_number.'" class="text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
                             <label for="part'.$index.'" class="text-xs font-medium text-gray-900 ms-2">'.$thisEdocPart->edoc_number.'</label>
                         </div>
                     </div>
@@ -855,8 +857,11 @@ class ChargeableRequestController extends Controller
             }
             if($rental_request->is_mri_number_encoded == 1){
                 $encoded .= '
-                    <div class="flex items-center w-full mb-5">
+                    <div class="flex items-center w-full">
                         <p class="w-44">MRI Number: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.$rental_request->mri_number.'</p>
+                    </div>
+                    <div class="flex items-center w-full mb-5">
+                        <p class="w-44">Importation: </p><p class="ml-1 font-bold w-[calc(100%-176px)] text-lg">'.(($rental_request->is_importation == 1) ? "YES" : "NO").'</p>
                     </div>
                 ';
             }
@@ -1093,7 +1098,7 @@ class ChargeableRequestController extends Controller
                         ';
                     }
                 }
-                elseif (Auth::user()->role == 12 && $rental_request->is_mri_number_encoded == 1 && $rental_request->is_invoice_encoded == 0){
+                elseif (Auth::user()->role == 12 && $rental_request->is_mri_number_encoded == 1 && $rental_request->is_invoice_encoded == 0 && $pendingEdoc > 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">ENCODE</button>
                     ';
@@ -1101,7 +1106,6 @@ class ChargeableRequestController extends Controller
                 elseif (Auth::user()->role == 9 && $rental_request->is_invoice_encoded == 1 && $rental_request->is_confirmed == 0){
                     $controls2 = '
                         <button type="button" class="approveButton text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">APPROVE</button>
-                        <button id="returnButton" type="button" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 rounded-lg border border-gray-200 text-sm font-bold py-2.5 hover:text-white focus:z-10 whitespace-nowrap px-4">RETURN REQUEST</button>
                     ';
                 }
                 elseif (Auth::user()->role == 13 && $rental_request->is_adviser_approved == 1 && $rental_request->is_service_coordinator_approved == 0){
@@ -1456,7 +1460,7 @@ class ChargeableRequestController extends Controller
                     'dr_number' => $request->dr_input
                 ]);
 
-                $pendingEdoc = ChargeableRequestParts::where('request_id', $request->id)->where('dr_number', 0)->count();
+                $pendingEdoc = ChargeableRequestParts::where('request_id', $request->id)->where('dr_number', '0')->count();
                 if($pendingEdoc == 0){
                     $thisRequest->is_invoice_encoded = 1;
                 }
