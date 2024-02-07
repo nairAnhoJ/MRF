@@ -159,6 +159,116 @@
                             <h1 class="text-xl font-bold text-neutral-800">Request Info</h1>
                             <input type="hidden" name="number" value="{{ $c_request->number }}">
                             
+                            <div class="flex gap-x-4">
+                                <div class="w-full">
+                                    <label for="date_needed" class="block text-sm font-medium text-gray-900">Date Needed</label>
+                                    <input type="date" name='date_needed' id="date_needed" value="{{ (old('date_needed') == '') ? $c_request->date_needed : old('date_needed') }}" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                    @error('date_needed')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="delivery_type" class="block text-sm font-medium text-gray-900">Delivery Type</label>
+                                    <select id="delivery_type" name='delivery_type' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="REGULAR"
+                                            @if (old('delivery_type') == '')
+                                                @if ($c_request->delivery_type == 'REGULAR')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('delivery_type') == 'REGULAR')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Regular</option>
+                                        <option value="SAME DAY"
+                                            @if (old('delivery_type') == '')
+                                                @if ($c_request->delivery_type == 'SAME DAY')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('delivery_type') == 'SAME DAY')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Same Day</option>
+                                        <option value="PICKUP"
+                                            @if (old('delivery_type') == '')
+                                                @if ($c_request->delivery_type == 'PICKUP')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('delivery_type') == 'PICKUP')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Pick Up</option>
+                                        <option value="AIR"
+                                            @if (old('delivery_type') == '')
+                                                @if ($c_request->delivery_type == 'AIR')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('delivery_type') == 'AIR')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Air</option>
+                                        <option value="SEA"
+                                            @if (old('delivery_type') == '')
+                                                @if ($c_request->delivery_type == 'SEA')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('delivery_type') == 'SEA')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Sea</option>
+                                        <option value="OTHERS"
+                                            @if (old('delivery_type') == '')
+                                                @if ($c_request->delivery_type == 'OTHERS')
+                                                    selected
+                                                @endif
+                                            @else
+                                                @if (old('delivery_type') == 'OTHERS')
+                                                    selected
+                                                @endif
+                                            @endif
+                                        >Others</option>
+                                    </select>
+                                    @error('delivery_type')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="service_coordinator" class="block text-sm font-medium text-gray-900">Service Coordinator</label>
+                                    <select id="service_coordinator" name='service_coordinator' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                                        <option value="" hidden>Select Service Coordinator</option>
+                                        @foreach ($coordinators as $coordinator)
+                                            <option value="{{ $coordinator->id }}" data-name="{{ $coordinator->name }}"
+                                                @if (old('service_coordinator') == '')
+                                                    @if ($c_request->service_coordinator_id == $coordinator->id)
+                                                        selected
+                                                    @endif
+                                                @else
+                                                    @if (old('service_coordinator') == $coordinator->id)
+                                                        selected
+                                                    @endif
+                                                @endif
+                                            >{{ $coordinator->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('service_coordinator')
+                                        <span class="text-xs text-red-500">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="w-full">
+                                    <label for="site" class="block text-sm font-medium text-gray-900">Site</label>
+                                    <input type="text" id="site" value='{{ $site }}' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" autocomplete="off" disabled>
+                                </div>
+                            </div>
+                            
                             <div>
                                 <div class="w-full">
                                     <label for="customer_name" class="block text-sm font-medium text-gray-900">Customer</label>
@@ -190,7 +300,6 @@
                                 <div class="w-full">
                                     <label for="brand" class="block text-sm font-medium text-gray-900">Brand</label>
                                     <select id="brand" name='brand' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                                        <option value="" hidden>Select Brand</option>
                                         @foreach ($brands as $brandOption)
                                             <option data-name="{{ $brandOption->name }}" value="{{ $brandOption->id }}"
                                                 @if (old('brand') == '')
@@ -370,6 +479,25 @@
                                     @error('status')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
+                                </div>
+                            </div>
+
+                            <div class="w-full">
+                                <div class="w-full">
+                                    <label for="attachments" class="block text-sm font-medium text-gray-900">Attachments</label>
+                                    <div class="flex gap-x-2">
+                                        <input type="file" id='attachments' name="attachments[]" multiple value="{{ old('attachments') }}" class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" accept=".jpeg, .jpg, .png">
+                                    </div>
+                                    <div id="attachment_preview" class="flex items-end w-full h-40 p-4 gap-x-5">
+                                        @php
+                                            $att = explode(',', $c_request->attachments)
+                                        @endphp
+                                        @foreach ($att as $index => $eactAtt)
+                                            <div class="flex items-center justify-center h-full border aspect-square">
+                                                <img src="{{ asset('storage/chargeable/'.$c_request->id.'/request_attachments/'.$eactAtt) }}" alt="attachment{{ ($index+1) }}" class="w-auto max-h-full">
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
 

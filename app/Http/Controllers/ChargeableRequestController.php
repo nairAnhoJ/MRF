@@ -1510,6 +1510,7 @@ class ChargeableRequestController extends Controller
         $customers = Customer::where('is_deleted', 0)->get();
         $site = Site::where('id', Auth::user()->site)->first()->name;
         $rbrand = Brand::where('name', $c_request->brand)->first();
+        $coordinators = User::where('role', 13)->get();
         if($rbrand != null){
             $brand = $rbrand->id;
         }else{
@@ -1518,7 +1519,7 @@ class ChargeableRequestController extends Controller
         $models = BrandModel::where('is_deleted', 0)->get();
         $selectedParts = ChargeableRequestParts::where('request_id', $c_request->id)->get();
         
-        return view('user.chargeable.edit', compact('c_request', 'c_request_parts', 'customers', 'brands', 'models', 'site', 'brand', 'selectedParts'));
+        return view('user.chargeable.edit', compact('c_request', 'c_request_parts', 'customers', 'brands', 'models', 'site', 'brand', 'selectedParts', 'coordinators'));
     }
 
     public function update(Request $request){
