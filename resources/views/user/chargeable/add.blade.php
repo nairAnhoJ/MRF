@@ -472,6 +472,15 @@
                                         <p class="w-36">Status: </p><p id="con_status" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
                                     </div>
                                     <div class="flex w-full mb-2">
+                                        <p class="w-36">Delivery Type: </p><p id="con_delivery_type" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Date Needed: </p><p id="con_date_needed" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
+                                        <p class="w-36">Service Coordinator: </p><p id="con_service_coordinator" class="ml-1 font-bold w-[calc(100%-144px)] text-lg"></p>
+                                    </div>
+                                    <div class="flex w-full mb-2">
                                         <p class="w-36">Remarks: </p>
                                         <textarea style="resize:none;" id="con_requestor_remarks" class="w-full h-10 overflow-y-hidden rounded-lg outline-none autoResize" readonly></textarea>
                                     </div>
@@ -688,11 +697,11 @@
                     // var cfor = $('#for').val();
                     // $('#con_for').html(cfor);
 
-                    // var order_type = $('#order_type').val();
-                    // $('#con_order_type').html(order_type);
+                    var service_coordinator = $('#service_coordinator').val();
+                    $('#con_service_coordinator').html(service_coordinator);
 
-                    // var date_needed = $('input[name="date_needed"]').val();
-                    // $('#con_date_needed').html(date_needed);
+                    var date_needed = $('input[name="date_needed"]').val();
+                    $('#con_date_needed').html(date_needed);
 
                     var model = $('input[name="model"]').val();
                     $('#con_model').html(model);
@@ -706,8 +715,8 @@
                     var fsrr_number = $('input[name="fsrr_number"]').val();
                     $('#con_fsrr_number').html(fsrr_number);
 
-                    // var delivery_type = $('#delivery_type').val();
-                    // $('#con_delivery_type').html(delivery_type);
+                    var delivery_type = $('#delivery_type').val();
+                    $('#con_delivery_type').html(delivery_type);
 
                     var technician = $('input[name="technician"]').val();
                     $('#con_technician').html(technician);
@@ -921,30 +930,6 @@
                         $('#attachment_preview').html(response);
                     }
                 });
-
-
-
-
-
-                // var index = selectedParts.indexOf(id);
-                // selectedParts.splice(index, 1);
-                
-                // $.ajax({
-                //     url:"{{ route('chargeable.add.updateSelected') }}",
-                //     method:"POST",
-                //     data:{
-                //         tab: tab,
-                //         selectedParts: JSON.stringify(selectedParts),
-                //         _token: _token
-                //     },
-                //     success:function(result){
-                //         $('#selectedPartsBody').html(result);
-                //         $('#selectedParts').val(selectedParts);
-
-                //         $('#loading').addClass('hidden');
-                //         $('#partsModal').addClass('hidden');
-                //     }
-                // })
             });
         });
     </script>

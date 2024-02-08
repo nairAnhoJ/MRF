@@ -539,18 +539,32 @@ class ChargeableRequestController extends Controller
 
     public function attachmentsPreview(Request $request){
         $attachments = $request->file('attachments');
-        $folder = 'temporary_files/chargeable/attachment/'.Auth::user()->id;
-        File::cleanDirectory(public_path($folder));
         $content = '';
+        if($attachments == null){
+            $creq = ChargeableRequest::where('id', $request->id)->first();
+            $cattachments = explode(',', $creq->attachments);
 
-        foreach($attachments as $index => $attachment){
-            $attachment->move(public_path($folder), $attachment->getClientOriginalName());
+            foreach($cattachments as $index => $attachment){
+                
+                $content .= '
+                    <div class="flex items-center justify-center h-full border aspect-square">
+                        <img src="'.asset('storage/chargeable/'.$creq->id.'/request_attachments/'.$attachment).'" alt="attachment'.($index+1).'" class="w-auto max-h-full">
+                    </div>
+                ';
+            }
+        }else{
+            $folder = 'temporary_files/chargeable/attachment/'.Auth::user()->id;
+            File::cleanDirectory(public_path($folder));
 
-            $content .= '
-                <div class="flex items-center justify-center h-full border aspect-square">
-                    <img src="'.asset($folder.'/'.$attachment->getClientOriginalName()).'" alt="attachment'.($index+1).'" class="w-auto max-h-full">
-                </div>
-            ';
+            foreach($attachments as $index => $attachment){
+                $attachment->move(public_path($folder), $attachment->getClientOriginalName());
+
+                $content .= '
+                    <div class="flex items-center justify-center h-full border aspect-square">
+                        <img src="'.asset($folder.'/'.$attachment->getClientOriginalName()).'" alt="attachment'.($index+1).'" class="w-auto max-h-full">
+                    </div>
+                ';
+            }
         }
 
         echo $content;
@@ -1506,6 +1520,7 @@ class ChargeableRequestController extends Controller
     public function edit(Request $request){
         $c_request = ChargeableRequest::where('number', $request->request_number)->first();
         $c_request_parts = ChargeableRequestParts::where('request_id', $c_request->id)->get();
+        $brand_id = Brand::where('name', $c_request->brand)->first()->id;
         $brands = Brand::where('is_deleted', 0)->orderBy('id', 'asc')->get();
         $customers = Customer::where('is_deleted', 0)->get();
         $site = Site::where('id', Auth::user()->site)->first()->name;
@@ -1516,7 +1531,7 @@ class ChargeableRequestController extends Controller
         }else{
             $brand = 0;
         }
-        $models = BrandModel::where('is_deleted', 0)->get();
+        $models = BrandModel::where('brand_id', $brand_id)->where('is_deleted', 0)->get();
         $selectedParts = ChargeableRequestParts::where('request_id', $c_request->id)->get();
         
         return view('user.chargeable.edit', compact('c_request', 'c_request_parts', 'customers', 'brands', 'models', 'site', 'brand', 'selectedParts', 'coordinators'));
@@ -1563,9 +1578,9 @@ class ChargeableRequestController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $customer_name = $request->customer_name;
-        $customer_address = $request->customer_address;
-        $customer_area = $request->customer_area;
+        $date_needed = $request->date_needed;
+        $delivery_type = $request->delivery_type;
+        $service_coordinator = $request->service_coordinator;
         
         $brand = Brand::where('id', $request->brand)->first()->name;
         $model = $request->model;
@@ -1574,6 +1589,7 @@ class ChargeableRequestController extends Controller
         $requestor_remarks = $request->requestor_remarks;
         $serial_number = $request->serial_number;
         $fsrrFile = $request->file('fsrrFile');
+        $attachments = $request->file('attachments');
         
         $technician = $request->technician;
         $hm = $request->hm;
@@ -1586,50 +1602,65 @@ class ChargeableRequestController extends Controller
         $selectedPartsQuantity = array_map('floatval', explode(",", $request->selectedPartsQuantity));
         $selectedPartsPrice = array_map('floatval', explode(",", $request->selectedPartsPrice));
 
-        $fsrrFile = $request->file('fsrrFile');
+        $c_request = ChargeableRequest::where('number', $request->number)->first();
+        $c_request->date_needed = $date_needed;
+        $c_request->delivery_type = $delivery_type;
+        $c_request->service_coordinator_id = $service_coordinator;
+        $c_request->service_coordinator_name = User::where('id', $service_coordinator)->first()->name;
 
-        $nc_request = ChargeableRequest::where('number', $request->number)->first();
-        $nc_request->site = Auth::user()->site;
-        $nc_request->area = Auth::user()->area;
-        $nc_request->customer_name = $customer_name;
-        $nc_request->customer_address = $customer_address;
-        $nc_request->customer_area = $customer_area;
-        $nc_request->fleet_number = $fleet_number;
-        $nc_request->brand = $brand;
-        $nc_request->model = $model;
-        $nc_request->serial_number = $serial_number;
-        $nc_request->fsrr_number = $fsrr_number;
+        $c_request->fleet_number = $fleet_number;
+        $c_request->brand = $brand;
+        $c_request->model = $model;
+        $c_request->serial_number = $serial_number;
+        $c_request->fsrr_number = $fsrr_number;
 
         if($fsrrFile != null){
-            $folder = 'storage/chargeable/'.$nc_request->id.'/fsrr/';
+            $folder = 'storage/chargeable/'.$c_request->id.'/fsrr/';
             File::cleanDirectory(public_path($folder));
 
             $fsrr_fileExt = $fsrrFile->getClientOriginalExtension();
 
             $fileName = date('Ymd') . '.' . $fsrr_fileExt;
-            $fsrrFile->storeAs('storage/chargeable/'.$nc_request->id.'/fsrr/', $fileName, 'public_uploads');
-            $fsrrPath = 'storage/chargeable/'.$nc_request->id.'/fsrr/'.$fileName;
+            $fsrrFile->storeAs('storage/chargeable/'.$c_request->id.'/fsrr/', $fileName, 'public_uploads');
+            $fsrrPath = 'storage/chargeable/'.$c_request->id.'/fsrr/'.$fileName;
 
-            $nc_request->fsrr_path = $fsrrPath;
+            $c_request->fsrr_path = $fsrrPath;
         }
 
-        $nc_request->technician = $technician;
-        $nc_request->hm = $hm;
-        $nc_request->disc = $disc;
-        $nc_request->working_environment = $working_environment;
-        $nc_request->status = $status;
-        $nc_request->fsrr_date_received = $date_received;
-        $nc_request->date_requested = date('Y-m-d h:i:s');
-        $nc_request->requestor = Auth::user()->name;
-        $nc_request->requestor_remarks = $requestor_remarks;
-        $nc_request->save();
+        $attachmentsArray = '';
 
-        ChargeableRequestParts::where('request_id', $nc_request->id)->delete();
+        if($attachments != null){
+            $folder = 'storage/chargeable/'.$c_request->id.'/request_attachments/';
+            File::cleanDirectory(public_path($folder));
+            foreach($attachments as $index => $attachment){
+                $attachmentsExt = $attachment->getClientOriginalExtension();
+                $attachmentsName = ($index+1).'.'.$attachmentsExt;
+                $attachment->storeAs('storage/chargeable/'.$c_request->id.'/request_attachments/', $attachmentsName, 'public_uploads');
+                if($index == 0){
+                    $attachmentsArray .= $attachmentsName;
+                }else{
+                    $attachmentsArray .= ','.$attachmentsName;
+                }
+            }
+            $c_request->attachments = $attachmentsArray;
+        }
+
+        $c_request->technician = $technician;
+        $c_request->hm = $hm;
+        $c_request->disc = $disc;
+        $c_request->working_environment = $working_environment;
+        $c_request->status = $status;
+        $c_request->fsrr_date_received = $date_received;
+        $c_request->date_requested = date('Y-m-d h:i:s');
+        $c_request->requestor_remarks = $requestor_remarks;
+        $c_request->save();
+
+        ChargeableRequestParts::where('request_id', $c_request->id)->delete();
 
         foreach ($selectedParts as $index => $selectedPart) {
             $sPart = Part::with('part_brand')->where('id', $selectedPart)->first();
             $perPart = new ChargeableRequestParts();
-            $perPart->request_id = $nc_request->id;
+            $perPart->request_id = $c_request->id;
             $perPart->part_id = $selectedPart;
             $perPart->part_number = $sPart->partno;
             $perPart->part_name = $sPart->partname;

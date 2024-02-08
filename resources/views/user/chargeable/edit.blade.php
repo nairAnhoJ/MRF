@@ -545,12 +545,12 @@
                                                         <td>{{ $selectedPart->part_name }}</td>
                                                         <td>{{ $selectedPart->brand }}</td>
                                                         <td class="py-2">
-                                                            <input type="text" name="partQuantity{{ ($index + 1) }}" class="w-16 text-sm text-center rounded-lg lowestOne partQuantity numberOnly text-neutral-700" value="{{ $selectedPart->quantity }}">
+                                                            <input type="text" name="partQuantity{{ ($index + 1) }}" class="w-16 text-sm text-center rounded-lg lowestOne partQuantity numberOnly text-neutral-700" value="{{ $selectedPart->quantity }}" autocomplete="off">
                                                         </td>
                                                         <td>
-                                                            <input type="text" name="partPrice'.{{ ($index + 1) }}" class="text-sm text-center rounded-lg w-28 partPrice lowestOne numberOnly text-neutral-700" value="{{ str_replace(',', '', $selectedPart->price) }}">
+                                                            <input type="text" name="partPrice'.{{ ($index + 1) }}" class="text-sm text-center rounded-lg w-28 partPrice lowestOne numberOnly text-neutral-700" value="{{ str_replace(',', '', $selectedPart->price) }}" autocomplete="off">
                                                         </td>
-                                                        <td class="partTotal">{{ number_format((str_replace(",", "", $selectedPart->price)), 2, ".", ",") }}</td>
+                                                        <td class="partTotal">{{ number_format((str_replace(",", "", ($selectedPart->price*$selectedPart->quantity))), 2, ".", ",") }}</td>
                                                         <td>
                                                             <button data-id="{{ $selectedPart->id }}" type="button" class="mt-1 text-red-500 partDelete hover:text-red-600">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 -960 960 960" fill=currentColor>
@@ -1073,6 +1073,32 @@
                         $('#partsModal').addClass('hidden');
                     }
                 })
+            });
+
+
+
+
+
+            jQuery(document).on("change", "#attachments", function() {
+                // $('#loading').removeClass('hidden');
+                var formData = new FormData();
+                const attachments = $("#attachments")[0].files;
+                for (let i = 0; i < attachments.length; i++) {
+                    formData.append("attachments[]", attachments[i]);
+                }
+                formData.append('_token', _token);
+                formData.append('id', id);
+
+                $.ajax({
+                    url: "{{ route('chargeable.add.attachmentsPreview') }}",
+                    method: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#attachment_preview').html(response);
+                    }
+                });
             });
         });
     </script>
